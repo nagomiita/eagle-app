@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { ImageData, OriginalImageData } from "../types";
+import { API_BASE_URL } from "../config";
 
 const useImages = () => {
   const [images, setImages] = useState<ImageData[]>([]);
@@ -15,7 +16,7 @@ const useImages = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `http://192.168.11.11:8000/api/item/list?limit=${limit}&offset=0&tags=${selectedTag}&folders=${folderId}`
+        `${API_BASE_URL}/api/item/list?limit=${limit}&offset=0&tags=${selectedTag}&folders=${folderId}`
       );
       setImages(response.data.data);
     } catch (error) {
@@ -28,7 +29,7 @@ const useImages = () => {
   const openModal = async (image: ImageData) => {
     try {
       const response = await axios.get(
-        `http://192.168.11.11:8000/api/item/original?id=${image.id}`
+        `${API_BASE_URL}/api/item/original?id=${image.id}`
       );
       if (response.data.status === "success") {
         const originalImage = response.data.data[0];

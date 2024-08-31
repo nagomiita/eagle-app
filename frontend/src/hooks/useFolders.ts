@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { FolderInfo } from "../types";
+import { API_BASE_URL } from "../config";
 
 const useFolders = () => {
   const [folders, setFolders] = useState<FolderInfo[]>([]);
@@ -10,9 +11,7 @@ const useFolders = () => {
   useEffect(() => {
     const fetchFolders = async () => {
       try {
-        const response = await axios.get(
-          "http://192.168.11.11:8000/api/folder/list"
-        );
+        const response = await axios.get(`${API_BASE_URL}/api/folder/list`);
         setFolders(response.data);
       } catch (error) {
         console.error("Error fetching folders:", error);

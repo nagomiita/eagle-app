@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { TagsData } from "../types";
+import { API_BASE_URL } from "../config";
 
 const useTags = () => {
   const [tags, setTags] = useState<TagsData>({
@@ -12,9 +13,7 @@ const useTags = () => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await axios.get(
-          "http://192.168.11.11:8000/api/tags/list"
-        );
+        const response = await axios.get(`${API_BASE_URL}/api/tags/list`);
         setTags(response.data);
       } catch (error) {
         console.error("Error fetching tags:", error);
