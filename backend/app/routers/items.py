@@ -1,23 +1,17 @@
 from app.schemas.item import ItemListResponse, OriginalImageResponse
 from app.services import item_service
-from fastapi import APIRouter, Query
+from fastapi import APIRouter
 
 router = APIRouter()
 
 
 @router.get("/api/item/list", response_model=ItemListResponse)
 async def get_items(
-    limit: int = Query(200, ge=1, le=1000),
-    offset: int = Query(0, ge=0),
-    orderBy: str | None = Query(
-        None, regex="^-?(CREATEDATE|FILESIZE|NAME|RESOLUTION)$"
-    ),
-    keyword: str | None = None,
-    ext: str | None = None,
+    include_sensitive: bool = False,
+    favorites_only: bool = False,
     tags: str | None = None,
-    folders: str | None = None,
 ):
-    items = item_service.get_items(limit, offset, orderBy, keyword, ext, tags, folders)
+    items = item_service.get_items(include_sensitive, favorites_only, tags)
     return ItemListResponse(status="success", data=items)
 
 

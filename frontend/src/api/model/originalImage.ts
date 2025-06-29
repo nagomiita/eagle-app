@@ -4,11 +4,11 @@
  * FastAPI
  * OpenAPI spec version: 0.1.0
  */
-import type { OriginalImageImage } from "./originalImageImage";
-import type { OriginalImageError } from "./originalImageError";
+import type { OriginalImageImage } from './originalImageImage';
+import type { OriginalImageError } from './originalImageError';
 
 export interface OriginalImage {
-	id: string;
-	image?: OriginalImageImage;
-	error?: OriginalImageError;
+  id: string;
+  image?: OriginalImageImage;
+  error?: OriginalImageError;
 }

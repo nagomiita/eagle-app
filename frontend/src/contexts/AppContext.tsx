@@ -27,11 +27,9 @@ interface AppContextType {
   images: Item[];
   setImages: React.Dispatch<React.SetStateAction<Item[]>>;
   isLoading: boolean;
-  limit: number;
-  setLimit: React.Dispatch<React.SetStateAction<number>>;
   columnCount: number;
   setColumnCount: React.Dispatch<React.SetStateAction<number>>;
-  fetchImages: (folderId: string, selectedTag: string) => Promise<void>;
+  fetchImages: (selectedTag: string) => Promise<void>;
   // From useOriginalImage
   selectedImage: OriginalImage | null;
   setSelectedImage: React.Dispatch<React.SetStateAction<OriginalImage | null>>;
@@ -60,11 +58,8 @@ export function AppProvider({ children }: AppProviderProps) {
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
   useEffect(() => {
-    thumbnailImagesState.fetchImages(
-      folderState.folderId,
-      tagState.selectedTag
-    );
-  }, [folderState.folderId, tagState.selectedTag, thumbnailImagesState.limit]);
+    thumbnailImagesState.fetchImages(tagState.selectedTag);
+  }, [tagState.selectedTag]);
 
   const value: AppContextType = {
     isDarkMode,

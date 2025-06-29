@@ -4,9 +4,9 @@
  * FastAPI
  * OpenAPI spec version: 0.1.0
  */
-import type { OriginalImage } from "./originalImage";
+import type { OriginalImage } from './originalImage';
 
 export interface OriginalImageResponse {
-	status?: string;
-	data: OriginalImage[];
+  status?: string;
+  data: OriginalImage[];
 }

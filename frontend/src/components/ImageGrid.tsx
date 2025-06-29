@@ -25,8 +25,9 @@ const ImageGrid: React.FC = () => {
       {images.map((image: Item) => (
         <div key={image.id} className="aspect-square">
           <img
-            src={image.thumbnail || undefined}
+            src={`http://192.168.11.11/api/static/${image.thumbnail}`}
             alt={`Thumbnail ${image.id}`}
+            loading="lazy"
             onClick={() => openModal(image)}
             className="w-full h-full object-cover cursor-pointer rounded"
           />

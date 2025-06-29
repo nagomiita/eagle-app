@@ -21,59 +21,23 @@
         "operationId": "get_items_api_item_list_get",
         "parameters": [
           {
-            "name": "limit",
+            "name": "include_sensitive",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "integer",
-              "maximum": 1000,
-              "minimum": 1,
-              "default": 200,
-              "title": "Limit"
+              "type": "boolean",
+              "default": false,
+              "title": "Include Sensitive"
             }
           },
           {
-            "name": "offset",
+            "name": "favorites_only",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "integer",
-              "minimum": 0,
-              "default": 0,
-              "title": "Offset"
-            }
-          },
-          {
-            "name": "orderBy",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "pattern": "^-?(CREATEDATE|FILESIZE|NAME|RESOLUTION)$"
-                },
-                { "type": "null" }
-              ],
-              "title": "Orderby"
-            }
-          },
-          {
-            "name": "keyword",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [{ "type": "string" }, { "type": "null" }],
-              "title": "Keyword"
-            }
-          },
-          {
-            "name": "ext",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [{ "type": "string" }, { "type": "null" }],
-              "title": "Ext"
+              "type": "boolean",
+              "default": false,
+              "title": "Favorites Only"
             }
           },
           {
@@ -83,15 +47,6 @@
             "schema": {
               "anyOf": [{ "type": "string" }, { "type": "null" }],
               "title": "Tags"
-            }
-          },
-          {
-            "name": "folders",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [{ "type": "string" }, { "type": "null" }],
-              "title": "Folders"
             }
           }
         ],

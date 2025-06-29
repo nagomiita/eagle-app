@@ -6,18 +6,7 @@
  */
 
 export type GetItemsApiItemListGetParams = {
-	/**
-	 * @minimum 1
-	 * @maximum 1000
-	 */
-	limit?: number;
-	/**
-	 * @minimum 0
-	 */
-	offset?: number;
-	orderBy?: string | null;
-	keyword?: string | null;
-	ext?: string | null;
-	tags?: string | null;
-	folders?: string | null;
+include_sensitive?: boolean;
+favorites_only?: boolean;
+tags?: string | null;
 };

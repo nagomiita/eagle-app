@@ -1,8 +1,17 @@
+from pathlib import Path
+
 from app.routers import folders, items, tags
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(root_path="/api")
+static_dir = Path(__file__).resolve().parent.parent / "thumbnails"
+app.mount(
+    "/static/thumbnails",
+    StaticFiles(directory=static_dir, follow_symlink=True),
+    name="static",
+)
 
 app.add_middleware(
     CORSMiddleware,

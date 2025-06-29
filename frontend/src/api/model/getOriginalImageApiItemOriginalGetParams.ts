@@ -6,5 +6,5 @@
  */
 
 export type GetOriginalImageApiItemOriginalGetParams = {
-	id: string;
+id: string;
 };

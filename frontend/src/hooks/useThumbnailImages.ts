@@ -5,17 +5,18 @@ import { Item } from "../api/model";
 export const useThumbnailImages = () => {
   const [images, setImages] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [limit, setLimit] = useState<number>(200);
-  const [columnCount, setColumnCount] = useState<number>(4);
+  const [columnCount, setColumnCount] = useState<number>(() => {
+    const width = window.innerWidth;
+    if (width < 600) return 4; // モバイル
+    if (width < 1024) return 6; // タブレット
+    return 8; // PC
+  });
 
-  const fetchImages = async (folderId: string, selectedTag: string) => {
+  const fetchImages = async (selectedTag: string) => {
     setIsLoading(true);
     try {
       const response = await getItemsApiItemListGet({
-        limit,
-        offset: 0,
         tags: selectedTag,
-        folders: folderId,
       });
       setImages(response.data);
     } catch (error) {
@@ -29,8 +30,6 @@ export const useThumbnailImages = () => {
     images,
     setImages,
     isLoading,
-    limit,
-    setLimit,
     columnCount,
     setColumnCount,
     fetchImages,

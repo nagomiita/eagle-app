@@ -10,3 +10,4 @@ venv
 tag_config.py
 *.csv
 config.py
+thumbnails
