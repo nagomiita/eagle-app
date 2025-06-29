@@ -6,23 +6,23 @@ import ImageGrid from "./components/ImageGrid";
 import ImageModal from "./components/ImageModal";
 
 function AppView() {
-	const { isDarkMode } = useAppContext();
+  const { isDarkMode } = useAppContext();
 
-	return (
-		<div
-			className={`min-h-screen ${
-				isDarkMode ? "dark bg-gray-900 text-white" : "bg-white text-black"
-			}`}
-		>
-			<div className="max-w-8xl mx-auto p-1">
-				<Header />
-				<FolderList />
-				<Controls />
-				<ImageGrid />
-				<ImageModal />
-			</div>
-		</div>
-	);
+  return (
+    <div
+      className={`min-h-screen ${
+        isDarkMode ? "dark bg-gray-900 text-white" : "bg-white text-black"
+      }`}
+    >
+      <div className="max-w-8xl mx-auto p-1">
+        <Header />
+        <FolderList />
+        <Controls />
+        <ImageGrid />
+        <ImageModal />
+      </div>
+    </div>
+  );
 }
 
 export default AppView;
