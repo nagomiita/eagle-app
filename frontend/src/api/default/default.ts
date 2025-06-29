@@ -4,382 +4,647 @@
  * FastAPI
  * OpenAPI spec version: 0.1.0
  */
-import {
-  useQuery
-} from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 import type {
-  DataTag,
-  DefinedInitialDataOptions,
-  DefinedUseQueryResult,
-  QueryClient,
-  QueryFunction,
-  QueryKey,
-  UndefinedInitialDataOptions,
-  UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+	DataTag,
+	DefinedInitialDataOptions,
+	DefinedUseQueryResult,
+	QueryClient,
+	QueryFunction,
+	QueryKey,
+	UndefinedInitialDataOptions,
+	UseQueryOptions,
+	UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
-  GetItemsApiItemListGetParams,
-  GetOriginalImageApiItemOriginalGetParams,
-  HTTPValidationError,
-  ItemListResponse,
-  OriginalImageResponse,
-  TagsResponse
-} from '.././model';
+	GetItemsApiItemListGetParams,
+	GetOriginalImageApiItemOriginalGetParams,
+	HTTPValidationError,
+	ItemListResponse,
+	OriginalImageResponse,
+	TagsResponse,
+} from ".././model";
 
-import { customAxios } from '.././custom-axios';
-
-
-
+import { customAxios } from ".././custom-axios";
 
 /**
  * @summary Fetch Folders
  */
-export const fetchFoldersApiFolderListGet = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customAxios<unknown>(
-      {url: `/api/folder/list`, method: 'GET', signal
-    },
-      );
-    }
-  
+export const fetchFoldersApiFolderListGet = (signal?: AbortSignal) => {
+	return customAxios<unknown>({
+		url: `/api/folder/list`,
+		method: "GET",
+		signal,
+	});
+};
 
 export const getFetchFoldersApiFolderListGetQueryKey = () => {
-    return [`/api/folder/list`] as const;
-    }
+	return [`/api/folder/list`] as const;
+};
 
-    
-export const getFetchFoldersApiFolderListGetQueryOptions = <TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError, TData>>, }
-) => {
+export const getFetchFoldersApiFolderListGetQueryOptions = <
+	TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
+	TError = unknown,
+>(options?: {
+	query?: Partial<
+		UseQueryOptions<
+			Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
+			TError,
+			TData
+		>
+	>;
+}) => {
+	const { query: queryOptions } = options ?? {};
 
-const {query: queryOptions} = options ?? {};
+	const queryKey =
+		queryOptions?.queryKey ?? getFetchFoldersApiFolderListGetQueryKey();
 
-  const queryKey =  queryOptions?.queryKey ?? getFetchFoldersApiFolderListGetQueryKey();
+	const queryFn: QueryFunction<
+		Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>
+	> = ({ signal }) => fetchFoldersApiFolderListGet(signal);
 
-  
+	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+		Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
+		TError,
+		TData
+	> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>> = ({ signal }) => fetchFoldersApiFolderListGet(signal);
+export type FetchFoldersApiFolderListGetQueryResult = NonNullable<
+	Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>
+>;
+export type FetchFoldersApiFolderListGetQueryError = unknown;
 
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type FetchFoldersApiFolderListGetQueryResult = NonNullable<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>>
-export type FetchFoldersApiFolderListGetQueryError = unknown
-
-
-export function useFetchFoldersApiFolderListGet<TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
-          TError,
-          Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFetchFoldersApiFolderListGet<TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
-          TError,
-          Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFetchFoldersApiFolderListGet<TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFetchFoldersApiFolderListGet<
+	TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
+	TError = unknown,
+>(
+	options: {
+		query: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				DefinedInitialDataOptions<
+					Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
+					TError,
+					Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>
+				>,
+				"initialData"
+			>;
+	},
+	queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useFetchFoldersApiFolderListGet<
+	TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
+	TError = unknown,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				UndefinedInitialDataOptions<
+					Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
+					TError,
+					Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>
+				>,
+				"initialData"
+			>;
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useFetchFoldersApiFolderListGet<
+	TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
+	TError = unknown,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
+				TError,
+				TData
+			>
+		>;
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Fetch Folders
  */
 
-export function useFetchFoldersApiFolderListGet<TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError, TData>>, }
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useFetchFoldersApiFolderListGet<
+	TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
+	TError = unknown,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
+				TError,
+				TData
+			>
+		>;
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+} {
+	const queryOptions = getFetchFoldersApiFolderListGetQueryOptions(options);
 
-  const queryOptions = getFetchFoldersApiFolderListGetQueryOptions(options)
+	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+		TData,
+		TError
+	> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+	query.queryKey = queryOptions.queryKey;
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+	return query;
 }
-
-
 
 /**
  * @summary Get Items
  */
 export const getItemsApiItemListGet = (
-    params?: GetItemsApiItemListGetParams,
- signal?: AbortSignal
+	params?: GetItemsApiItemListGetParams,
+	signal?: AbortSignal,
 ) => {
-      
-      
-      return customAxios<ItemListResponse>(
-      {url: `/api/item/list`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+	return customAxios<ItemListResponse>({
+		url: `/api/item/list`,
+		method: "GET",
+		params,
+		signal,
+	});
+};
 
-export const getGetItemsApiItemListGetQueryKey = (params?: GetItemsApiItemListGetParams,) => {
-    return [`/api/item/list`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getGetItemsApiItemListGetQueryOptions = <TData = Awaited<ReturnType<typeof getItemsApiItemListGet>>, TError = HTTPValidationError>(params?: GetItemsApiItemListGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemsApiItemListGet>>, TError, TData>>, }
+export const getGetItemsApiItemListGetQueryKey = (
+	params?: GetItemsApiItemListGetParams,
 ) => {
+	return [`/api/item/list`, ...(params ? [params] : [])] as const;
+};
 
-const {query: queryOptions} = options ?? {};
+export const getGetItemsApiItemListGetQueryOptions = <
+	TData = Awaited<ReturnType<typeof getItemsApiItemListGet>>,
+	TError = HTTPValidationError,
+>(
+	params?: GetItemsApiItemListGetParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getItemsApiItemListGet>>,
+				TError,
+				TData
+			>
+		>;
+	},
+) => {
+	const { query: queryOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetItemsApiItemListGetQueryKey(params);
+	const queryKey =
+		queryOptions?.queryKey ?? getGetItemsApiItemListGetQueryKey(params);
 
-  
+	const queryFn: QueryFunction<
+		Awaited<ReturnType<typeof getItemsApiItemListGet>>
+	> = ({ signal }) => getItemsApiItemListGet(params, signal);
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getItemsApiItemListGet>>> = ({ signal }) => getItemsApiItemListGet(params, signal);
+	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+		Awaited<ReturnType<typeof getItemsApiItemListGet>>,
+		TError,
+		TData
+	> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-      
+export type GetItemsApiItemListGetQueryResult = NonNullable<
+	Awaited<ReturnType<typeof getItemsApiItemListGet>>
+>;
+export type GetItemsApiItemListGetQueryError = HTTPValidationError;
 
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getItemsApiItemListGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetItemsApiItemListGetQueryResult = NonNullable<Awaited<ReturnType<typeof getItemsApiItemListGet>>>
-export type GetItemsApiItemListGetQueryError = HTTPValidationError
-
-
-export function useGetItemsApiItemListGet<TData = Awaited<ReturnType<typeof getItemsApiItemListGet>>, TError = HTTPValidationError>(
- params: undefined |  GetItemsApiItemListGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemsApiItemListGet>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getItemsApiItemListGet>>,
-          TError,
-          Awaited<ReturnType<typeof getItemsApiItemListGet>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetItemsApiItemListGet<TData = Awaited<ReturnType<typeof getItemsApiItemListGet>>, TError = HTTPValidationError>(
- params?: GetItemsApiItemListGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemsApiItemListGet>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getItemsApiItemListGet>>,
-          TError,
-          Awaited<ReturnType<typeof getItemsApiItemListGet>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetItemsApiItemListGet<TData = Awaited<ReturnType<typeof getItemsApiItemListGet>>, TError = HTTPValidationError>(
- params?: GetItemsApiItemListGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemsApiItemListGet>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetItemsApiItemListGet<
+	TData = Awaited<ReturnType<typeof getItemsApiItemListGet>>,
+	TError = HTTPValidationError,
+>(
+	params: undefined | GetItemsApiItemListGetParams,
+	options: {
+		query: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getItemsApiItemListGet>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				DefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getItemsApiItemListGet>>,
+					TError,
+					Awaited<ReturnType<typeof getItemsApiItemListGet>>
+				>,
+				"initialData"
+			>;
+	},
+	queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetItemsApiItemListGet<
+	TData = Awaited<ReturnType<typeof getItemsApiItemListGet>>,
+	TError = HTTPValidationError,
+>(
+	params?: GetItemsApiItemListGetParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getItemsApiItemListGet>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				UndefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getItemsApiItemListGet>>,
+					TError,
+					Awaited<ReturnType<typeof getItemsApiItemListGet>>
+				>,
+				"initialData"
+			>;
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetItemsApiItemListGet<
+	TData = Awaited<ReturnType<typeof getItemsApiItemListGet>>,
+	TError = HTTPValidationError,
+>(
+	params?: GetItemsApiItemListGetParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getItemsApiItemListGet>>,
+				TError,
+				TData
+			>
+		>;
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Get Items
  */
 
-export function useGetItemsApiItemListGet<TData = Awaited<ReturnType<typeof getItemsApiItemListGet>>, TError = HTTPValidationError>(
- params?: GetItemsApiItemListGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getItemsApiItemListGet>>, TError, TData>>, }
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetItemsApiItemListGet<
+	TData = Awaited<ReturnType<typeof getItemsApiItemListGet>>,
+	TError = HTTPValidationError,
+>(
+	params?: GetItemsApiItemListGetParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getItemsApiItemListGet>>,
+				TError,
+				TData
+			>
+		>;
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+} {
+	const queryOptions = getGetItemsApiItemListGetQueryOptions(params, options);
 
-  const queryOptions = getGetItemsApiItemListGetQueryOptions(params,options)
+	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+		TData,
+		TError
+	> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+	query.queryKey = queryOptions.queryKey;
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+	return query;
 }
-
-
 
 /**
  * @summary Get Original Image
  */
 export const getOriginalImageApiItemOriginalGet = (
-    params: GetOriginalImageApiItemOriginalGetParams,
- signal?: AbortSignal
+	params: GetOriginalImageApiItemOriginalGetParams,
+	signal?: AbortSignal,
 ) => {
-      
-      
-      return customAxios<OriginalImageResponse>(
-      {url: `/api/item/original`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
+	return customAxios<OriginalImageResponse>({
+		url: `/api/item/original`,
+		method: "GET",
+		params,
+		signal,
+	});
+};
 
-export const getGetOriginalImageApiItemOriginalGetQueryKey = (params: GetOriginalImageApiItemOriginalGetParams,) => {
-    return [`/api/item/original`, ...(params ? [params]: [])] as const;
-    }
-
-    
-export const getGetOriginalImageApiItemOriginalGetQueryOptions = <TData = Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>, TError = HTTPValidationError>(params: GetOriginalImageApiItemOriginalGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>, TError, TData>>, }
+export const getGetOriginalImageApiItemOriginalGetQueryKey = (
+	params: GetOriginalImageApiItemOriginalGetParams,
 ) => {
+	return [`/api/item/original`, ...(params ? [params] : [])] as const;
+};
 
-const {query: queryOptions} = options ?? {};
+export const getGetOriginalImageApiItemOriginalGetQueryOptions = <
+	TData = Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
+	TError = HTTPValidationError,
+>(
+	params: GetOriginalImageApiItemOriginalGetParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
+				TError,
+				TData
+			>
+		>;
+	},
+) => {
+	const { query: queryOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetOriginalImageApiItemOriginalGetQueryKey(params);
+	const queryKey =
+		queryOptions?.queryKey ??
+		getGetOriginalImageApiItemOriginalGetQueryKey(params);
 
-  
+	const queryFn: QueryFunction<
+		Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>
+	> = ({ signal }) => getOriginalImageApiItemOriginalGet(params, signal);
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>> = ({ signal }) => getOriginalImageApiItemOriginalGet(params, signal);
+	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+		Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
+		TError,
+		TData
+	> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-      
+export type GetOriginalImageApiItemOriginalGetQueryResult = NonNullable<
+	Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>
+>;
+export type GetOriginalImageApiItemOriginalGetQueryError = HTTPValidationError;
 
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetOriginalImageApiItemOriginalGetQueryResult = NonNullable<Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>>
-export type GetOriginalImageApiItemOriginalGetQueryError = HTTPValidationError
-
-
-export function useGetOriginalImageApiItemOriginalGet<TData = Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>, TError = HTTPValidationError>(
- params: GetOriginalImageApiItemOriginalGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
-          TError,
-          Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetOriginalImageApiItemOriginalGet<TData = Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>, TError = HTTPValidationError>(
- params: GetOriginalImageApiItemOriginalGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
-          TError,
-          Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetOriginalImageApiItemOriginalGet<TData = Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>, TError = HTTPValidationError>(
- params: GetOriginalImageApiItemOriginalGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOriginalImageApiItemOriginalGet<
+	TData = Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
+	TError = HTTPValidationError,
+>(
+	params: GetOriginalImageApiItemOriginalGetParams,
+	options: {
+		query: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				DefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
+					TError,
+					Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>
+				>,
+				"initialData"
+			>;
+	},
+	queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetOriginalImageApiItemOriginalGet<
+	TData = Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
+	TError = HTTPValidationError,
+>(
+	params: GetOriginalImageApiItemOriginalGetParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				UndefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
+					TError,
+					Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>
+				>,
+				"initialData"
+			>;
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetOriginalImageApiItemOriginalGet<
+	TData = Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
+	TError = HTTPValidationError,
+>(
+	params: GetOriginalImageApiItemOriginalGetParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
+				TError,
+				TData
+			>
+		>;
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Get Original Image
  */
 
-export function useGetOriginalImageApiItemOriginalGet<TData = Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>, TError = HTTPValidationError>(
- params: GetOriginalImageApiItemOriginalGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>, TError, TData>>, }
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetOriginalImageApiItemOriginalGet<
+	TData = Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
+	TError = HTTPValidationError,
+>(
+	params: GetOriginalImageApiItemOriginalGetParams,
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getOriginalImageApiItemOriginalGet>>,
+				TError,
+				TData
+			>
+		>;
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+} {
+	const queryOptions = getGetOriginalImageApiItemOriginalGetQueryOptions(
+		params,
+		options,
+	);
 
-  const queryOptions = getGetOriginalImageApiItemOriginalGetQueryOptions(params,options)
+	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+		TData,
+		TError
+	> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+	query.queryKey = queryOptions.queryKey;
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+	return query;
 }
-
-
 
 /**
  * @summary Get Tags
  */
-export const getTagsApiTagsListGet = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customAxios<TagsResponse>(
-      {url: `/api/tags/list`, method: 'GET', signal
-    },
-      );
-    }
-  
+export const getTagsApiTagsListGet = (signal?: AbortSignal) => {
+	return customAxios<TagsResponse>({
+		url: `/api/tags/list`,
+		method: "GET",
+		signal,
+	});
+};
 
 export const getGetTagsApiTagsListGetQueryKey = () => {
-    return [`/api/tags/list`] as const;
-    }
+	return [`/api/tags/list`] as const;
+};
 
-    
-export const getGetTagsApiTagsListGetQueryOptions = <TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError, TData>>, }
-) => {
+export const getGetTagsApiTagsListGetQueryOptions = <
+	TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+	TError = unknown,
+>(options?: {
+	query?: Partial<
+		UseQueryOptions<
+			Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+			TError,
+			TData
+		>
+	>;
+}) => {
+	const { query: queryOptions } = options ?? {};
 
-const {query: queryOptions} = options ?? {};
+	const queryKey = queryOptions?.queryKey ?? getGetTagsApiTagsListGetQueryKey();
 
-  const queryKey =  queryOptions?.queryKey ?? getGetTagsApiTagsListGetQueryKey();
+	const queryFn: QueryFunction<
+		Awaited<ReturnType<typeof getTagsApiTagsListGet>>
+	> = ({ signal }) => getTagsApiTagsListGet(signal);
 
-  
+	return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+		Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+		TError,
+		TData
+	> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTagsApiTagsListGet>>> = ({ signal }) => getTagsApiTagsListGet(signal);
+export type GetTagsApiTagsListGetQueryResult = NonNullable<
+	Awaited<ReturnType<typeof getTagsApiTagsListGet>>
+>;
+export type GetTagsApiTagsListGetQueryError = unknown;
 
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetTagsApiTagsListGetQueryResult = NonNullable<Awaited<ReturnType<typeof getTagsApiTagsListGet>>>
-export type GetTagsApiTagsListGetQueryError = unknown
-
-
-export function useGetTagsApiTagsListGet<TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
-          TError,
-          Awaited<ReturnType<typeof getTagsApiTagsListGet>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetTagsApiTagsListGet<TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
-          TError,
-          Awaited<ReturnType<typeof getTagsApiTagsListGet>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetTagsApiTagsListGet<TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetTagsApiTagsListGet<
+	TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+	TError = unknown,
+>(
+	options: {
+		query: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				DefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+					TError,
+					Awaited<ReturnType<typeof getTagsApiTagsListGet>>
+				>,
+				"initialData"
+			>;
+	},
+	queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetTagsApiTagsListGet<
+	TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+	TError = unknown,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+				TError,
+				TData
+			>
+		> &
+			Pick<
+				UndefinedInitialDataOptions<
+					Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+					TError,
+					Awaited<ReturnType<typeof getTagsApiTagsListGet>>
+				>,
+				"initialData"
+			>;
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetTagsApiTagsListGet<
+	TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+	TError = unknown,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+				TError,
+				TData
+			>
+		>;
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Get Tags
  */
 
-export function useGetTagsApiTagsListGet<TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError, TData>>, }
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetTagsApiTagsListGet<
+	TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+	TError = unknown,
+>(
+	options?: {
+		query?: Partial<
+			UseQueryOptions<
+				Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+				TError,
+				TData
+			>
+		>;
+	},
+	queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+	queryKey: DataTag<QueryKey, TData, TError>;
+} {
+	const queryOptions = getGetTagsApiTagsListGetQueryOptions(options);
 
-  const queryOptions = getGetTagsApiTagsListGetQueryOptions(options)
+	const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+		TData,
+		TError
+	> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+	query.queryKey = queryOptions.queryKey;
 
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
+	return query;
 }
-
-
-

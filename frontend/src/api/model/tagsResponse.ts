@@ -6,6 +6,6 @@
  */
 
 export interface TagsResponse {
-  historyTags: string[];
-  starredTags: string[];
+	historyTags: string[];
+	starredTags: string[];
 }

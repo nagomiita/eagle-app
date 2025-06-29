@@ -6,18 +6,18 @@
  */
 
 export type GetItemsApiItemListGetParams = {
-/**
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * @minimum 0
- */
-offset?: number;
-orderBy?: string | null;
-keyword?: string | null;
-ext?: string | null;
-tags?: string | null;
-folders?: string | null;
+	/**
+	 * @minimum 1
+	 * @maximum 1000
+	 */
+	limit?: number;
+	/**
+	 * @minimum 0
+	 */
+	offset?: number;
+	orderBy?: string | null;
+	keyword?: string | null;
+	ext?: string | null;
+	tags?: string | null;
+	folders?: string | null;
 };

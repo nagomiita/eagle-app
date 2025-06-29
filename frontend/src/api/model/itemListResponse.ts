@@ -4,9 +4,9 @@
  * FastAPI
  * OpenAPI spec version: 0.1.0
  */
-import type { Item } from './item';
+import type { Item } from "./item";
 
 export interface ItemListResponse {
-  status: string;
-  data: Item[];
+	status: string;
+	data: Item[];
 }

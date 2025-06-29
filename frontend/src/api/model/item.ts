@@ -4,9 +4,9 @@
  * FastAPI
  * OpenAPI spec version: 0.1.0
  */
-import type { ItemThumbnail } from './itemThumbnail';
+import type { ItemThumbnail } from "./itemThumbnail";
 
 export interface Item {
-  id: string;
-  thumbnail?: ItemThumbnail;
+	id: string;
+	thumbnail?: ItemThumbnail;
 }
