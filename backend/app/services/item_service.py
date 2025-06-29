@@ -1,108 +1,47 @@
 import base64
 import logging
 from pathlib import Path
-from urllib.parse import unquote
 
-import requests
-from app.config import EAGLE_API_BASE_URL
-from app.schemas.item import OriginalImage
-from app.utils.image_utils import encode_image, try_image_formats
+from app.config import THUMB_DIR
+from app.db.query import get_filtered_image_entries
+from app.schemas.item import Item, OriginalImage
 
 logger = logging.getLogger(__name__)
 
 
-async def get_items(limit, offset, orderBy, keyword, ext, tags, folders):
-    url = f"{EAGLE_API_BASE_URL}/item/list"
-    params = {
-        "limit": limit,
-        "offset": offset,
-        "orderBy": orderBy,
-        "keyword": keyword,
-        "ext": ext,
-        "tags": tags,
-        "folders": folders,
-    }
+def get_items(limit, offset, orderBy, keyword, ext, tags, folders):
+    filtered_image_entries = get_filtered_image_entries(
+        limit=limit, include_sensitive=False
+    )
+    print(f"Filtered image entries: {len(filtered_image_entries)}")
+    thumbnails: list[Item] = []
 
-    try:
-        response = requests.get(url, params=params, timeout=30)
-        response.raise_for_status()
-        items = response.json()["data"]
-        thumbnails = []
+    for entry in filtered_image_entries:
+        thumbnail = get_thumbnail(entry.thumbnail_path)
+        thumbnails.append(Item(id=entry.image_path, thumbnail=thumbnail))
 
-        for item in items:
-            thumbnail = await get_thumbnail(item["id"])
-            thumbnails.append(thumbnail)
-
-        return thumbnails
-    except requests.exceptions.Timeout:
-        logger.error("Request to fetch items timed out")
-        raise TimeoutError("Request to fetch items timed out")
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Failed to fetch items: {str(e)}")
-        raise Exception(f"Failed to fetch items: {str(e)}")
-    except Exception as e:
-        logger.error(f"Unexpected error occurred: {str(e)}")
-        raise Exception("An unexpected error occurred")
+    return thumbnails
 
 
-async def get_thumbnail(item_id):
-    try:
-        thumbnail_url = f"{EAGLE_API_BASE_URL}/item/thumbnail?id={item_id}"
-        thumbnail_response = requests.get(thumbnail_url, timeout=100)
-        thumbnail_response.raise_for_status()
-        thumbnail_path = thumbnail_response.json()["data"]
+def get_thumbnail(thumbnail_path: str):
+    path = Path(THUMB_DIR, thumbnail_path)
+    if path.exists() and path.suffix.lower() in [".png", ".jpg", ".jpeg"]:
+        with path.open("rb") as image_file:
+            encoded = base64.b64encode(image_file.read()).decode()
 
-        decoded_path = unquote(thumbnail_path)
-        unicode_path = Path(decoded_path)
-
-        if unicode_path.exists() and unicode_path.suffix.lower() in [
-            ".png",
-            ".jpg",
-            ".jpeg",
-        ]:
-            with unicode_path.open("rb") as image_file:
-                encoded_string = base64.b64encode(image_file.read()).decode()
-
-            image_format = "png" if unicode_path.suffix.lower() == ".png" else "jpeg"
-            return {
-                "id": item_id,
-                "thumbnail": f"data:image/{image_format};base64,{encoded_string}",
-            }
-        else:
-            logger.warning(f"Thumbnail not found or unsupported format: {unicode_path}")
-            return {
-                "id": item_id,
-                "thumbnail": None,
-                "error": "Thumbnail not found or unsupported format",
-            }
-    except Exception as e:
-        logger.error(f"Error processing thumbnail for item {item_id}: {str(e)}")
-        return {
-            "id": item_id,
-            "thumbnail": None,
-            "error": f"Error processing thumbnail: {str(e)}",
-        }
+        ext = path.suffix.lower().replace(".", "")
+        return f"data:image/{ext};base64,{encoded}"
 
 
 def get_original_image(id) -> list[OriginalImage]:
-    thumbnail_url = f"{EAGLE_API_BASE_URL}/item/thumbnail?id={id}"
-    thumbnail_response = requests.get(thumbnail_url, timeout=10)
-    thumbnail_response.raise_for_status()
-    thumbnail_path = thumbnail_response.json()["data"]
+    path = Path(THUMB_DIR, id)
+    if path.exists() and path.suffix.lower() in [".png", ".jpg", ".jpeg"]:
+        with path.open("rb") as image_file:
+            encoded = base64.b64encode(image_file.read()).decode()
 
-    original_image_path = str(thumbnail_path).replace("_thumbnail", "")
-    unicode_path = Path(unquote(original_image_path))
-
-    found_path = try_image_formats(unicode_path)
-    if not found_path:
-        raise FileNotFoundError(f"Original image not found: {unicode_path}")
-
-    if found_path.suffix.lower() not in [".png", ".jpg", ".jpeg", ".heic"]:
-        raise ValueError(f"Unsupported image format: {found_path.suffix}")
-
-    image_format, encoded_string = encode_image(found_path)
+        ext = path.suffix.lower().replace(".", "")
     original_images: list[OriginalImage] = []
     original_images.append(
-        OriginalImage(id=id, image=f"data:image/{image_format};base64,{encoded_string}")
+        OriginalImage(id=id, image=f"data:image/{ext};base64,{encoded}")
     )
     return original_images

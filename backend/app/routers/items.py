@@ -17,9 +17,7 @@ async def get_items(
     tags: str | None = None,
     folders: str | None = None,
 ):
-    items = await item_service.get_items(
-        limit, offset, orderBy, keyword, ext, tags, folders
-    )
+    items = item_service.get_items(limit, offset, orderBy, keyword, ext, tags, folders)
     return ItemListResponse(status="success", data=items)
 
 
