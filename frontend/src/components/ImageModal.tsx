@@ -21,7 +21,7 @@ const ImageModal: React.FC = () => {
         <img
           src={selectedImage.image || undefined}
           alt="Selected"
-          className="max-w-[90%] max-h-[90%] object-contain"
+          className="max-w-[100%] max-h-[100%] object-contain"
           onClick={(e) => e.stopPropagation()}
         />
       )}

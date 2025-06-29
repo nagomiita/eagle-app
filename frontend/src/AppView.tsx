@@ -14,7 +14,7 @@ function AppView() {
         isDarkMode ? "dark bg-gray-900 text-white" : "bg-white text-black"
       }`}
     >
-      <div className="max-w-7xl mx-auto p-5">
+      <div className="max-w-8xl mx-auto p-1">
         <Header />
         <FolderList />
         <Controls />

@@ -17,7 +17,7 @@ const ImageGrid: React.FC = () => {
 
   return (
     <div
-      className={`grid gap-2.5`}
+      className={`grid gap-0.5`}
       style={{
         gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
       }}
