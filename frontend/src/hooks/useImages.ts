@@ -1,11 +1,13 @@
 import { useState } from "react";
-import axios from "axios";
-import { ImageData, OriginalImageData } from "../types";
-import { API_BASE_URL } from "../config";
-
+import { ImageData } from "../types";
+import {
+  getItemsApiItemListGet,
+  getOriginalImageApiItemOriginalGet,
+} from "../api/default/default";
+import { Item, OriginalImage } from "../api/model";
 const useImages = () => {
-  const [images, setImages] = useState<ImageData[]>([]);
-  const [selectedImage, setSelectedImage] = useState<OriginalImageData | null>(
+  const [images, setImages] = useState<Item[]>([]);
+  const [selectedImage, setSelectedImage] = useState<OriginalImage | null>(
     null
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -15,10 +17,13 @@ const useImages = () => {
   const fetchImages = async (folderId: string, selectedTag: string) => {
     setIsLoading(true);
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/api/item/list?limit=${limit}&offset=0&tags=${selectedTag}&folders=${folderId}`
-      );
-      setImages(response.data.data);
+      const response = await getItemsApiItemListGet({
+        limit,
+        offset: 0,
+        tags: selectedTag,
+        folders: folderId,
+      });
+      setImages(response.data); // Orval の response.data が { status, data } の場合
     } catch (error) {
       console.error("Error fetching images:", error);
     } finally {
@@ -28,16 +33,15 @@ const useImages = () => {
 
   const openModal = async (image: ImageData) => {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/api/item/original?id=${image.id}`
-      );
-      if (response.data.status === "success") {
-        const originalImage = response.data.data[0];
+      const response = await getOriginalImageApiItemOriginalGet({
+        id: image.id,
+      });
+
+      const originalImage = response.data?.[0];
+      if (originalImage) {
         setSelectedImage(originalImage);
       } else {
-        throw new Error(
-          response.data.data[0]?.error || "Failed to fetch original image"
-        );
+        throw new Error("Original image not found");
       }
     } catch (error) {
       console.error("Error fetching original image:", error);

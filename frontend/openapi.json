@@ -1,0 +1,273 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "FastAPI", "version": "0.1.0" },
+  "servers": [{ "url": "/api" }],
+  "paths": {
+    "/api/folder/list": {
+      "get": {
+        "summary": "Fetch Folders",
+        "operationId": "fetch_folders_api_folder_list_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          }
+        }
+      }
+    },
+    "/api/item/list": {
+      "get": {
+        "summary": "Get Items",
+        "operationId": "get_items_api_item_list_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 200,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^-?(CREATEDATE|FILESIZE|NAME|RESOLUTION)$"
+                },
+                { "type": "null" }
+              ],
+              "title": "Orderby"
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Keyword"
+            }
+          },
+          {
+            "name": "ext",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Ext"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Tags"
+            }
+          },
+          {
+            "name": "folders",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Folders"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ItemListResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/item/original": {
+      "get": {
+        "summary": "Get Original Image",
+        "operationId": "get_original_image_api_item_original_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OriginalImageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tags/list": {
+      "get": {
+        "summary": "Get Tags",
+        "operationId": "get_tags_api_tags_list_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TagsResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Item": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "thumbnail": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Thumbnail"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "Item"
+      },
+      "ItemListResponse": {
+        "properties": {
+          "status": { "type": "string", "title": "Status" },
+          "data": {
+            "items": { "$ref": "#/components/schemas/Item" },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": ["status", "data"],
+        "title": "ItemListResponse"
+      },
+      "OriginalImage": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "image": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Image"
+          },
+          "error": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "OriginalImage"
+      },
+      "OriginalImageResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "success"
+          },
+          "data": {
+            "items": { "$ref": "#/components/schemas/OriginalImage" },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": ["data"],
+        "title": "OriginalImageResponse"
+      },
+      "TagsResponse": {
+        "properties": {
+          "historyTags": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Historytags"
+          },
+          "starredTags": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Starredtags"
+          }
+        },
+        "type": "object",
+        "required": ["historyTags", "starredTags"],
+        "title": "TagsResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": { "type": "string", "title": "Message" },
+          "type": { "type": "string", "title": "Error Type" }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
