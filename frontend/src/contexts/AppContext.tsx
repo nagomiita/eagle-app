@@ -7,8 +7,9 @@ import React, {
 } from "react";
 import { Item, OriginalImage } from "../api/model";
 import useFolders from "../hooks/useFolders";
-import useImages from "../hooks/useImages";
+import { useOriginalImage } from "../hooks/useOriginalImage";
 import useTags from "../hooks/useTags";
+import { useThumbnailImages } from "../hooks/useThumbnailImages";
 import { FolderInfo, TagsData } from "../types";
 interface AppContextType {
   isDarkMode: boolean;
@@ -22,17 +23,18 @@ interface AppContextType {
   handleFolderClick: (folder: FolderInfo) => void;
   handleBackClick: () => void;
 
-  // From useImages
+  // From useThumbnailImages
   images: Item[];
   setImages: React.Dispatch<React.SetStateAction<Item[]>>;
-  selectedImage: OriginalImage | null;
-  setSelectedImage: React.Dispatch<React.SetStateAction<OriginalImage | null>>;
   isLoading: boolean;
   limit: number;
   setLimit: React.Dispatch<React.SetStateAction<number>>;
   columnCount: number;
   setColumnCount: React.Dispatch<React.SetStateAction<number>>;
   fetchImages: (folderId: string, selectedTag: string) => Promise<void>;
+  // From useOriginalImage
+  selectedImage: OriginalImage | null;
+  setSelectedImage: React.Dispatch<React.SetStateAction<OriginalImage | null>>;
   openModal: (image: Item) => Promise<void>;
   closeModal: () => void;
 
@@ -51,20 +53,25 @@ interface AppProviderProps {
 export function AppProvider({ children }: AppProviderProps) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const folderState = useFolders();
-  const imageState = useImages();
+  const thumbnailImagesState = useThumbnailImages();
+  const OriginalImageState = useOriginalImage();
   const tagState = useTags();
 
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
   useEffect(() => {
-    imageState.fetchImages(folderState.folderId, tagState.selectedTag);
-  }, [folderState.folderId, tagState.selectedTag, imageState.limit]);
+    thumbnailImagesState.fetchImages(
+      folderState.folderId,
+      tagState.selectedTag
+    );
+  }, [folderState.folderId, tagState.selectedTag, thumbnailImagesState.limit]);
 
   const value: AppContextType = {
     isDarkMode,
     toggleDarkMode,
     ...folderState,
-    ...imageState,
+    ...thumbnailImagesState,
+    ...OriginalImageState,
     ...tagState,
   };
 
