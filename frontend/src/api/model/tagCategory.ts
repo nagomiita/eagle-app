@@ -5,4 +5,4 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type TagsCategory = string | null;
+export type TagCategory = string | null;

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Tags } from "../api/model";
+import { Tag } from "../api/model";
 import { fetchTranslatedTags } from "../api/default/default";
 
 const useTags = () => {
-  const [tags, setTags] = useState<Tags[] | null>(null);
+  const [tags, setTags] = useState<Tag[] | null>(null);
   const [selectedTag, setSelectedTag] = useState<string>("");
 
   useEffect(() => {

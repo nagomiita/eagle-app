@@ -1,6 +1,5 @@
 import { useAppContext } from "./contexts/AppContext";
 import Header from "./components/Header";
-import FolderList from "./components/FolderList";
 import Controls from "./components/Controls";
 import ImageGrid from "./components/ImageGrid";
 import ImageModal from "./components/ImageModal";
@@ -16,7 +15,6 @@ function AppView() {
     >
       <div className="max-w-8xl mx-auto p-1">
         <Header />
-        <FolderList />
         <Controls />
         <ImageGrid />
         <ImageModal />

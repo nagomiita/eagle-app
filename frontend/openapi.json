@@ -104,7 +104,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": { "$ref": "#/components/schemas/Tags" },
+                  "items": { "$ref": "#/components/schemas/Tag" },
                   "type": "array",
                   "title": "Response Fetch Translated Tags"
                 }
@@ -140,7 +140,7 @@
         "required": ["id"],
         "title": "OriginalImage"
       },
-      "Tags": {
+      "Tag": {
         "properties": {
           "tag_id": { "type": "integer", "title": "Tag Id" },
           "tag_name": { "type": "string", "title": "Tag Name" },
@@ -155,7 +155,7 @@
         },
         "type": "object",
         "required": ["tag_id", "tag_name"],
-        "title": "Tags"
+        "title": "Tag"
       },
       "ThumbnailImage": {
         "properties": {

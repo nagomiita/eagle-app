@@ -24,7 +24,7 @@ import type {
   FetchOriginalImageParams,
   HTTPValidationError,
   OriginalImage,
-  Tags,
+  Tag,
   ThumbnailImage
 } from '.././model';
 
@@ -218,7 +218,7 @@ export const fetchTranslatedTags = (
 ) => {
       
       
-      return customAxios<Tags[]>(
+      return customAxios<Tag[]>(
       {url: `/tags/list`, method: 'GET', signal
     },
       );

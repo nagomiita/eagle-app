@@ -6,7 +6,6 @@ import {
   useState,
 } from "react";
 
-import useFolders from "../hooks/useFolders";
 import { useOriginalImage } from "../hooks/useOriginalImage";
 import useTags from "../hooks/useTags";
 import { useThumbnailImages } from "../hooks/useThumbnailImages";
@@ -20,7 +19,6 @@ interface AppProviderProps {
 
 export function AppProvider({ children }: AppProviderProps) {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const folderState = useFolders();
   const thumbnailImagesState = useThumbnailImages();
   const OriginalImageState = useOriginalImage();
   const tagState = useTags();
@@ -38,7 +36,6 @@ export function AppProvider({ children }: AppProviderProps) {
   const value: AppContextType = {
     isDarkMode,
     toggleDarkMode,
-    ...folderState,
     ...thumbnailImagesState,
     ...OriginalImageState,
     ...tagState,

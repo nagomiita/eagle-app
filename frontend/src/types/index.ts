@@ -28,14 +28,6 @@ export interface AppContextType {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
 
-  // From useFolders
-  folders: FolderInfo[];
-  currentFolder: FolderInfo | null;
-  folderId: string;
-  setFolderId: (id: string) => void;
-  handleFolderClick: (folder: FolderInfo) => void;
-  handleBackClick: () => void;
-
   // From useThumbnailImages
   images: Item[];
   setImages: React.Dispatch<React.SetStateAction<Item[]>>;
