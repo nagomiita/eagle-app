@@ -1,6 +1,7 @@
 import React from "react";
 import { useAppContext } from "../contexts/AppContext";
 import { Item } from "../api/model";
+import LazyImage from "./LazyImage";
 
 const ImageGrid: React.FC = () => {
   const { images, isLoading, columnCount, openModal } = useAppContext();
@@ -23,15 +24,12 @@ const ImageGrid: React.FC = () => {
       }}
     >
       {images.map((image: Item) => (
-        <div key={image.id} className="aspect-square">
-          <img
-            src={`http://192.168.11.11/api/static/${image.thumbnail}`}
-            alt={`Thumbnail ${image.id}`}
-            loading="lazy"
-            onClick={() => openModal(image)}
-            className="w-full h-full object-cover cursor-pointer rounded"
-          />
-        </div>
+        <LazyImage
+          key={image.id}
+          src={`http://192.168.11.11/api/static/${image.thumbnail}`}
+          alt={`Thumbnail ${image.id}`}
+          onClick={() => openModal(image)}
+        />
       ))}
     </div>
   );
