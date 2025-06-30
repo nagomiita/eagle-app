@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getOriginalImageApiItemOriginalGet } from "../api/default/default";
+import { fetchOriginalImage } from "../api/default/default";
 import { Item, OriginalImage } from "../api/model";
 
 export const useOriginalImage = () => {
@@ -9,7 +9,7 @@ export const useOriginalImage = () => {
 
   const openModal = async (image: Item) => {
     try {
-      const response = await getOriginalImageApiItemOriginalGet({
+      const response = await fetchOriginalImage({
         id: image.id,
       });
 

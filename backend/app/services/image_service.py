@@ -1,12 +1,9 @@
 import base64
-import logging
 from pathlib import Path
 
 from app.config import IMAGE_DIR
 from app.db.queries import image
 from app.schemas.item import Item, OriginalImage
-
-logger = logging.getLogger(__name__)
 
 
 def fetch_filtered_thumnail_images(

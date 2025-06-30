@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Tags } from "../api/model";
-import { getTags } from "../api/default/default";
+import { fetchTranslatedTags } from "../api/default/default";
 
 const useTags = () => {
   const [tags, setTags] = useState<Tags[] | null>(null);
@@ -9,7 +9,7 @@ const useTags = () => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await getTags();
+        const response = await fetchTranslatedTags();
         setTags(response);
       } catch (error) {
         console.error("Error fetching tags:", error);

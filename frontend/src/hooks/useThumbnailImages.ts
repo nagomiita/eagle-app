@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getItemsApiItemListGet } from "../api/default/default";
+import { fetchFilteredThumnailImages } from "../api/default/default";
 import { Item } from "../api/model";
 
 export const useThumbnailImages = () => {
@@ -17,7 +17,7 @@ export const useThumbnailImages = () => {
   const fetchImages = async (selectedTag: string) => {
     setIsLoading(true);
     try {
-      const response = await getItemsApiItemListGet({
+      const response = await fetchFilteredThumnailImages({
         include_sensitive: includeSensitive,
         favorites_only: onlyFavorite,
         selected_tag: selectedTag,

@@ -18,6 +18,8 @@ export * from "./originalImageResponse";
 export * from "./tagsResponse";
 export * from "./validationError";
 export * from "./validationErrorLocItem";
+export * from './fetchFilteredThumnailImagesParams';
+export * from './fetchOriginalImageParams';
 export * from './tags';
 export * from './tagsCategory';
 export * from './tagsGenre';

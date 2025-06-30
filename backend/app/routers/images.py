@@ -6,7 +6,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/api/item/list",
+    "/item/list",
     response_model=ItemListResponse,
     operation_id="fetch_filtered_thumnail_images",
 )
@@ -22,7 +22,7 @@ async def fetch_filtered_thumnail_images(
 
 
 @router.get(
-    "/api/item/original",
+    "/item/original",
     response_model=OriginalImageResponse,
     operation_id="fetch_original_image",
 )

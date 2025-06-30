@@ -15,10 +15,10 @@
         }
       }
     },
-    "/api/item/list": {
+    "/item/list": {
       "get": {
-        "summary": "Get Items",
-        "operationId": "get_items_api_item_list_get",
+        "summary": "Fetch Filtered Thumnail Images",
+        "operationId": "fetch_filtered_thumnail_images",
         "parameters": [
           {
             "name": "include_sensitive",
@@ -70,10 +70,10 @@
         }
       }
     },
-    "/api/item/original": {
+    "/item/original": {
       "get": {
-        "summary": "Get Original Image",
-        "operationId": "get_original_image_api_item_original_get",
+        "summary": "Fetch Original Image",
+        "operationId": "fetch_original_image",
         "parameters": [
           {
             "name": "id",
@@ -104,10 +104,10 @@
         }
       }
     },
-    "/api/tags/list": {
+    "/tags/list": {
       "get": {
-        "summary": "Get Tags",
-        "operationId": "get_tags",
+        "summary": "Fetch Translated Tags",
+        "operationId": "fetch_translated_tags",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -116,7 +116,7 @@
                 "schema": {
                   "items": { "$ref": "#/components/schemas/Tags" },
                   "type": "array",
-                  "title": "Response Get Tags"
+                  "title": "Response Fetch Translated Tags"
                 }
               }
             }
