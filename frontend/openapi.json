@@ -3,19 +3,7 @@
   "info": { "title": "FastAPI", "version": "0.1.0" },
   "servers": [{ "url": "/api" }],
   "paths": {
-    "/api/folder/list": {
-      "get": {
-        "summary": "Fetch Folders",
-        "operationId": "fetch_folders_api_folder_list_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": { "application/json": { "schema": {} } }
-          }
-        }
-      }
-    },
-    "/item/list": {
+    "/image/thumbnails": {
       "get": {
         "summary": "Fetch Filtered Thumnail Images",
         "operationId": "fetch_filtered_thumnail_images",
@@ -55,7 +43,11 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ItemListResponse" }
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ThumbnailImage" },
+                  "title": "Response Fetch Filtered Thumnail Images"
+                }
               }
             }
           },
@@ -70,7 +62,7 @@
         }
       }
     },
-    "/item/original": {
+    "/image/original": {
       "get": {
         "summary": "Fetch Original Image",
         "operationId": "fetch_original_image",
@@ -87,9 +79,7 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OriginalImageResponse"
-                }
+                "schema": { "$ref": "#/components/schemas/OriginalImage" }
               }
             }
           },
@@ -138,63 +128,17 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
-      "Item": {
-        "properties": {
-          "id": { "type": "string", "title": "Id" },
-          "thumbnail": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
-            "title": "Thumbnail"
-          }
-        },
-        "type": "object",
-        "required": ["id"],
-        "title": "Item"
-      },
-      "ItemListResponse": {
-        "properties": {
-          "status": { "type": "string", "title": "Status" },
-          "data": {
-            "items": { "$ref": "#/components/schemas/Item" },
-            "type": "array",
-            "title": "Data"
-          }
-        },
-        "type": "object",
-        "required": ["status", "data"],
-        "title": "ItemListResponse"
-      },
       "OriginalImage": {
         "properties": {
           "id": { "type": "string", "title": "Id" },
           "image": {
             "anyOf": [{ "type": "string" }, { "type": "null" }],
             "title": "Image"
-          },
-          "error": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
-            "title": "Error"
           }
         },
         "type": "object",
         "required": ["id"],
         "title": "OriginalImage"
-      },
-      "OriginalImageResponse": {
-        "properties": {
-          "status": {
-            "type": "string",
-            "title": "Status",
-            "default": "success"
-          },
-          "data": {
-            "items": { "$ref": "#/components/schemas/OriginalImage" },
-            "type": "array",
-            "title": "Data"
-          }
-        },
-        "type": "object",
-        "required": ["data"],
-        "title": "OriginalImageResponse"
       },
       "Tags": {
         "properties": {
@@ -212,6 +156,18 @@
         "type": "object",
         "required": ["tag_id", "tag_name"],
         "title": "Tags"
+      },
+      "ThumbnailImage": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "thumbnail": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Thumbnail"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "ThumbnailImage"
       },
       "ValidationError": {
         "properties": {

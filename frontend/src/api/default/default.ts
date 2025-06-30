@@ -23,100 +23,13 @@ import type {
   FetchFilteredThumnailImagesParams,
   FetchOriginalImageParams,
   HTTPValidationError,
-  ItemListResponse,
-  OriginalImageResponse,
-  Tags
+  OriginalImage,
+  Tags,
+  ThumbnailImage
 } from '.././model';
 
 import { customAxios } from '.././custom-axios';
 
-
-
-
-/**
- * @summary Fetch Folders
- */
-export const fetchFoldersApiFolderListGet = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customAxios<unknown>(
-      {url: `/api/folder/list`, method: 'GET', signal
-    },
-      );
-    }
-  
-
-export const getFetchFoldersApiFolderListGetQueryKey = () => {
-    return [`/api/folder/list`] as const;
-    }
-
-    
-export const getFetchFoldersApiFolderListGetQueryOptions = <TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getFetchFoldersApiFolderListGetQueryKey();
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>> = ({ signal }) => fetchFoldersApiFolderListGet(signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type FetchFoldersApiFolderListGetQueryResult = NonNullable<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>>
-export type FetchFoldersApiFolderListGetQueryError = unknown
-
-
-export function useFetchFoldersApiFolderListGet<TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
-          TError,
-          Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFetchFoldersApiFolderListGet<TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>,
-          TError,
-          Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFetchFoldersApiFolderListGet<TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Fetch Folders
- */
-
-export function useFetchFoldersApiFolderListGet<TData = Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchFoldersApiFolderListGet>>, TError, TData>>, }
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getFetchFoldersApiFolderListGetQueryOptions(options)
-
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
 
 
 
@@ -129,8 +42,8 @@ export const fetchFilteredThumnailImages = (
 ) => {
       
       
-      return customAxios<ItemListResponse>(
-      {url: `/item/list`, method: 'GET',
+      return customAxios<ThumbnailImage[]>(
+      {url: `/image/thumbnails`, method: 'GET',
         params, signal
     },
       );
@@ -138,7 +51,7 @@ export const fetchFilteredThumnailImages = (
   
 
 export const getFetchFilteredThumnailImagesQueryKey = (params?: FetchFilteredThumnailImagesParams,) => {
-    return [`/item/list`, ...(params ? [params]: [])] as const;
+    return [`/image/thumbnails`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -217,8 +130,8 @@ export const fetchOriginalImage = (
 ) => {
       
       
-      return customAxios<OriginalImageResponse>(
-      {url: `/item/original`, method: 'GET',
+      return customAxios<OriginalImage>(
+      {url: `/image/original`, method: 'GET',
         params, signal
     },
       );
@@ -226,7 +139,7 @@ export const fetchOriginalImage = (
   
 
 export const getFetchOriginalImageQueryKey = (params: FetchOriginalImageParams,) => {
-    return [`/item/original`, ...(params ? [params]: [])] as const;
+    return [`/image/original`, ...(params ? [params]: [])] as const;
     }
 
     

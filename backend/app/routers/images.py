@@ -1,4 +1,4 @@
-from app.schemas.item import ItemListResponse, OriginalImageResponse
+from app.schemas.image import OriginalImage, ThumbnailImage
 from app.services import image_service
 from fastapi import APIRouter
 
@@ -6,8 +6,8 @@ router = APIRouter()
 
 
 @router.get(
-    "/item/list",
-    response_model=ItemListResponse,
+    "/image/thumbnails",
+    response_model=list[ThumbnailImage],
     operation_id="fetch_filtered_thumnail_images",
 )
 async def fetch_filtered_thumnail_images(
@@ -18,14 +18,14 @@ async def fetch_filtered_thumnail_images(
     thumnail_images = image_service.fetch_filtered_thumnail_images(
         include_sensitive, favorites_only, selected_tag
     )
-    return ItemListResponse(status="success", data=thumnail_images)
+    return thumnail_images
 
 
 @router.get(
-    "/item/original",
-    response_model=OriginalImageResponse,
+    "/image/original",
+    response_model=OriginalImage,
     operation_id="fetch_original_image",
 )
 async def fetch_original_image(id: str):
-    result = image_service.fetch_original_image(id)
-    return OriginalImageResponse(data=result)
+    original_image = image_service.fetch_original_image(id)
+    return original_image

@@ -23,3 +23,5 @@ export * from './fetchOriginalImageParams';
 export * from './tags';
 export * from './tagsCategory';
 export * from './tagsGenre';
+export * from './thumbnailImage';
+export * from './thumbnailImageThumbnail';

@@ -17,12 +17,12 @@ export const useThumbnailImages = () => {
   const fetchImages = async (selectedTag: string) => {
     setIsLoading(true);
     try {
-      const response = await fetchFilteredThumnailImages({
+      const thumnailImages = await fetchFilteredThumnailImages({
         include_sensitive: includeSensitive,
         favorites_only: onlyFavorite,
         selected_tag: selectedTag,
       });
-      setImages(response.data);
+      setImages(thumnailImages);
     } catch (error) {
       console.error("Error fetching images:", error);
     } finally {

@@ -9,11 +9,9 @@ export const useOriginalImage = () => {
 
   const openModal = async (image: Item) => {
     try {
-      const response = await fetchOriginalImage({
+      const originalImage = await fetchOriginalImage({
         id: image.id,
       });
-
-      const originalImage = response.data?.[0];
       if (originalImage) {
         setSelectedImage(originalImage);
       } else {
@@ -21,11 +19,6 @@ export const useOriginalImage = () => {
       }
     } catch (error) {
       console.error("Error fetching original image:", error);
-      setSelectedImage({
-        id: image.id,
-        image: image.thumbnail,
-        error: "Failed to load original image",
-      });
     }
   };
 
