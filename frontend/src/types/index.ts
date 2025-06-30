@@ -1,3 +1,5 @@
+import { Item, OriginalImage, Tags } from "../api/model";
+
 export interface ImageData {
   id: string;
   thumbnail: string | null;
@@ -26,7 +28,7 @@ export interface AppContextType {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
 
-  // Folders
+  // From useFolders
   folders: FolderInfo[];
   currentFolder: FolderInfo | null;
   folderId: string;
@@ -34,26 +36,25 @@ export interface AppContextType {
   handleFolderClick: (folder: FolderInfo) => void;
   handleBackClick: () => void;
 
-  // Images
-  images: ImageData[];
-  selectedImage: OriginalImageData | null;
-  setSelectedImage: (image: OriginalImageData | null) => void;
+  // From useThumbnailImages
+  images: Item[];
+  setImages: React.Dispatch<React.SetStateAction<Item[]>>;
   isLoading: boolean;
-  limit: number;
-  setLimit: (limit: number) => void;
-  openModal: (image: ImageData) => Promise<void>;
+  columnCount: number;
+  setColumnCount: React.Dispatch<React.SetStateAction<number>>;
+  fetchImages: (selectedTag: string) => Promise<void>;
+  includeSensitive: boolean;
+  setIncludeSensitive: React.Dispatch<React.SetStateAction<boolean>>;
+  onlyFavorite: boolean;
+  setOnlyFavorite: React.Dispatch<React.SetStateAction<boolean>>;
+  // From useOriginalImage
+  selectedImage: OriginalImage | null;
+  setSelectedImage: React.Dispatch<React.SetStateAction<OriginalImage | null>>;
+  openModal: (image: Item) => Promise<void>;
   closeModal: () => void;
 
-  // Tags
-  tags: TagsData;
+  // From useTags
+  tags: Tags[] | null;
   selectedTag: string;
   setSelectedTag: (tag: string) => void;
-
-  // Layout
-  columnCount: number;
-  setColumnCount: (count: number) => void;
-}
-
-export interface AppProviderProps {
-  children: React.ReactNode;
 }

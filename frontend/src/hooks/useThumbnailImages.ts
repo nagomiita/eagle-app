@@ -5,6 +5,8 @@ import { Item } from "../api/model";
 export const useThumbnailImages = () => {
   const [images, setImages] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [includeSensitive, setIncludeSensitive] = useState<boolean>(false);
+  const [onlyFavorite, setOnlyFavorite] = useState<boolean>(false);
   const [columnCount, setColumnCount] = useState<number>(() => {
     const width = window.innerWidth;
     if (width < 600) return 4; // モバイル
@@ -16,6 +18,8 @@ export const useThumbnailImages = () => {
     setIsLoading(true);
     try {
       const response = await getItemsApiItemListGet({
+        include_sensitive: includeSensitive,
+        favorites_only: onlyFavorite,
         selected_tag: selectedTag,
       });
       setImages(response.data);
@@ -33,5 +37,9 @@ export const useThumbnailImages = () => {
     columnCount,
     setColumnCount,
     fetchImages,
+    includeSensitive,
+    setIncludeSensitive,
+    onlyFavorite,
+    setOnlyFavorite,
   };
 };

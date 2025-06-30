@@ -10,6 +10,10 @@ const Controls: React.FC = () => {
     setSelectedTag,
     columnCount,
     setColumnCount,
+    includeSensitive,
+    setIncludeSensitive,
+    onlyFavorite,
+    setOnlyFavorite,
   } = useAppContext();
 
   const [selectedCategory, setSelectedCategory] = useState<string>("全て");
@@ -158,6 +162,50 @@ const Controls: React.FC = () => {
             }}
           />
         </div>
+      </div>
+      {/* センシティブ画像表示トグル */}
+      <div className="flex items-center gap-2">
+        <label
+          htmlFor="sensitive-toggle"
+          className="text-sm font-medium min-w-fit"
+        >
+          センシティブ画像を表示:
+        </label>
+        <button
+          id="sensitive-toggle"
+          onClick={() => setIncludeSensitive((prev) => !prev)}
+          className={`w-14 h-8 flex items-center rounded-full p-1 transition-colors ${
+            includeSensitive ? "bg-green-500" : "bg-gray-400"
+          }`}
+        >
+          <div
+            className={`bg-white w-6 h-6 rounded-full shadow-md transform transition-transform ${
+              includeSensitive ? "translate-x-6" : "translate-x-0"
+            }`}
+          />
+        </button>
+      </div>
+      {/* お気に入り画像表示トグル */}
+      <div className="flex items-center gap-2">
+        <label
+          htmlFor="sensitive-toggle"
+          className="text-sm font-medium min-w-fit"
+        >
+          お気に入り画像のみを表示:
+        </label>
+        <button
+          id="sensitive-toggle"
+          onClick={() => setOnlyFavorite((prev) => !prev)}
+          className={`w-14 h-8 flex items-center rounded-full p-1 transition-colors ${
+            onlyFavorite ? "bg-green-500" : "bg-gray-400"
+          }`}
+        >
+          <div
+            className={`bg-white w-6 h-6 rounded-full shadow-md transform transition-transform ${
+              onlyFavorite ? "translate-x-6" : "translate-x-0"
+            }`}
+          />
+        </button>
       </div>
 
       {/* 列数調整 */}

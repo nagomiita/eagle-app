@@ -1,46 +1,16 @@
-import React, {
+import {
   createContext,
   ReactNode,
   useContext,
   useEffect,
   useState,
 } from "react";
-import { Item, OriginalImage, Tags } from "../api/model";
+
 import useFolders from "../hooks/useFolders";
 import { useOriginalImage } from "../hooks/useOriginalImage";
 import useTags from "../hooks/useTags";
 import { useThumbnailImages } from "../hooks/useThumbnailImages";
-import { FolderInfo } from "../types";
-interface AppContextType {
-  isDarkMode: boolean;
-  toggleDarkMode: () => void;
-
-  // From useFolders
-  folders: FolderInfo[];
-  currentFolder: FolderInfo | null;
-  folderId: string;
-  setFolderId: (id: string) => void;
-  handleFolderClick: (folder: FolderInfo) => void;
-  handleBackClick: () => void;
-
-  // From useThumbnailImages
-  images: Item[];
-  setImages: React.Dispatch<React.SetStateAction<Item[]>>;
-  isLoading: boolean;
-  columnCount: number;
-  setColumnCount: React.Dispatch<React.SetStateAction<number>>;
-  fetchImages: (selectedTag: string) => Promise<void>;
-  // From useOriginalImage
-  selectedImage: OriginalImage | null;
-  setSelectedImage: React.Dispatch<React.SetStateAction<OriginalImage | null>>;
-  openModal: (image: Item) => Promise<void>;
-  closeModal: () => void;
-
-  // From useTags
-  tags: Tags[] | null;
-  selectedTag: string;
-  setSelectedTag: (tag: string) => void;
-}
+import { AppContextType } from "../types";
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -59,7 +29,11 @@ export function AppProvider({ children }: AppProviderProps) {
 
   useEffect(() => {
     thumbnailImagesState.fetchImages(tagState.selectedTag);
-  }, [tagState.selectedTag]);
+  }, [
+    tagState.selectedTag,
+    thumbnailImagesState.includeSensitive,
+    thumbnailImagesState.onlyFavorite,
+  ]);
 
   const value: AppContextType = {
     isDarkMode,
