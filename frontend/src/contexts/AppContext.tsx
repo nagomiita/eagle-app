@@ -5,12 +5,12 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { Item, OriginalImage } from "../api/model";
+import { Item, OriginalImage, Tags } from "../api/model";
 import useFolders from "../hooks/useFolders";
 import { useOriginalImage } from "../hooks/useOriginalImage";
 import useTags from "../hooks/useTags";
 import { useThumbnailImages } from "../hooks/useThumbnailImages";
-import { FolderInfo, TagsData } from "../types";
+import { FolderInfo } from "../types";
 interface AppContextType {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
@@ -37,7 +37,7 @@ interface AppContextType {
   closeModal: () => void;
 
   // From useTags
-  tags: TagsData;
+  tags: Tags[] | null;
   selectedTag: string;
   setSelectedTag: (tag: string) => void;
 }

@@ -9,9 +9,9 @@ router = APIRouter()
 async def get_items(
     include_sensitive: bool = False,
     favorites_only: bool = False,
-    tags: str | None = None,
+    selected_tag: str | None = None,
 ):
-    items = item_service.get_items(include_sensitive, favorites_only, tags)
+    items = item_service.get_items(include_sensitive, favorites_only, selected_tag)
     return ItemListResponse(status="success", data=items)
 
 

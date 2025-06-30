@@ -18,6 +18,7 @@ from app.db.models import (
     TagGenre,
     TagTranslation,
 )
+from app.models.schemas import Tags
 from app.tag_config import SENSITIVE_KEYWORDS
 from app.utils.categorize import get_tag_category
 from app.utils.genre import get_genres
@@ -133,7 +134,7 @@ def seed_categories_and_tags():
 def get_filtered_image_entries(
     favorites_only: bool = False,
     include_sensitive: bool = True,
-    limit: int | None = None,
+    tag_id: str | None = None,
 ) -> list[ImageEntry]:
     with get_session() as session:
         with measure_query_time("build_filtered_query"):
@@ -143,9 +144,11 @@ def get_filtered_image_entries(
             if not include_sensitive:
                 query = query.filter(ImageEntry.is_sensitive.is_(False))
             query = query.order_by(ImageEntry.id.desc())
-            if limit is not None:
-                query = query.limit(limit)
-
+            if tag_id:
+                subquery = session.query(ImageTag.image_id).filter(
+                    ImageTag.tag_id == tag_id
+                )
+                query = query.filter(ImageEntry.id.in_(subquery))
         with measure_query_time("execute_filtered_query"):
             return query.all()
 
@@ -318,6 +321,43 @@ def get_all_tags() -> list[Tag]:
     with get_session() as session:
         with measure_query_time("get_all_tags_ordered"):
             return session.query(Tag).order_by(Tag.name).all()
+
+
+@measure_time("get_all_tags_with_translation")
+def get_all_translated_tags(language: str = "ja") -> list[Tag]:
+    with get_session() as session:
+        with measure_query_time("query_with_translation_join"):
+            tag_with_translations = (
+                session.query(Tag)
+                .outerjoin(
+                    TagTranslation,
+                    (Tag.id == TagTranslation.tag_id)
+                    & (TagTranslation.language == language),
+                )
+                .join(Tag.category)
+                .outerjoin(TagGenre, Tag.id == TagGenre.tag_id)
+                .outerjoin(Genre, TagGenre.genre_id == Genre.id)
+                .with_entities(
+                    Tag.id.label("tag_id"),
+                    Tag.name.label("default_name"),
+                    TagTranslation.translated_name.label("translated_name"),
+                    Category.name.label("category"),
+                    Genre.name.label("genre_name"),
+                )
+                .order_by(Tag.name)
+                .all()
+            )
+
+    # 結果を Pydantic モデルに変換
+    return [
+        Tags(
+            tag_id=tag_id,
+            tag_name=translated_name or default_name,
+            category=category,
+            genre=genre,
+        )
+        for tag_id, default_name, translated_name, category, genre in tag_with_translations
+    ]
 
 
 @measure_time("get_tags_for_image")

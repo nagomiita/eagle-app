@@ -1,20 +1,16 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../config";
-import { TagsData } from "../types";
+import { Tags } from "../api/model";
+import { getTags } from "../api/default/default";
 
 const useTags = () => {
-  const [tags, setTags] = useState<TagsData>({
-    historyTags: [],
-    starredTags: [],
-  });
+  const [tags, setTags] = useState<Tags[] | null>(null);
   const [selectedTag, setSelectedTag] = useState<string>("");
 
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/tags/list`);
-        setTags(response.data);
+        const response = await getTags();
+        setTags(response);
       } catch (error) {
         console.error("Error fetching tags:", error);
       }

@@ -9,9 +9,11 @@ from app.schemas.item import Item, OriginalImage
 logger = logging.getLogger(__name__)
 
 
-def get_items(include_sensitive, favorites_only, tags):
+def get_items(include_sensitive, favorites_only, selected_tag):
     filtered_image_entries = get_filtered_image_entries(
-        include_sensitive=include_sensitive, favorites_only=favorites_only
+        include_sensitive=include_sensitive,
+        favorites_only=favorites_only,
+        tag_id=selected_tag,
     )
     print(f"Filtered image entries: {len(filtered_image_entries)}")
     thumbnails: list[Item] = []

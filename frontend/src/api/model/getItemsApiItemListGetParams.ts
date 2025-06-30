@@ -8,5 +8,5 @@
 export type GetItemsApiItemListGetParams = {
 include_sensitive?: boolean;
 favorites_only?: boolean;
-tags?: string | null;
+selected_tag?: string | null;
 };

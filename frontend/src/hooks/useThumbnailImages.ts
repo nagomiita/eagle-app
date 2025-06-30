@@ -16,7 +16,7 @@ export const useThumbnailImages = () => {
     setIsLoading(true);
     try {
       const response = await getItemsApiItemListGet({
-        tags: selectedTag,
+        selected_tag: selectedTag,
       });
       setImages(response.data);
     } catch (error) {

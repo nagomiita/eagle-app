@@ -25,7 +25,7 @@ import type {
   HTTPValidationError,
   ItemListResponse,
   OriginalImageResponse,
-  TagsResponse
+  Tags
 } from '.././model';
 
 import { customAxios } from '.././custom-axios';
@@ -299,80 +299,80 @@ export function useGetOriginalImageApiItemOriginalGet<TData = Awaited<ReturnType
 /**
  * @summary Get Tags
  */
-export const getTagsApiTagsListGet = (
+export const getTags = (
     
  signal?: AbortSignal
 ) => {
       
       
-      return customAxios<TagsResponse>(
+      return customAxios<Tags[]>(
       {url: `/api/tags/list`, method: 'GET', signal
     },
       );
     }
   
 
-export const getGetTagsApiTagsListGetQueryKey = () => {
+export const getGetTagsQueryKey = () => {
     return [`/api/tags/list`] as const;
     }
 
     
-export const getGetTagsApiTagsListGetQueryOptions = <TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError, TData>>, }
+export const getGetTagsQueryOptions = <TData = Awaited<ReturnType<typeof getTags>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetTagsApiTagsListGetQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetTagsQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTagsApiTagsListGet>>> = ({ signal }) => getTagsApiTagsListGet(signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTags>>> = ({ signal }) => getTags(signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetTagsApiTagsListGetQueryResult = NonNullable<Awaited<ReturnType<typeof getTagsApiTagsListGet>>>
-export type GetTagsApiTagsListGetQueryError = unknown
+export type GetTagsQueryResult = NonNullable<Awaited<ReturnType<typeof getTags>>>
+export type GetTagsQueryError = unknown
 
 
-export function useGetTagsApiTagsListGet<TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError, TData>> & Pick<
+export function useGetTags<TData = Awaited<ReturnType<typeof getTags>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+          Awaited<ReturnType<typeof getTags>>,
           TError,
-          Awaited<ReturnType<typeof getTagsApiTagsListGet>>
+          Awaited<ReturnType<typeof getTags>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetTagsApiTagsListGet<TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError, TData>> & Pick<
+export function useGetTags<TData = Awaited<ReturnType<typeof getTags>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getTagsApiTagsListGet>>,
+          Awaited<ReturnType<typeof getTags>>,
           TError,
-          Awaited<ReturnType<typeof getTagsApiTagsListGet>>
+          Awaited<ReturnType<typeof getTags>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetTagsApiTagsListGet<TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError, TData>>, }
+export function useGetTags<TData = Awaited<ReturnType<typeof getTags>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get Tags
  */
 
-export function useGetTagsApiTagsListGet<TData = Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTagsApiTagsListGet>>, TError, TData>>, }
+export function useGetTags<TData = Awaited<ReturnType<typeof getTags>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getTags>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetTagsApiTagsListGetQueryOptions(options)
+  const queryOptions = getGetTagsQueryOptions(options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
