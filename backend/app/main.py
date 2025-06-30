@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from app.routers import folders, items, tags
+from app.routers import folders, images, tags
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -22,7 +22,7 @@ app.add_middleware(
 )
 
 app.include_router(folders.router)
-app.include_router(items.router)
+app.include_router(images.router)
 app.include_router(tags.router)
 
 if __name__ == "__main__":
