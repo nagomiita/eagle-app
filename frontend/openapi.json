@@ -41,12 +41,12 @@
             }
           },
           {
-            "name": "tags",
+            "name": "selected_tag",
             "in": "query",
             "required": false,
             "schema": {
               "anyOf": [{ "type": "string" }, { "type": "null" }],
-              "title": "Tags"
+              "title": "Selected Tag"
             }
           }
         ],
@@ -107,13 +107,17 @@
     "/api/tags/list": {
       "get": {
         "summary": "Get Tags",
-        "operationId": "get_tags_api_tags_list_get",
+        "operationId": "get_tags",
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/TagsResponse" }
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/Tags" },
+                  "type": "array",
+                  "title": "Response Get Tags"
+                }
               }
             }
           }
@@ -192,22 +196,22 @@
         "required": ["data"],
         "title": "OriginalImageResponse"
       },
-      "TagsResponse": {
+      "Tags": {
         "properties": {
-          "historyTags": {
-            "items": { "type": "string" },
-            "type": "array",
-            "title": "Historytags"
+          "tag_id": { "type": "integer", "title": "Tag Id" },
+          "tag_name": { "type": "string", "title": "Tag Name" },
+          "category": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Category"
           },
-          "starredTags": {
-            "items": { "type": "string" },
-            "type": "array",
-            "title": "Starredtags"
+          "genre": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Genre"
           }
         },
         "type": "object",
-        "required": ["historyTags", "starredTags"],
-        "title": "TagsResponse"
+        "required": ["tag_id", "tag_name"],
+        "title": "Tags"
       },
       "ValidationError": {
         "properties": {
