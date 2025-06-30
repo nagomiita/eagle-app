@@ -5,7 +5,9 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-@router.get("/api/tags/list", response_model=list[Tags], operation_id="get_tags")
-async def get_tags() -> list[Tags]:
-    tags = tag_service.get_tags()
+@router.get(
+    "/api/tags/list", response_model=list[Tags], operation_id="fetch_translated_tags"
+)
+async def fetch_translated_tags() -> list[Tags]:
+    tags = tag_service.fetch_translated_tags()
     return tags

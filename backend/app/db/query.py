@@ -1,13 +1,8 @@
-import logging
-import time
-from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Generator
 
 import numpy as np
 from app.config import LANGUAGE
-from app.db.engine import engine
 from app.db.models import (
     Category,
     Genre,
@@ -18,84 +13,14 @@ from app.db.models import (
     TagGenre,
     TagTranslation,
 )
-from app.models.schemas import Tags
+from app.db.query_performance import measure_query_time, measure_time, perf_logger
+from app.db.session import get_session
 from app.tag_config import SENSITIVE_KEYWORDS
 from app.utils.categorize import get_tag_category
 from app.utils.genre import get_genres
 from app.utils.translations import get_translation_for_tag
 from sqlalchemy import false, or_, true
 from sqlalchemy.orm import Session, joinedload
-
-# パフォーマンス測定用のロガー設定
-perf_logger = logging.getLogger("query_performance")
-perf_logger.setLevel(logging.INFO)
-if not perf_logger.handlers:
-    handler = logging.StreamHandler()
-    formatter = logging.Formatter("%(asctime)s - PERF - %(message)s")
-    handler.setFormatter(formatter)
-    perf_logger.addHandler(handler)
-
-
-# パフォーマンス測定デコレータ
-def measure_time(func_name: str = None, log_threshold: float = 0.001):
-    """
-    実行時間を測定するデコレータ
-
-    Args:
-        func_name: ログに表示する関数名（Noneの場合は実際の関数名）
-        log_threshold: この閾値（秒）を超えた場合のみログ出力
-    """
-
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            name = func_name or func.__name__
-            start_time = time.perf_counter()
-            try:
-                result = func(*args, **kwargs)
-                return result
-            finally:
-                elapsed = time.perf_counter() - start_time
-                if elapsed >= log_threshold:
-                    perf_logger.info(f"{name}: {elapsed:.4f}s")
-                else:
-                    perf_logger.debug(f"{name}: {elapsed:.4f}s")
-
-        return wrapper
-
-    return decorator
-
-
-@contextmanager
-def measure_query_time(query_name: str, log_threshold: float = 0.001):
-    """
-    クエリ実行時間を測定するコンテキストマネージャ
-
-    Args:
-        query_name: クエリの名前
-        log_threshold: この閾値（秒）を超えた場合のみログ出力
-    """
-    start_time = time.perf_counter()
-    try:
-        yield
-    finally:
-        elapsed = time.perf_counter() - start_time
-        if elapsed >= log_threshold:
-            perf_logger.info(f"QUERY [{query_name}]: {elapsed:.4f}s")
-        else:
-            perf_logger.debug(f"QUERY [{query_name}]: {elapsed:.4f}s")
-
-
-# ---------------------------- Session Management ----------------------------
-
-
-@contextmanager
-def get_session() -> Generator[Session, None, None]:
-    session = Session(engine)
-    try:
-        yield session
-    finally:
-        session.close()
-
 
 # ---------------------------- Seed: Add Entries ----------------------------
 
@@ -321,43 +246,6 @@ def get_all_tags() -> list[Tag]:
     with get_session() as session:
         with measure_query_time("get_all_tags_ordered"):
             return session.query(Tag).order_by(Tag.name).all()
-
-
-@measure_time("get_all_tags_with_translation")
-def get_all_translated_tags(language: str = "ja") -> list[Tag]:
-    with get_session() as session:
-        with measure_query_time("query_with_translation_join"):
-            tag_with_translations = (
-                session.query(Tag)
-                .outerjoin(
-                    TagTranslation,
-                    (Tag.id == TagTranslation.tag_id)
-                    & (TagTranslation.language == language),
-                )
-                .join(Tag.category)
-                .outerjoin(TagGenre, Tag.id == TagGenre.tag_id)
-                .outerjoin(Genre, TagGenre.genre_id == Genre.id)
-                .with_entities(
-                    Tag.id.label("tag_id"),
-                    Tag.name.label("default_name"),
-                    TagTranslation.translated_name.label("translated_name"),
-                    Category.name.label("category"),
-                    Genre.name.label("genre_name"),
-                )
-                .order_by(Tag.name)
-                .all()
-            )
-
-    # 結果を Pydantic モデルに変換
-    return [
-        Tags(
-            tag_id=tag_id,
-            tag_name=translated_name or default_name,
-            category=category,
-            genre=genre,
-        )
-        for tag_id, default_name, translated_name, category, genre in tag_with_translations
-    ]
 
 
 @measure_time("get_tags_for_image")
@@ -795,24 +683,3 @@ def add_genre_to_tag(
     session.add(relation)
     with measure_query_time(f"commit_genre_relation_{tag_id}_{genre_id}"):
         session.commit()
-
-
-# ---------------------------- Performance Report Helper ----------------------------
-
-
-def get_performance_summary():
-    """パフォーマンス測定の簡易レポートを取得"""
-    handler = perf_logger.handlers[0]
-    if hasattr(handler, "stream") and hasattr(handler.stream, "getvalue"):
-        return handler.stream.getvalue()
-    return "Performance logs are being written to console"
-
-
-def enable_performance_logging(level=logging.INFO):
-    """パフォーマンスロギングを有効化"""
-    perf_logger.setLevel(level)
-
-
-def disable_performance_logging():
-    """パフォーマンスロギングを無効化"""
-    perf_logger.setLevel(logging.CRITICAL)

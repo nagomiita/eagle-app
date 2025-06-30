@@ -1,7 +1,15 @@
-from app.db.query import get_all_translated_tags
+from app.db.queries import tag
 from app.models.schemas import Tags
 
 
-def get_tags() -> list[Tags]:
-    tags = get_all_translated_tags()
-    return tags
+def fetch_translated_tags(language: str = "ja") -> list[Tags]:
+    tags = tag.query_all_translated_tags(language)
+    return [
+        Tags(
+            tag_id=tag_id,
+            tag_name=translated_name or default_name,
+            category=category,
+            genre=genre,
+        )
+        for tag_id, default_name, translated_name, category, genre in tags
+    ]
