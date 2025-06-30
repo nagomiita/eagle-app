@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { fetchOriginalImage } from "../api/default/default";
-import { Item, OriginalImage } from "../api/model";
+import { ThumbnailImage, OriginalImage } from "../api/model";
 
 export const useOriginalImage = () => {
   const [selectedImage, setSelectedImage] = useState<OriginalImage | null>(
     null
   );
 
-  const openModal = async (image: Item) => {
+  const openModal = async (image: ThumbnailImage) => {
     try {
       const originalImage = await fetchOriginalImage({
         id: image.id,

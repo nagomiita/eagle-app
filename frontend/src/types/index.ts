@@ -1,4 +1,4 @@
-import { Item, OriginalImage, Tags } from "../api/model";
+import { ThumbnailImage, OriginalImage, Tag } from "../api/model";
 
 export interface ImageData {
   id: string;
@@ -29,8 +29,8 @@ export interface AppContextType {
   toggleDarkMode: () => void;
 
   // From useThumbnailImages
-  images: Item[];
-  setImages: React.Dispatch<React.SetStateAction<Item[]>>;
+  images: ThumbnailImage[];
+  setImages: React.Dispatch<React.SetStateAction<ThumbnailImage[]>>;
   isLoading: boolean;
   columnCount: number;
   setColumnCount: React.Dispatch<React.SetStateAction<number>>;
@@ -42,11 +42,11 @@ export interface AppContextType {
   // From useOriginalImage
   selectedImage: OriginalImage | null;
   setSelectedImage: React.Dispatch<React.SetStateAction<OriginalImage | null>>;
-  openModal: (image: Item) => Promise<void>;
+  openModal: (image: ThumbnailImage) => Promise<void>;
   closeModal: () => void;
 
   // From useTags
-  tags: Tags[] | null;
+  tags: Tag[] | null;
   selectedTag: string;
   setSelectedTag: (tag: string) => void;
 }

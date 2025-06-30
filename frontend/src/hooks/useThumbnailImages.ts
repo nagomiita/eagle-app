@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { fetchFilteredThumnailImages } from "../api/default/default";
-import { Item } from "../api/model";
+import { ThumbnailImage } from "../api/model";
 
 export const useThumbnailImages = () => {
-  const [images, setImages] = useState<Item[]>([]);
+  const [images, setImages] = useState<ThumbnailImage[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [includeSensitive, setIncludeSensitive] = useState<boolean>(false);
   const [onlyFavorite, setOnlyFavorite] = useState<boolean>(false);

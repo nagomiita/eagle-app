@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppContext } from "../contexts/AppContext";
-import { Item } from "../api/model";
+import { ThumbnailImage } from "../api/model";
 import LazyImage from "./LazyImage";
 
 const ImageGrid: React.FC = () => {
@@ -23,7 +23,7 @@ const ImageGrid: React.FC = () => {
         gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
       }}
     >
-      {images.map((image: Item) => (
+      {images.map((image: ThumbnailImage) => (
         <LazyImage
           key={image.id}
           src={`http://192.168.11.11/api/static/${image.thumbnail}`}
