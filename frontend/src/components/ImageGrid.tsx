@@ -28,7 +28,7 @@ const ImageGrid: React.FC = () => {
           key={image.id}
           src={`http://192.168.11.11/api/static/${image.thumbnail}`}
           alt={`Thumbnail ${image.id}`}
-          onClick={() => openModal(image)}
+          onClick={() => openModal(image.id)}
         />
       ))}
     </div>

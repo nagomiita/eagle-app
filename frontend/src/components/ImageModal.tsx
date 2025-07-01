@@ -1,23 +1,29 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAppContext } from "../contexts/AppContext";
+import { fetchOriginalImage } from "../api/default/default";
 
-// 定数定義
-const SWIPE_CLOSE_THRESHOLD = 100; // px
-const MOBILE_BREAKPOINT = 1024; // px
+const SWIPE_CLOSE_THRESHOLD = 100; // 上スワイプで閉じる距離
+const SWIPE_IMAGE_THRESHOLD = 80; // 左右スワイプで画像切り替え距離
+const MOBILE_BREAKPOINT = 1024; // モバイル判定用
 
-// タッチ操作の状態を管理する型
 interface TouchState {
+  startX: number | null;
   startY: number | null;
+  dragX: number;
   dragY: number;
   isDragging: boolean;
 }
 
 const ImageModal: React.FC = () => {
-  const { selectedImage, closeModal } = useAppContext();
+  const { selectedImage, setSelectedImage, closeModal, images } =
+    useAppContext();
+
   const modalRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [touchState, setTouchState] = useState<TouchState>({
+    startX: null,
     startY: null,
+    dragX: 0,
     dragY: 0,
     isDragging: false,
   });
@@ -27,7 +33,6 @@ const ImageModal: React.FC = () => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
     };
-
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -37,11 +42,8 @@ const ImageModal: React.FC = () => {
   useEffect(() => {
     if (!selectedImage) return;
 
-    const preventTouchScroll = (e: TouchEvent) => {
-      e.preventDefault();
-    };
+    const preventTouchScroll = (e: TouchEvent) => e.preventDefault();
 
-    // スクロール無効化
     document.body.style.overflow = "hidden";
     document.addEventListener("touchmove", preventTouchScroll, {
       passive: false,
@@ -53,10 +55,12 @@ const ImageModal: React.FC = () => {
     };
   }, [selectedImage]);
 
-  // 画像変更時のタッチ状態リセット
+  // 画像変更時のドラッグ状態リセット
   useEffect(() => {
     setTouchState({
+      startX: null,
       startY: null,
+      dragX: 0,
       dragY: 0,
       isDragging: false,
     });
@@ -65,64 +69,95 @@ const ImageModal: React.FC = () => {
   // タッチイベントハンドラー
   const handleTouchStart = (e: React.TouchEvent) => {
     if (!isMobile) return;
-
-    setTouchState((prev) => ({
-      ...prev,
+    setTouchState({
+      startX: e.touches[0].clientX,
       startY: e.touches[0].clientY,
+      dragX: 0,
+      dragY: 0,
       isDragging: true,
-    }));
+    });
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isMobile || !touchState.isDragging || touchState.startY === null)
+    if (
+      !isMobile ||
+      !touchState.isDragging ||
+      touchState.startX === null ||
+      touchState.startY === null
+    )
       return;
 
-    const currentY = e.touches[0].clientY;
-    const deltaY = currentY - touchState.startY;
+    const deltaX = e.touches[0].clientX - touchState.startX;
+    const deltaY = e.touches[0].clientY - touchState.startY;
 
-    // 上方向のスワイプのみ許可
-    if (deltaY < 0) {
-      setTouchState((prev) => ({
-        ...prev,
-        dragY: deltaY,
-      }));
-    }
+    setTouchState((prev) => ({
+      ...prev,
+      dragX: deltaX,
+      dragY: deltaY < 0 ? deltaY : 0, // 上方向のみ
+    }));
   };
 
   const handleTouchEnd = () => {
     if (!isMobile) return;
 
-    // スワイプ距離が閾値を超えた場合は閉じる
-    if (touchState.dragY < -SWIPE_CLOSE_THRESHOLD) {
+    const { dragX, dragY } = touchState;
+
+    if (dragY < -SWIPE_CLOSE_THRESHOLD) {
       closeModal();
-    } else {
-      // 元の位置に戻す
-      setTouchState((prev) => ({
-        ...prev,
-        dragY: 0,
-      }));
+    } else if (dragX > SWIPE_IMAGE_THRESHOLD) {
+      showPreviousImage();
+    } else if (dragX < -SWIPE_IMAGE_THRESHOLD) {
+      showNextImage();
     }
 
-    setTouchState((prev) => ({
-      ...prev,
-      isDragging: false,
+    setTouchState({
+      startX: null,
       startY: null,
-    }));
+      dragX: 0,
+      dragY: 0,
+      isDragging: false,
+    });
   };
 
-  // ESCキーでモーダル閉じる
+  const showPreviousImage = async () => {
+    const index = images.findIndex((img) => img.id === selectedImage?.id);
+    if (index > 0) {
+      const originalImage = await fetchOriginalImage({
+        id: images[index - 1].id,
+      });
+      if (originalImage) {
+        setSelectedImage(originalImage);
+      } else {
+        throw new Error("Original image not found");
+      }
+    }
+  };
+
+  const showNextImage = async () => {
+    const index = images.findIndex((img) => img.id === selectedImage?.id);
+    if (index >= 0 && index < images.length - 1) {
+      const originalImage = await fetchOriginalImage({
+        id: images[index + 1].id,
+      });
+      if (originalImage) {
+        setSelectedImage(originalImage);
+      } else {
+        throw new Error("Original image not found");
+      }
+    }
+  };
+
+  // ESCキーで閉じる
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && selectedImage) {
         closeModal();
       }
     };
-
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [selectedImage, closeModal]);
 
-  // モーダルが開いていない場合は何も表示しない
   if (!selectedImage) return null;
 
   return (
@@ -134,18 +169,16 @@ const ImageModal: React.FC = () => {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* デスクトップ用の閉じるボタン */}
       {!isMobile && (
         <button
           onClick={closeModal}
-          className="absolute top-4 right-4 text-white text-3xl font-bold z-50 hover:text-gray-300 transition-colors"
+          className="absolute top-4 right-4 text-white text-3xl font-bold z-50 hover:text-gray-300"
           aria-label="モーダルを閉じる"
         >
           &times;
         </button>
       )}
 
-      {/* 画像表示 */}
       <img
         src={selectedImage.image || undefined}
         alt="Selected image"
@@ -155,20 +188,13 @@ const ImageModal: React.FC = () => {
         `}
         onClick={(e) => e.stopPropagation()}
         style={{
-          transform: `translateY(${touchState.dragY}px)`,
-        }}
-        onError={(e) => {
-          console.error(
-            `画像の読み込みに失敗しました:${e}`,
-            selectedImage.image
-          );
+          transform: `translate(${touchState.dragX}px, ${touchState.dragY}px)`,
         }}
       />
 
-      {/* モバイル用のスワイプヒント */}
       {isMobile && (
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm opacity-70">
-          上にスワイプして閉じる
+          上にスワイプで閉じる・左右で画像切替
         </div>
       )}
     </div>

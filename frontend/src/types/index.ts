@@ -42,7 +42,7 @@ export interface AppContextType {
   // From useOriginalImage
   selectedImage: OriginalImage | null;
   setSelectedImage: React.Dispatch<React.SetStateAction<OriginalImage | null>>;
-  openModal: (image: ThumbnailImage) => Promise<void>;
+  openModal: (image: string) => Promise<void>;
   closeModal: () => void;
 
   // From useTags
