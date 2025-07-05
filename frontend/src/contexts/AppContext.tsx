@@ -1,10 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext, useEffect } from "react";
 
 import { useOriginalImage } from "../hooks/useOriginalImage";
 import useTags from "../hooks/useTags";
