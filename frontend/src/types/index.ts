@@ -25,9 +25,6 @@ export interface FolderInfo {
 }
 
 export interface AppContextType {
-  isDarkMode: boolean;
-  toggleDarkMode: () => void;
-
   // From useThumbnailImages
   images: ThumbnailImage[];
   setImages: React.Dispatch<React.SetStateAction<ThumbnailImage[]>>;

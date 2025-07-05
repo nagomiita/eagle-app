@@ -4,7 +4,6 @@ import Select from "react-select";
 
 const Controls: React.FC = () => {
   const {
-    isDarkMode,
     tags,
     selectedTag,
     setSelectedTag,
@@ -83,17 +82,14 @@ const Controls: React.FC = () => {
           id="category-select"
           value={selectedCategory}
           onChange={handleCategoryChange}
-          className={`
-            px-3 py-2 border rounded-md shadow-sm transition-colors
-            focus:outline-none focus:ring-2 focus:ring-blue-500
-            ${
-              isDarkMode
-                ? "bg-gray-700 text-white border-gray-600"
-                : "bg-white text-gray-900 border-gray-300"
-            }
-          `}
+          className="
+					px-3 py-2 border rounded-md shadow-sm transition-colors
+					focus:outline-none focus:ring-2 focus:ring-blue-500
+					bg-gray-700 text-white border-gray-600
+					"
         >
           <option value="全て">全て</option>
+
           {categories.map((category) => (
             <option key={category} value={category ?? ""}>
               {category ?? ""}
@@ -110,15 +106,11 @@ const Controls: React.FC = () => {
           id="genre-select"
           value={selectedGenre}
           onChange={handleGenreChange}
-          className={`
-            px-3 py-2 border rounded-md shadow-sm transition-colors
-            focus:outline-none focus:ring-2 focus:ring-blue-500
-            ${
-              isDarkMode
-                ? "bg-gray-700 text-white border-gray-600"
-                : "bg-white text-gray-900 border-gray-300"
-            }
-          `}
+          className="
+					px-3 py-2 border rounded-md shadow-sm transition-colors
+					focus:outline-none focus:ring-2 focus:ring-blue-500
+					bg-gray-700 text-white border-gray-600
+					"
         >
           <option value="全て">全て</option>
           {Genres.map((genre) => (
@@ -147,10 +139,10 @@ const Controls: React.FC = () => {
               ...theme,
               colors: {
                 ...theme.colors,
-                primary: isDarkMode ? "#3b82f6" : "#2563eb",
-                neutral0: isDarkMode ? "#1f2937" : "#ffffff",
-                neutral80: isDarkMode ? "#ffffff" : "#374151",
-                neutral20: isDarkMode ? "#4b5563" : "#d1d5db",
+                primary: "#3b82f6",
+                neutral0: "#1f2937", // 背景
+                neutral80: "#ffffff", // テキスト
+                neutral20: "#4b5563", // ボーダー
               },
             })}
             styles={{
@@ -224,10 +216,7 @@ const Controls: React.FC = () => {
             max="12"
             value={columnCount}
             onChange={handleColumnChange}
-            className={`
-              w-full h-2 rounded-lg appearance-none cursor-pointer
-              ${isDarkMode ? "bg-gray-700" : "bg-gray-200"}
-            `}
+            className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-700"
           />
           <div className="flex justify-between text-xs text-gray-500 mt-1">
             <span>1</span>

@@ -18,13 +18,9 @@ interface AppProviderProps {
 }
 
 export function AppProvider({ children }: AppProviderProps) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const thumbnailImagesState = useThumbnailImages();
   const OriginalImageState = useOriginalImage();
   const tagState = useTags();
-
-  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
-
   useEffect(() => {
     thumbnailImagesState.fetchImages(tagState.selectedTag);
   }, [
@@ -34,8 +30,6 @@ export function AppProvider({ children }: AppProviderProps) {
   ]);
 
   const value: AppContextType = {
-    isDarkMode,
-    toggleDarkMode,
     ...thumbnailImagesState,
     ...OriginalImageState,
     ...tagState,

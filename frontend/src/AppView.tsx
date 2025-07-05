@@ -1,21 +1,12 @@
-import { useAppContext } from "./contexts/AppContext";
 import Header from "./components/Header";
-import Controls from "./components/Controls";
 import ImageGrid from "./components/ImageGrid";
 import ImageModal from "./components/ImageModal";
 
 function AppView() {
-  const { isDarkMode } = useAppContext();
-
   return (
-    <div
-      className={`min-h-screen ${
-        isDarkMode ? "dark bg-gray-900 text-white" : "bg-white text-black"
-      }`}
-    >
+    <div className={"min-h-screendark bg-gray-900 text-white"}>
       <div className="max-w-8xl mx-auto p-1">
         <Header />
-        <Controls />
         <ImageGrid />
         <ImageModal />
       </div>
