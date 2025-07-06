@@ -7,7 +7,7 @@
 import type { ThumbnailImageThumbnail } from './thumbnailImageThumbnail';
 
 export interface ThumbnailImage {
-  id: string;
+  id: number;
   thumbnail?: ThumbnailImageThumbnail;
   is_favorite: boolean;
 }

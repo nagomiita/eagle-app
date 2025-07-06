@@ -7,6 +7,7 @@
 import type { OriginalImageImage } from './originalImageImage';
 
 export interface OriginalImage {
-  id: string;
+  id: number;
   image?: OriginalImageImage;
+  tags: string[];
 }

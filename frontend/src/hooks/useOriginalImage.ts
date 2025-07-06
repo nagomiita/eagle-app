@@ -7,7 +7,7 @@ export const useOriginalImage = () => {
     null
   );
 
-  const openModal = async (imageId: string) => {
+  const openModal = async (imageId: number) => {
     try {
       const originalImage = await fetchOriginalImage({
         id: imageId,

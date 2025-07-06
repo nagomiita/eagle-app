@@ -2,7 +2,7 @@ import base64
 from pathlib import Path
 
 from app.config import IMAGE_DIR
-from app.db.queries import image
+from app.db.queries import image, tag
 from app.schemas.image import OriginalImage, ThumbnailImage
 from send2trash import send2trash
 
@@ -38,11 +38,11 @@ def fetch_filtered_thumnail_images(
     thumbnails: list[ThumbnailImage] = []
 
     for entry in filtered_image_entries:
-        if not entry.image_path or not entry.thumbnail_path:
+        if not entry.thumbnail_path:
             continue
         thumbnails.append(
             ThumbnailImage(
-                id=entry.image_path,
+                id=entry.id,
                 thumbnail=entry.thumbnail_path,
                 is_favorite=entry.is_favorite,
             )
@@ -51,12 +51,12 @@ def fetch_filtered_thumnail_images(
     return thumbnails
 
 
-def fetch_original_image(id: str) -> OriginalImage:
+def fetch_original_image(id: int) -> OriginalImage:
     """
     指定された画像IDに対応する画像ファイルを読み込み、Base64形式のデータURIとして返す。
 
     Args:
-        id (str): 画像ファイルのファイル名またはID（ファイル名と一致する文字列）。
+        id (id): 画像ファイルのID。
 
     Raises:
         FileNotFoundError: 指定された画像ファイルが存在しない場合に発生。
@@ -65,29 +65,29 @@ def fetch_original_image(id: str) -> OriginalImage:
     Returns:
         OriginalImage: Base64エンコードされた画像を含むデータオブジェクト。
     """
-    path = Path(IMAGE_DIR, id)
-    image.query_increment_view_count(id)
-
-    if not path.exists():
+    image_path = image.query_image_path_by_id(id)
+    if not image_path:
         raise FileNotFoundError(f"画像が見つかりません: {id}")
-
+    tags = tag.query_translated_tag_names_by_image_id(id)
+    path = Path(IMAGE_DIR, image_path)
+    if not path.exists():
+        raise FileNotFoundError(f"画像が見つかりません: {path}")
     if path.suffix.lower() not in [".png", ".jpg", ".jpeg", ".webp"]:
         raise ValueError(f"未対応の画像形式です: {path.suffix}")
-
     with path.open("rb") as image_file:
         encoded = base64.b64encode(image_file.read()).decode()
 
     ext = path.suffix.lower().replace(".", "")
-    return OriginalImage(id=id, image=f"data:image/{ext};base64,{encoded}")
+    return OriginalImage(id=id, image=f"data:image/{ext};base64,{encoded}", tags=tags)
 
 
-def register_favorite_image(image_path: str) -> bool:
-    is_favorite = image.query_toggle_favorite(image_path)
+def register_favorite_image(image_id: int) -> bool:
+    is_favorite = image.query_toggle_favorite(image_id)
     return is_favorite
 
 
-def delete_image(image_path: str) -> bool:
-    deleted_image = image.delete_image_by_path(image_path)
+def delete_image(image_id: int) -> bool:
+    deleted_image = image.delete_image_by_path(image_id)
     for path in [
         Path(IMAGE_DIR, deleted_image.image_path),
         Path(IMAGE_DIR, deleted_image.thumbnail_path),

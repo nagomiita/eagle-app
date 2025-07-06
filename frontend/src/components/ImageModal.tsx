@@ -31,6 +31,13 @@ const ImageModal: React.FC = () => {
     dragY: 0,
     isDragging: false,
   });
+  const [showOptionPanel, setShowOptionPanel] = useState(false);
+
+  // オプション切り替え
+  const toggleOptionPanel = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setShowOptionPanel((prev) => !prev);
+  };
 
   // 画像クリック時にFABトグル
   const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
@@ -241,6 +248,48 @@ const ImageModal: React.FC = () => {
           上にスワイプで閉じる・左右で画像切替
         </div>
       )}
+      {/* オプション切り替えボタン（右上） */}
+      {showButton && (
+        <button
+          onClick={toggleOptionPanel}
+          className="absolute top-4 right-4 text-white bg-gray-800 bg-opacity-70 hover:bg-opacity-90 px-3 py-1 rounded z-50"
+        >
+          オプション
+        </button>
+      )}
+      {showOptionPanel && (
+        <div className="absolute right-0 top-0 bottom-0 w-72 bg-white dark:bg-gray-900 text-black dark:text-white shadow-lg overflow-y-auto z-40 p-4">
+          <h2 className="text-lg font-bold mb-2">オプション</h2>
+
+          {/* 類似画像のダミー例 */}
+          <div className="mb-4">
+            <h3 className="font-semibold mb-1">類似画像</h3>
+            <div className="grid grid-cols-3 gap-1">
+              {/* サムネイルを並べる（仮） */}
+              {images.slice(0, 6).map((img) => (
+                <img
+                  key={img.id}
+                  src={`http://192.168.11.11/api/static/${img.thumbnail}`}
+                  alt={`thumb-${img.id}`}
+                  className="w-full h-auto cursor-pointer"
+                  onClick={() => setSelectedImage(img)}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* タグ一覧（仮） */}
+          <div>
+            <h3 className="font-semibold mb-1">タグ</h3>
+            <ul className="text-sm list-disc list-inside">
+              {(selectedImage?.tags ?? []).map((tag, i) => (
+                <li key={i}>{tag}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
       {showButton && currentImage && (
         <>
           {/* ゴミ箱ボタン（左下） */}

@@ -53,7 +53,7 @@ async def fetch_filtered_thumnail_images(
     description="""
 指定された画像IDに対応するオリジナル画像をBase64形式で取得します。
 
-- `id`: オリジナル画像ファイルのファイル名（拡張子を含む）を指定します。
+- `id`: オリジナル画像ファイルのidを指定します。
 
 対応形式は `.png`, `.jpg`, `.jpeg`, `.webp` のみです。
 
@@ -63,7 +63,7 @@ async def fetch_filtered_thumnail_images(
 - 500: その他の内部エラー
 """,
 )
-async def fetch_original_image(id: str):
+async def fetch_original_image(id: int):
     try:
         original_image = image_service.fetch_original_image(id)
         return original_image
@@ -88,7 +88,7 @@ async def fetch_original_image(id: str):
 成功時はステータス200を返します。
 """,
 )
-async def register_favorite_image(image_id: str = Body(..., embed=True)):
+async def register_favorite_image(image_id: int = Body(..., embed=True)):
     try:
         is_favorite = image_service.register_favorite_image(image_id)
         return {"message": f"画像 {image_id} を{is_favorite}に登録しました"}
@@ -115,7 +115,7 @@ async def register_favorite_image(image_id: str = Body(..., embed=True)):
 - 500: その他の削除処理中のエラー
 """,
 )
-async def delete_image(image_id: str = Body(..., embed=True)):
+async def delete_image(image_id: int = Body(..., embed=True)):
     try:
         image_service.delete_image(image_id)
         return {"message": f"画像 {image_id} を削除しました"}

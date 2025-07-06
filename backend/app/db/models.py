@@ -9,6 +9,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    LargeBinary,
     String,
     Text,
     UniqueConstraint,
@@ -24,6 +25,7 @@ class ImageEntry(Base):
     image_path = Column(String, unique=True, nullable=False)
     thumbnail_path = Column(String, unique=True, nullable=False)
     tag_embedding = Column(Text)
+    tag_embedding_blob = Column(LargeBinary)
     created_at = Column(DateTime)  # ファイル作成日時
     registered_at = Column(DateTime, default=datetime.now)  # 登録日時
     is_favorite = Column(Boolean, default=False)
@@ -62,6 +64,7 @@ class Tag(Base):
         Integer, ForeignKey("categories.id", ondelete="SET NULL"), nullable=True
     )
     embedding = Column(Text)
+    embedding_blob = Column(LargeBinary)
     registered_at = Column(DateTime, default=datetime.now)
     is_sensitive = Column(Boolean, default=False)
     disable = Column(Boolean, default=False)

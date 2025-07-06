@@ -29,47 +29,51 @@ def query_filtered_image_entries(
             return query.all()
 
 
-def query_toggle_favorite(image_path: str) -> bool:
+def query_toggle_favorite(image_id: int) -> bool:
     """image_path に対応する画像の is_favorite をトグルし、更新後の値を返す"""
     with get_session() as session:
-        image = session.query(ImageEntry).filter_by(image_path=image_path).first()
+        entry = session.get(ImageEntry, image_id)
 
-        if image is None:
-            raise ValueError(f"画像が見つかりません: {image_path}")
+        if entry is None:
+            raise ValueError(f"画像が見つかりません: {image_id}")
 
-        image.is_favorite = not image.is_favorite
+        entry.is_favorite = not entry.is_favorite
         session.commit()
-        return image.is_favorite  # 更新後の状態を返す
+        return entry.is_favorite  # 更新後の状態を返す
 
 
-def delete_image_by_path(image_path: str) -> ImageEntry:
+def delete_image_by_path(image_id: int) -> ImageEntry:
     """image_path に対応する画像レコードを削除し、削除したレコードを返す"""
     with get_session() as session:
-        image = session.query(ImageEntry).filter_by(image_path=image_path).first()
+        entry = session.get(ImageEntry, image_id)
 
-        if image is None:
-            raise FileNotFoundError(f"画像が見つかりません: {image_path}")
+        if entry is None:
+            raise FileNotFoundError(f"画像が見つかりません: {image_id}")
 
         deleted_image = ImageEntry(
-            id=image.id,
-            image_path=image.image_path,
-            thumbnail_path=image.thumbnail_path,
-            tag_embedding=image.tag_embedding,
-            created_at=image.created_at,
-            registered_at=image.registered_at,
-            is_favorite=image.is_favorite,
-            is_sensitive=image.is_sensitive,
-            view_count=image.view_count,
+            id=entry.id,
+            image_path=entry.image_path,
+            thumbnail_path=entry.thumbnail_path,
+            tag_embedding=entry.tag_embedding,
+            created_at=entry.created_at,
+            registered_at=entry.registered_at,
+            is_favorite=entry.is_favorite,
+            is_sensitive=entry.is_sensitive,
+            view_count=entry.view_count,
         )
 
-        session.delete(image)
+        session.delete(entry)
         session.commit()
         return deleted_image
 
 
-def query_increment_view_count(image_path: str) -> None:
+@measure_time("query_image_path_by_id")
+def query_image_path_by_id(image_id: int) -> str | None:
     with get_session() as session:
-        entry = session.query(ImageEntry).filter_by(image_path=image_path).first()
-        if entry:
+        with measure_query_time(f"query_image_by_id_{image_id}"):
+            entry = session.get(ImageEntry, image_id)
+            if not entry:
+                return None
             entry.view_count += 1
             session.commit()
+            return entry.image_path

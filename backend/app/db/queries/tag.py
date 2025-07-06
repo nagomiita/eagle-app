@@ -1,6 +1,7 @@
 from app.db.models import (
     Category,
     Genre,
+    ImageTag,
     Tag,
     TagGenre,
     TagTranslation,
@@ -33,3 +34,31 @@ def query_all_translated_tags(language: str = "ja") -> list[tuple]:
                 .order_by(Tag.name)
                 .all()
             )
+
+
+@measure_time("query_translated_tag_names_by_image_id")
+def query_translated_tag_names_by_image_id(
+    image_id: int, language: str = "ja"
+) -> list[str]:
+    with get_session() as session:
+        with measure_query_time(f"query_translated_tag_names_by_image_id_{image_id}"):
+            results = (
+                session.query(
+                    Tag.name.label("default_name"),
+                    TagTranslation.translated_name.label("translated_name"),
+                )
+                .join(ImageTag, ImageTag.tag_id == Tag.id)
+                .filter(ImageTag.image_id == image_id)
+                .outerjoin(
+                    TagTranslation,
+                    (Tag.id == TagTranslation.tag_id)
+                    & (TagTranslation.language == language),
+                )
+                .order_by(Tag.name)
+                .all()
+            )
+
+            # 翻訳名があればそれを、なければ元の名前を使用
+            return [
+                translated if translated else default for default, translated in results
+            ]

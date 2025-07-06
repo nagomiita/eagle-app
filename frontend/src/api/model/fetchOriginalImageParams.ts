@@ -6,5 +6,5 @@
  */
 
 export type FetchOriginalImageParams = {
-id: string;
+id: number;
 };

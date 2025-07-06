@@ -6,5 +6,5 @@
  */
 
 export interface BodyDeleteImage {
-  image_id: string;
+  image_id: number;
 }

@@ -138,7 +138,7 @@ export function useFetchFilteredThumnailImages<TData = Awaited<ReturnType<typeof
 /**
  * 指定された画像IDに対応するオリジナル画像をBase64形式で取得します。
 
-- `id`: オリジナル画像ファイルのファイル名（拡張子を含む）を指定します。
+- `id`: オリジナル画像ファイルのidを指定します。
 
 対応形式は `.png`, `.jpg`, `.jpeg`, `.webp` のみです。
 

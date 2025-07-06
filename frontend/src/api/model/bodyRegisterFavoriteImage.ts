@@ -6,5 +6,5 @@
  */
 
 export interface BodyRegisterFavoriteImage {
-  image_id: string;
+  image_id: number;
 }
