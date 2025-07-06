@@ -33,7 +33,7 @@ const ImageGrid: React.FC = () => {
           />
           {image.is_favorite && (
             <div className="absolute bottom-1 right-1 bg-pink-500 p-1 rounded-full shadow">
-              <HeartIcon className="h-8 w-8 text-white" />
+              <HeartIcon className="h-4 w-4 text-white" />
             </div>
           )}
         </div>
