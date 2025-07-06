@@ -4,6 +4,7 @@ from pathlib import Path
 from app.config import IMAGE_DIR
 from app.db.queries import image, tag
 from app.schemas.image import OriginalImage, ThumbnailImage
+from app.schemas.tag import Tag
 from app.utils import embedding
 from send2trash import send2trash
 
@@ -69,7 +70,8 @@ def fetch_original_image(id: int) -> OriginalImage:
     image_path = image.query_image_path_by_id(id)
     if not image_path:
         raise FileNotFoundError(f"画像が見つかりません: {id}")
-    tags = tag.query_translated_tag_names_by_image_id(id)
+    raw_tags = tag.query_translated_tag_names_by_image_id(id)
+    tags = [Tag(tag_id=tag["tag_id"], tag_name=tag["translated"]) for tag in raw_tags]
     path = Path(IMAGE_DIR, image_path)
     if not path.exists():
         raise FileNotFoundError(f"画像が見つかりません: {path}")

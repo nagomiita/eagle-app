@@ -39,11 +39,12 @@ def query_all_translated_tags(language: str = "ja") -> list[tuple]:
 @measure_time("query_translated_tag_names_by_image_id")
 def query_translated_tag_names_by_image_id(
     image_id: int, language: str = "ja"
-) -> list[str]:
+) -> list[dict]:
     with get_session() as session:
         with measure_query_time(f"query_translated_tag_names_by_image_id_{image_id}"):
             results = (
                 session.query(
+                    Tag.id.label("tag_id"),
                     Tag.name.label("default_name"),
                     TagTranslation.translated_name.label("translated_name"),
                 )
@@ -58,7 +59,10 @@ def query_translated_tag_names_by_image_id(
                 .all()
             )
 
-            # 翻訳名があればそれを、なければ元の名前を使用
             return [
-                translated if translated else default for default, translated in results
+                {
+                    "tag_id": tag_id,
+                    "translated": translated_name if translated_name else default_name,
+                }
+                for tag_id, default_name, translated_name in results
             ]

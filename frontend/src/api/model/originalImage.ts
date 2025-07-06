@@ -5,9 +5,10 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { OriginalImageImage } from './originalImageImage';
+import type { Tag } from './tag';
 
 export interface OriginalImage {
   id: number;
   image?: OriginalImageImage;
-  tags: string[];
+  tags: Tag[];
 }

@@ -178,7 +178,7 @@
             "name": "top_k",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "default": 20, "title": "Top K" }
+            "schema": { "type": "integer", "default": 21, "title": "Top K" }
           }
         ],
         "responses": {
@@ -286,7 +286,7 @@
             "title": "Image"
           },
           "tags": {
-            "items": { "type": "string" },
+            "items": { "$ref": "#/components/schemas/Tag" },
             "type": "array",
             "title": "Tags"
           }

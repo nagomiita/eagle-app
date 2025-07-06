@@ -5,9 +5,7 @@ import {
   fetchOriginalImage,
   fetchSimilarImages,
 } from "../api/default/default";
-import { HeartIcon } from "@heroicons/react/24/solid";
 import { registerFavoriteImage } from "../api/default/default";
-import { TrashIcon } from "@heroicons/react/24/solid";
 import { ThumbnailImage } from "../api/model";
 import { SidebarUi } from "../components/ui/SidebarUi"; // Sidebarをインポート
 import ThumbnailGrid from "./ui/ThumbnailGrid";
@@ -33,6 +31,7 @@ const ImageModal: React.FC = () => {
     images,
     setImages,
     includeSensitive,
+    setSelectedTag,
   } = useAppContext();
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -47,12 +46,6 @@ const ImageModal: React.FC = () => {
   });
   const [showOptionPanel, setShowOptionPanel] = useState(false);
   const [similarImages, setSimilarImages] = useState<ThumbnailImage[]>([]);
-
-  // オプション切り替え
-  const toggleOptionPanel = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setShowOptionPanel((prev) => !prev);
-  };
 
   // サイドバーを閉じる
   const closeSidebar = () => {
@@ -364,12 +357,17 @@ const ImageModal: React.FC = () => {
           <div className="mb-6">
             <h3 className="font-semibold mb-2 text-gray-100">タグ</h3>
             <div className="flex flex-wrap gap-2 text-sm">
-              {(selectedImage?.tags ?? []).map((tag, i) => (
+              {(selectedImage?.tags ?? []).map((tag) => (
                 <span
-                  key={i}
-                  className="px-2 py-1 bg-gray-700 rounded text-gray-100 hover:bg-gray-600 transition-colors"
+                  key={tag.tag_id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedTag(String(tag.tag_id)); // ← ここでタグを選択状態にする
+                    closeModal(); // ← 任意（選択後にモーダル閉じる場合）
+                  }}
+                  className="px-2 py-1 bg-gray-700 rounded text-gray-100 hover:bg-gray-600 cursor-pointer transition-colors"
                 >
-                  {tag}
+                  {tag.tag_name}
                 </span>
               ))}
             </div>

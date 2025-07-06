@@ -1,3 +1,4 @@
+from app.schemas.tag import Tag
 from pydantic import BaseModel
 
 
@@ -10,4 +11,4 @@ class ThumbnailImage(BaseModel):
 class OriginalImage(BaseModel):
     id: int
     image: str | None = None
-    tags: list[str]
+    tags: list[Tag]
