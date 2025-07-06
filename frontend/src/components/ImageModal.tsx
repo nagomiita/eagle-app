@@ -10,6 +10,8 @@ import { registerFavoriteImage } from "../api/default/default";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { ThumbnailImage } from "../api/model";
 import { SidebarUi } from "../components/ui/SidebarUi"; // Sidebarをインポート
+import ThumbnailGrid from "./ui/ThumbnailGrid";
+import ActionButton from "./ui/ActionButton";
 
 const SWIPE_CLOSE_THRESHOLD = 100; // 上スワイプで閉じる距離
 const SWIPE_IMAGE_THRESHOLD = 80; // 左右スワイプで画像切り替え距離
@@ -316,45 +318,30 @@ const ImageModal: React.FC = () => {
 
         {/* オプション切り替えボタン（右上） */}
         {showButton && (
-          <button
-            onClick={toggleOptionPanel}
-            className="absolute top-4 right-4 text-white bg-gray-800 bg-opacity-70 hover:bg-opacity-90 px-3 py-1 rounded z-50"
-          >
-            オプション
-          </button>
+          <ActionButton
+            type="options"
+            position="top-right"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowOptionPanel((prev) => !prev);
+            }}
+          />
         )}
 
         {showButton && currentImage && (
           <>
-            {/* ゴミ箱ボタン（左下） */}
-            <button
-              onClick={handleDeleteImage}
-              className={`
-                absolute bottom-6 left-6 rounded-full p-3 shadow-lg z-50 transition-colors
-                bg-red-600 hover:bg-red-700
-              `}
-            >
-              <TrashIcon className="h-6 w-6 text-white" />
-            </button>
-
-            {/* お気に入りボタン（右下） */}
-            <button
+            <ActionButton
+              type="favorite"
+              position="bottom-right"
+              isActive={currentImage.is_favorite}
               onClick={handleToggleFavorite}
-              className={`
-                absolute bottom-6 right-6 rounded-full p-3 shadow-lg z-50 transition-colors
-                ${
-                  currentImage.is_favorite
-                    ? "bg-pink-500 hover:bg-pink-600"
-                    : "bg-gray-500 hover:bg-gray-600"
-                }
-              `}
-            >
-              <HeartIcon
-                className={`h-6 w-6 transition-colors ${
-                  currentImage.is_favorite ? "text-white" : "text-gray-200"
-                }`}
-              />
-            </button>
+            />
+
+            <ActionButton
+              type="delete"
+              position="bottom-left"
+              onClick={handleDeleteImage}
+            />
           </>
         )}
       </div>
@@ -367,27 +354,11 @@ const ImageModal: React.FC = () => {
           onClose={closeSidebar}
         >
           {/* 類似画像 */}
-          <div className="mb-6">
-            <h3 className="font-semibold mb-2 text-gray-100">類似画像</h3>
-            <div className="grid grid-cols-3 gap-1">
-              {similarImages.map((img) => (
-                <div
-                  key={img.id}
-                  className="relative w-full pt-[100%] bg-gray-700 overflow-hidden rounded cursor-pointer hover:opacity-80 transition-opacity"
-                  onClick={() => handleThumbnailClick(img.id)}
-                >
-                  <img
-                    src={`http://192.168.11.11/api/static/${img.thumbnail}`}
-                    alt={`thumb-${img.id}`}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-            {similarImages.length === 0 && (
-              <p className="text-gray-400 text-sm">類似画像がありません</p>
-            )}
-          </div>
+          <ThumbnailGrid
+            images={similarImages}
+            columnCount={3}
+            onClick={handleThumbnailClick}
+          />
 
           {/* タグ一覧 */}
           <div className="mb-6">
