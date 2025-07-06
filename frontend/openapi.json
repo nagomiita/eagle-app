@@ -225,10 +225,11 @@
           "thumbnail": {
             "anyOf": [{ "type": "string" }, { "type": "null" }],
             "title": "Thumbnail"
-          }
+          },
+          "is_favorite": { "type": "boolean", "title": "Is Favorite" }
         },
         "type": "object",
-        "required": ["id"],
+        "required": ["id", "is_favorite"],
         "title": "ThumbnailImage"
       },
       "ValidationError": {

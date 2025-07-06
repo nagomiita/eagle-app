@@ -12,6 +12,7 @@ export * from './fetchTranslatedTagsParams';
 export * from './hTTPValidationError';
 export * from './originalImage';
 export * from './originalImageImage';
+export * from './registerFavoriteImageParams';
 export * from './tag';
 export * from './tagCategory';
 export * from './tagGenre';

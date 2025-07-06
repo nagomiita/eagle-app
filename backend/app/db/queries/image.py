@@ -27,3 +27,16 @@ def query_filtered_image_entries(
                 query = query.filter(ImageEntry.id.in_(subquery))
         with measure_query_time("execute_filtered_query"):
             return query.all()
+
+
+def query_toggle_favorite(image_path: str) -> bool:
+    """image_path に対応する画像の is_favorite をトグルし、更新後の値を返す"""
+    with get_session() as session:
+        image = session.query(ImageEntry).filter_by(image_path=image_path).first()
+
+        if image is None:
+            raise ValueError(f"画像が見つかりません: {image_path}")
+
+        image.is_favorite = not image.is_favorite
+        session.commit()
+        return image.is_favorite  # 更新後の状態を返す

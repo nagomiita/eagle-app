@@ -1,29 +1,5 @@
 import { ThumbnailImage, OriginalImage, Tag } from "../api/model";
 
-export interface ImageData {
-  id: string;
-  thumbnail: string | null;
-}
-
-export interface OriginalImageData {
-  id: string;
-  image: string | null;
-  error?: string;
-}
-
-export interface TagsData {
-  historyTags: string[];
-  starredTags: string[];
-}
-
-export interface FolderInfo {
-  id: string;
-  name: string;
-  children: FolderInfo[];
-  parent: string | null;
-  folder_image: [string, string];
-}
-
 export interface AppContextType {
   // From useThumbnailImages
   images: ThumbnailImage[];

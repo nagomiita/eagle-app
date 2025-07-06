@@ -90,8 +90,8 @@ async def fetch_original_image(id: str):
 )
 async def register_favorite_image(image_id: str = Body(..., embed=True)):
     try:
-        # image_service.register_favorite_image(image_id) などの処理を将来的に実装
-        return {"message": f"画像 {image_id} をお気に入りに登録しました"}
+        is_favorite = image_service.register_favorite_image(image_id)
+        return {"message": f"画像 {image_id} を{is_favorite}に登録しました"}
     except Exception as e:
         logger.error(f"お気に入り登録中にエラー: {e}")
         raise HTTPException(

@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAppContext } from "../contexts/AppContext";
 import { fetchOriginalImage } from "../api/default/default";
 import { HeartIcon } from "@heroicons/react/24/solid";
+import { registerFavoriteImage } from "../api/default/default";
 
 const SWIPE_CLOSE_THRESHOLD = 100; // 上スワイプで閉じる距離
 const SWIPE_IMAGE_THRESHOLD = 80; // 左右スワイプで画像切り替え距離
@@ -16,12 +17,11 @@ interface TouchState {
 }
 
 const ImageModal: React.FC = () => {
-  const { selectedImage, setSelectedImage, closeModal, images } =
+  const { selectedImage, setSelectedImage, closeModal, images, setImages } =
     useAppContext();
 
   const modalRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [isFavorited, setIsFavorited] = useState(false);
   const [showFab, setShowFab] = useState(false);
   const [touchState, setTouchState] = useState<TouchState>({
     startX: null,
@@ -156,6 +156,27 @@ const ImageModal: React.FC = () => {
     }
   };
 
+  const currentImage = useMemo(() => {
+    return images.find((img) => img.id === selectedImage?.id);
+  }, [images, selectedImage]);
+
+  const handleToggleFavorite = async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.stopPropagation();
+
+    if (!selectedImage) return;
+    await registerFavoriteImage({ image_id: selectedImage.id });
+
+    setImages((prev) =>
+      prev.map((img) =>
+        img.id === selectedImage.id
+          ? { ...img, is_favorite: !img.is_favorite }
+          : img
+      )
+    );
+  };
+
   // ESCキーで閉じる
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -206,16 +227,13 @@ const ImageModal: React.FC = () => {
           上にスワイプで閉じる・左右で画像切替
         </div>
       )}
-      {showFab && (
+      {showFab && currentImage && (
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsFavorited((prev) => !prev);
-          }}
+          onClick={handleToggleFavorite}
           className={`
         absolute bottom-6 right-6 rounded-full p-3 shadow-lg z-50 transition-colors
         ${
-          isFavorited
+          currentImage.is_favorite
             ? "bg-pink-500 hover:bg-pink-600"
             : "bg-gray-500 hover:bg-gray-600"
         }
@@ -223,7 +241,7 @@ const ImageModal: React.FC = () => {
         >
           <HeartIcon
             className={`h-6 w-6 transition-colors ${
-              isFavorited ? "text-white" : "text-gray-200"
+              currentImage.is_favorite ? "text-white" : "text-gray-200"
             }`}
           />
         </button>

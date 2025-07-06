@@ -40,7 +40,11 @@ def fetch_filtered_thumnail_images(
         if not entry.image_path or not entry.thumbnail_path:
             continue
         thumbnails.append(
-            ThumbnailImage(id=entry.image_path, thumbnail=entry.thumbnail_path)
+            ThumbnailImage(
+                id=entry.image_path,
+                thumbnail=entry.thumbnail_path,
+                is_favorite=entry.is_favorite,
+            )
         )
 
     return thumbnails
@@ -73,3 +77,8 @@ def fetch_original_image(id: str) -> OriginalImage:
 
     ext = path.suffix.lower().replace(".", "")
     return OriginalImage(id=id, image=f"data:image/{ext};base64,{encoded}")
+
+
+def register_favorite_image(image_path: str) -> bool:
+    is_favorite = image.query_toggle_favorite(image_path)
+    return is_favorite

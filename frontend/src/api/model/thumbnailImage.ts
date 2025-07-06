@@ -9,4 +9,5 @@ import type { ThumbnailImageThumbnail } from './thumbnailImageThumbnail';
 export interface ThumbnailImage {
   id: string;
   thumbnail?: ThumbnailImageThumbnail;
+  is_favorite: boolean;
 }
