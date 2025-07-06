@@ -10,6 +10,7 @@ import { ThumbnailImage } from "../api/model";
 import { SidebarUi } from "../components/ui/SidebarUi"; // Sidebarをインポート
 import ThumbnailGrid from "./ui/ThumbnailGrid";
 import ActionButton from "./ui/ActionButton";
+import TagList from "./ui/TagList";
 
 const SWIPE_CLOSE_THRESHOLD = 100; // 上スワイプで閉じる距離
 const SWIPE_IMAGE_THRESHOLD = 80; // 左右スワイプで画像切り替え距離
@@ -90,6 +91,12 @@ const ImageModal: React.FC = () => {
     e.stopPropagation();
     setShowOptionPanel(false);
     setShowButton((prev) => !prev);
+  };
+
+  const handleTagClick = (tagId: string) => () => {
+    setSelectedTag(tagId);
+    setShowOptionPanel(false);
+    closeModal();
   };
 
   // モバイル判定
@@ -355,27 +362,10 @@ const ImageModal: React.FC = () => {
           />
 
           {/* タグ一覧 */}
-          <div className="mb-6">
-            <h3 className="font-semibold mb-2 text-gray-100">タグ</h3>
-            <div className="flex flex-wrap gap-2 text-sm">
-              {(selectedImage?.tags ?? []).map((tag) => (
-                <span
-                  key={tag.tag_id}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedTag(String(tag.tag_id)); // ← ここでタグを選択状態にする
-                    closeModal(); // ← 任意（選択後にモーダル閉じる場合）
-                  }}
-                  className="px-2 py-1 bg-gray-700 rounded text-gray-100 hover:bg-gray-600 cursor-pointer transition-colors"
-                >
-                  {tag.tag_name}
-                </span>
-              ))}
-            </div>
-            {(!selectedImage?.tags || selectedImage.tags.length === 0) && (
-              <p className="text-gray-400 text-sm">タグがありません</p>
-            )}
-          </div>
+          <TagList
+            tags={selectedImage?.tags ?? []}
+            onTagClick={handleTagClick}
+          />
         </SidebarUi>
       )}
     </>
