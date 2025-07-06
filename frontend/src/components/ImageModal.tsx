@@ -333,6 +333,7 @@ const ImageModal: React.FC = () => {
             <ActionButton
               type="delete"
               position="bottom-left"
+              isActive={currentImage.is_favorite} //お気に入りは削除不可
               onClick={handleDeleteImage}
             />
           </>

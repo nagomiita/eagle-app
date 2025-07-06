@@ -21,7 +21,6 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   position = "bottom-right",
   onClick,
 }) => {
-  // 位置クラスの割り当て
   const positionClassMap: Record<PositionType, string> = {
     "bottom-right": "bottom-6 right-6",
     "bottom-left": "bottom-6 left-6",
@@ -33,7 +32,6 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   const baseClass =
     "absolute rounded-full p-3 shadow-lg z-50 transition-colors";
 
-  // ボタンの色分岐
   const bgClass =
     type === "favorite"
       ? isActive
@@ -43,7 +41,6 @@ const ActionButton: React.FC<ActionButtonProps> = ({
       ? "bg-red-600 hover:bg-red-700"
       : "bg-gray-800 hover:bg-gray-700";
 
-  // アイコン分岐
   const icon =
     type === "favorite" ? (
       <HeartIcon
@@ -57,10 +54,16 @@ const ActionButton: React.FC<ActionButtonProps> = ({
       <AdjustmentsHorizontalIcon className="h-6 w-6 text-white" />
     );
 
+  // 削除ボタンを非アクティブにするかどうか
+  const isDisabled = type === "delete" && isActive;
+
   return (
     <button
       onClick={onClick}
-      className={`${baseClass} ${positionClass} ${bgClass}`}
+      className={`${baseClass} ${positionClass} ${bgClass} ${
+        isDisabled ? "opacity-50 cursor-not-allowed" : ""
+      }`}
+      disabled={isDisabled}
     >
       {icon}
     </button>
