@@ -97,3 +97,31 @@ async def register_favorite_image(image_id: str = Body(..., embed=True)):
         raise HTTPException(
             status_code=500, detail="お気に入り登録中にエラーが発生しました"
         )
+
+
+@router.delete(
+    "/image",
+    operation_id="delete_image",
+    description="""
+指定された画像IDに対応する画像を削除します。
+
+- `image_id`: 削除対象の画像IDを指定します。
+
+### 成功時
+- ステータス200（削除成功）
+
+### 失敗時
+- 404: 対象画像が存在しない
+- 500: その他の削除処理中のエラー
+""",
+)
+async def delete_image(image_id: str = Body(..., embed=True)):
+    try:
+        image_service.delete_image(image_id)
+        return {"message": f"画像 {image_id} を削除しました"}
+    except FileNotFoundError as e:
+        logger.warning(f"画像が見つかりません: {e}")
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.error(f"画像削除中にエラー: {e}")
+        raise HTTPException(status_code=500, detail="画像削除中にエラーが発生しました")

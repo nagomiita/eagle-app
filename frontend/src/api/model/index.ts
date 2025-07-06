@@ -5,6 +5,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './bodyDeleteImage';
 export * from './bodyRegisterFavoriteImage';
 export * from './fetchFilteredThumnailImagesParams';
 export * from './fetchOriginalImageParams';

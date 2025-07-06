@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAppContext } from "../contexts/AppContext";
-import { fetchOriginalImage } from "../api/default/default";
+import { deleteImage, fetchOriginalImage } from "../api/default/default";
 import { HeartIcon } from "@heroicons/react/24/solid";
 import { registerFavoriteImage } from "../api/default/default";
+import { TrashIcon } from "@heroicons/react/24/solid";
 
 const SWIPE_CLOSE_THRESHOLD = 100; // 上スワイプで閉じる距離
 const SWIPE_IMAGE_THRESHOLD = 80; // 左右スワイプで画像切り替え距離
@@ -177,6 +178,19 @@ const ImageModal: React.FC = () => {
     );
   };
 
+  const handleDeleteImage = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+
+    if (!selectedImage) return;
+    try {
+      await deleteImage({ image_id: selectedImage.id });
+      setImages((prev) => prev.filter((img) => img.id !== selectedImage.id));
+      closeModal();
+    } catch (err) {
+      console.error("画像削除中にエラーが発生しました:", err);
+    }
+  };
+
   // ESCキーで閉じる
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -228,9 +242,22 @@ const ImageModal: React.FC = () => {
         </div>
       )}
       {showFab && currentImage && (
-        <button
-          onClick={handleToggleFavorite}
-          className={`
+        <>
+          {/* ゴミ箱ボタン（左下） */}
+          <button
+            onClick={handleDeleteImage}
+            className={`
+        absolute bottom-6 left-6 rounded-full p-3 shadow-lg z-50 transition-colors
+        bg-red-600 hover:bg-red-700
+      `}
+          >
+            <TrashIcon className="h-6 w-6 text-white" />
+          </button>
+
+          {/* お気に入りボタン（右下） */}
+          <button
+            onClick={handleToggleFavorite}
+            className={`
         absolute bottom-6 right-6 rounded-full p-3 shadow-lg z-50 transition-colors
         ${
           currentImage.is_favorite
@@ -238,13 +265,14 @@ const ImageModal: React.FC = () => {
             : "bg-gray-500 hover:bg-gray-600"
         }
       `}
-        >
-          <HeartIcon
-            className={`h-6 w-6 transition-colors ${
-              currentImage.is_favorite ? "text-white" : "text-gray-200"
-            }`}
-          />
-        </button>
+          >
+            <HeartIcon
+              className={`h-6 w-6 transition-colors ${
+                currentImage.is_favorite ? "text-white" : "text-gray-200"
+              }`}
+            />
+          </button>
+        </>
       )}
     </div>
   );

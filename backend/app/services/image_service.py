@@ -4,6 +4,7 @@ from pathlib import Path
 from app.config import IMAGE_DIR
 from app.db.queries import image
 from app.schemas.image import OriginalImage, ThumbnailImage
+from send2trash import send2trash
 
 
 def fetch_filtered_thumnail_images(
@@ -82,3 +83,16 @@ def fetch_original_image(id: str) -> OriginalImage:
 def register_favorite_image(image_path: str) -> bool:
     is_favorite = image.query_toggle_favorite(image_path)
     return is_favorite
+
+
+def delete_image(image_path: str) -> bool:
+    deleted_image = image.delete_image_by_path(image_path)
+    for path in [
+        Path(IMAGE_DIR, deleted_image.image_path),
+        Path(IMAGE_DIR, deleted_image.thumbnail_path),
+    ]:
+        try:
+            if path.exists():
+                send2trash(str(path))
+        except Exception as e:
+            raise (f"[Error] ファイル削除失敗: {path} -> {e}")

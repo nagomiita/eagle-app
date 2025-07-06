@@ -24,6 +24,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  BodyDeleteImage,
   BodyRegisterFavoriteImage,
   FetchFilteredThumnailImagesParams,
   FetchOriginalImageParams,
@@ -298,6 +299,79 @@ export const useRegisterFavoriteImage = <TError = HTTPValidationError,
       > => {
 
       const mutationOptions = getRegisterFavoriteImageMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * 指定された画像IDに対応する画像を削除します。
+
+- `image_id`: 削除対象の画像IDを指定します。
+
+### 成功時
+- ステータス200（削除成功）
+
+### 失敗時
+- 404: 対象画像が存在しない
+- 500: その他の削除処理中のエラー
+ * @summary Delete Image
+ */
+export const deleteImage = (
+    bodyDeleteImage: BodyDeleteImage,
+ ) => {
+      
+      
+      return customAxios<unknown>(
+      {url: `/image`, method: 'DELETE',
+      headers: {'Content-Type': 'application/json', },
+      data: bodyDeleteImage
+    },
+      );
+    }
+  
+
+
+export const getDeleteImageMutationOptions = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteImage>>, TError,{data: BodyDeleteImage}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteImage>>, TError,{data: BodyDeleteImage}, TContext> => {
+
+const mutationKey = ['deleteImage'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteImage>>, {data: BodyDeleteImage}> = (props) => {
+          const {data} = props ?? {};
+
+          return  deleteImage(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteImageMutationResult = NonNullable<Awaited<ReturnType<typeof deleteImage>>>
+    export type DeleteImageMutationBody = BodyDeleteImage
+    export type DeleteImageMutationError = HTTPValidationError
+
+    /**
+ * @summary Delete Image
+ */
+export const useDeleteImage = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteImage>>, TError,{data: BodyDeleteImage}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteImage>>,
+        TError,
+        {data: BodyDeleteImage},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteImageMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

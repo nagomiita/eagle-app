@@ -40,3 +40,28 @@ def query_toggle_favorite(image_path: str) -> bool:
         image.is_favorite = not image.is_favorite
         session.commit()
         return image.is_favorite  # 更新後の状態を返す
+
+
+def delete_image_by_path(image_path: str) -> ImageEntry:
+    """image_path に対応する画像レコードを削除し、削除したレコードを返す"""
+    with get_session() as session:
+        image = session.query(ImageEntry).filter_by(image_path=image_path).first()
+
+        if image is None:
+            raise FileNotFoundError(f"画像が見つかりません: {image_path}")
+
+        deleted_image = ImageEntry(
+            id=image.id,
+            image_path=image.image_path,
+            thumbnail_path=image.thumbnail_path,
+            tag_embedding=image.tag_embedding,
+            created_at=image.created_at,
+            registered_at=image.registered_at,
+            is_favorite=image.is_favorite,
+            is_sensitive=image.is_sensitive,
+            view_count=image.view_count,
+        )
+
+        session.delete(image)
+        session.commit()
+        return deleted_image

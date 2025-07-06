@@ -127,6 +127,35 @@
         }
       }
     },
+    "/image": {
+      "delete": {
+        "summary": "Delete Image",
+        "description": "指定された画像IDに対応する画像を削除します。\n\n- `image_id`: 削除対象の画像IDを指定します。\n\n### 成功時\n- ステータス200（削除成功）\n\n### 失敗時\n- 404: 対象画像が存在しない\n- 500: その他の削除処理中のエラー",
+        "operationId": "delete_image",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Body_delete_image" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tags/list": {
       "get": {
         "summary": "Fetch Translated Tags",
@@ -173,6 +202,12 @@
   },
   "components": {
     "schemas": {
+      "Body_delete_image": {
+        "properties": { "image_id": { "type": "string", "title": "Image Id" } },
+        "type": "object",
+        "required": ["image_id"],
+        "title": "Body_delete_image"
+      },
       "Body_register_favorite_image": {
         "properties": { "image_id": { "type": "string", "title": "Image Id" } },
         "type": "object",
