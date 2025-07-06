@@ -1,7 +1,7 @@
 from app.core.logger import setup_logging
 from app.schemas.image import OriginalImage, ThumbnailImage
 from app.services import image_service
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Body, HTTPException
 
 router = APIRouter()
 
@@ -74,4 +74,26 @@ async def fetch_original_image(id: str):
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"内部エラーが発生しました: {str(e)}"
+        )
+
+
+@router.post(
+    "/image/favorite",
+    operation_id="register_favorite_image",
+    description="""
+指定された画像IDをお気に入りとして登録します。
+
+- `image_id`: お気に入り登録対象の画像IDを指定します。
+
+成功時はステータス200を返します。
+""",
+)
+async def register_favorite_image(image_id: str = Body(..., embed=True)):
+    try:
+        # image_service.register_favorite_image(image_id) などの処理を将来的に実装
+        return {"message": f"画像 {image_id} をお気に入りに登録しました"}
+    except Exception as e:
+        logger.error(f"お気に入り登録中にエラー: {e}")
+        raise HTTPException(
+            status_code=500, detail="お気に入り登録中にエラーが発生しました"
         )

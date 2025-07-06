@@ -5,23 +5,29 @@
  * OpenAPI spec version: 0.1.0
  */
 import {
+  useMutation,
   useQuery
 } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
+  BodyRegisterFavoriteImage,
   FetchFilteredThumnailImagesParams,
   FetchOriginalImageParams,
+  FetchTranslatedTagsParams,
   HTTPValidationError,
   OriginalImage,
   Tag,
@@ -34,6 +40,13 @@ import { customAxios } from '.././custom-axios';
 
 
 /**
+ * 指定された条件に基づいて、画像のサムネイル一覧を取得します。
+
+- `include_sensitive`: センシティブな画像（NSFWなど）も含めるかどうかを指定します（デフォルト: False）。
+- `favorites_only`: お気に入りに登録された画像のみを対象とするかを指定します（デフォルト: False）。
+- `selected_tag`: 特定のタグに紐づいた画像のみを対象とする場合に指定します。
+
+取得に失敗した場合は、適切なエラーメッセージとステータスコードを返します。
  * @summary Fetch Filtered Thumnail Images
  */
 export const fetchFilteredThumnailImages = (
@@ -122,6 +135,16 @@ export function useFetchFilteredThumnailImages<TData = Awaited<ReturnType<typeof
 
 
 /**
+ * 指定された画像IDに対応するオリジナル画像をBase64形式で取得します。
+
+- `id`: オリジナル画像ファイルのファイル名（拡張子を含む）を指定します。
+
+対応形式は `.png`, `.jpg`, `.jpeg`, `.webp` のみです。
+
+### エラー
+- 404: 指定された画像ファイルが存在しない場合
+- 400: 対応していない画像形式の場合
+- 500: その他の内部エラー
  * @summary Fetch Original Image
  */
 export const fetchOriginalImage = (
@@ -210,36 +233,118 @@ export function useFetchOriginalImage<TData = Awaited<ReturnType<typeof fetchOri
 
 
 /**
- * @summary Fetch Translated Tags
+ * 指定された画像IDをお気に入りとして登録します。
+
+- `image_id`: お気に入り登録対象の画像IDを指定します。
+
+成功時はステータス200を返します。
+ * @summary Register Favorite Image
  */
-export const fetchTranslatedTags = (
-    
+export const registerFavoriteImage = (
+    bodyRegisterFavoriteImage: BodyRegisterFavoriteImage,
  signal?: AbortSignal
 ) => {
       
       
-      return customAxios<Tag[]>(
-      {url: `/tags/list`, method: 'GET', signal
+      return customAxios<unknown>(
+      {url: `/image/favorite`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: bodyRegisterFavoriteImage, signal
     },
       );
     }
   
 
-export const getFetchTranslatedTagsQueryKey = () => {
-    return [`/tags/list`] as const;
+
+export const getRegisterFavoriteImageMutationOptions = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerFavoriteImage>>, TError,{data: BodyRegisterFavoriteImage}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof registerFavoriteImage>>, TError,{data: BodyRegisterFavoriteImage}, TContext> => {
+
+const mutationKey = ['registerFavoriteImage'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof registerFavoriteImage>>, {data: BodyRegisterFavoriteImage}> = (props) => {
+          const {data} = props ?? {};
+
+          return  registerFavoriteImage(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RegisterFavoriteImageMutationResult = NonNullable<Awaited<ReturnType<typeof registerFavoriteImage>>>
+    export type RegisterFavoriteImageMutationBody = BodyRegisterFavoriteImage
+    export type RegisterFavoriteImageMutationError = HTTPValidationError
+
+    /**
+ * @summary Register Favorite Image
+ */
+export const useRegisterFavoriteImage = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerFavoriteImage>>, TError,{data: BodyRegisterFavoriteImage}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof registerFavoriteImage>>,
+        TError,
+        {data: BodyRegisterFavoriteImage},
+        TContext
+      > => {
+
+      const mutationOptions = getRegisterFavoriteImageMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * 翻訳済みのタグ一覧を取得するエンドポイント。
+
+- 指定した言語（例: `"ja"` や `"en"`）に対応したタグを返します。
+- 使用用途：多言語対応のフロントエンド表示など。
+
+### クエリパラメータ:
+- `language` (str): 翻訳対象の言語コード（デフォルト: `"ja"`）
+
+### レスポンス:
+- `200 OK`: 成功時に翻訳済みタグの配列を返します
+- `404 Not Found`: タグが存在しない場合
+- `500 Internal Server Error`: サーバ内部でエラーが発生した場合
+ * @summary Fetch Translated Tags
+ */
+export const fetchTranslatedTags = (
+    params?: FetchTranslatedTagsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customAxios<Tag[]>(
+      {url: `/tags/list`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getFetchTranslatedTagsQueryKey = (params?: FetchTranslatedTagsParams,) => {
+    return [`/tags/list`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getFetchTranslatedTagsQueryOptions = <TData = Awaited<ReturnType<typeof fetchTranslatedTags>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchTranslatedTags>>, TError, TData>>, }
+export const getFetchTranslatedTagsQueryOptions = <TData = Awaited<ReturnType<typeof fetchTranslatedTags>>, TError = HTTPValidationError>(params?: FetchTranslatedTagsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchTranslatedTags>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getFetchTranslatedTagsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getFetchTranslatedTagsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof fetchTranslatedTags>>> = ({ signal }) => fetchTranslatedTags(signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof fetchTranslatedTags>>> = ({ signal }) => fetchTranslatedTags(params, signal);
 
       
 
@@ -249,11 +354,11 @@ const {query: queryOptions} = options ?? {};
 }
 
 export type FetchTranslatedTagsQueryResult = NonNullable<Awaited<ReturnType<typeof fetchTranslatedTags>>>
-export type FetchTranslatedTagsQueryError = unknown
+export type FetchTranslatedTagsQueryError = HTTPValidationError
 
 
-export function useFetchTranslatedTags<TData = Awaited<ReturnType<typeof fetchTranslatedTags>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchTranslatedTags>>, TError, TData>> & Pick<
+export function useFetchTranslatedTags<TData = Awaited<ReturnType<typeof fetchTranslatedTags>>, TError = HTTPValidationError>(
+ params: undefined |  FetchTranslatedTagsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchTranslatedTags>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof fetchTranslatedTags>>,
           TError,
@@ -262,8 +367,8 @@ export function useFetchTranslatedTags<TData = Awaited<ReturnType<typeof fetchTr
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFetchTranslatedTags<TData = Awaited<ReturnType<typeof fetchTranslatedTags>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchTranslatedTags>>, TError, TData>> & Pick<
+export function useFetchTranslatedTags<TData = Awaited<ReturnType<typeof fetchTranslatedTags>>, TError = HTTPValidationError>(
+ params?: FetchTranslatedTagsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchTranslatedTags>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof fetchTranslatedTags>>,
           TError,
@@ -272,20 +377,20 @@ export function useFetchTranslatedTags<TData = Awaited<ReturnType<typeof fetchTr
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFetchTranslatedTags<TData = Awaited<ReturnType<typeof fetchTranslatedTags>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchTranslatedTags>>, TError, TData>>, }
+export function useFetchTranslatedTags<TData = Awaited<ReturnType<typeof fetchTranslatedTags>>, TError = HTTPValidationError>(
+ params?: FetchTranslatedTagsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchTranslatedTags>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Fetch Translated Tags
  */
 
-export function useFetchTranslatedTags<TData = Awaited<ReturnType<typeof fetchTranslatedTags>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchTranslatedTags>>, TError, TData>>, }
+export function useFetchTranslatedTags<TData = Awaited<ReturnType<typeof fetchTranslatedTags>>, TError = HTTPValidationError>(
+ params?: FetchTranslatedTagsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchTranslatedTags>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getFetchTranslatedTagsQueryOptions(options)
+  const queryOptions = getFetchTranslatedTagsQueryOptions(params,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

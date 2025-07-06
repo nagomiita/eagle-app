@@ -5,8 +5,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './bodyRegisterFavoriteImage';
 export * from './fetchFilteredThumnailImagesParams';
 export * from './fetchOriginalImageParams';
+export * from './fetchTranslatedTagsParams';
 export * from './hTTPValidationError';
 export * from './originalImage';
 export * from './originalImageImage';

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAppContext } from "../contexts/AppContext";
 import { fetchOriginalImage } from "../api/default/default";
+import { HeartIcon } from "@heroicons/react/24/solid";
 
 const SWIPE_CLOSE_THRESHOLD = 100; // 上スワイプで閉じる距離
 const SWIPE_IMAGE_THRESHOLD = 80; // 左右スワイプで画像切り替え距離
@@ -20,6 +21,8 @@ const ImageModal: React.FC = () => {
 
   const modalRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [showFab, setShowFab] = useState(false);
   const [touchState, setTouchState] = useState<TouchState>({
     startX: null,
     startY: null,
@@ -27,6 +30,12 @@ const ImageModal: React.FC = () => {
     dragY: 0,
     isDragging: false,
   });
+
+  // 画像クリック時にFABトグル
+  const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
+    e.stopPropagation();
+    setShowFab((prev) => !prev);
+  };
 
   // モバイル判定
   useEffect(() => {
@@ -183,10 +192,10 @@ const ImageModal: React.FC = () => {
         src={selectedImage.image || undefined}
         alt="Selected image"
         className={`
-          max-w-full max-h-full object-contain transition-transform duration-300
-          ${touchState.isDragging ? "" : "ease-out"}
-        `}
-        onClick={(e) => e.stopPropagation()}
+    max-w-full max-h-full object-contain transition-transform duration-300
+    ${touchState.isDragging ? "" : "ease-out"}
+  `}
+        onClick={handleImageClick}
         style={{
           transform: `translate(${touchState.dragX}px, ${touchState.dragY}px)`,
         }}
@@ -196,6 +205,28 @@ const ImageModal: React.FC = () => {
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm opacity-70">
           上にスワイプで閉じる・左右で画像切替
         </div>
+      )}
+      {showFab && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsFavorited((prev) => !prev);
+          }}
+          className={`
+        absolute bottom-6 right-6 rounded-full p-3 shadow-lg z-50 transition-colors
+        ${
+          isFavorited
+            ? "bg-pink-500 hover:bg-pink-600"
+            : "bg-gray-500 hover:bg-gray-600"
+        }
+      `}
+        >
+          <HeartIcon
+            className={`h-6 w-6 transition-colors ${
+              isFavorited ? "text-white" : "text-gray-200"
+            }`}
+          />
+        </button>
       )}
     </div>
   );
