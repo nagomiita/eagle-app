@@ -9,6 +9,7 @@ export * from './bodyDeleteImage';
 export * from './bodyRegisterFavoriteImage';
 export * from './fetchFilteredThumnailImagesParams';
 export * from './fetchOriginalImageParams';
+export * from './fetchSimilarImagesParams';
 export * from './fetchTranslatedTagsParams';
 export * from './hTTPValidationError';
 export * from './originalImage';

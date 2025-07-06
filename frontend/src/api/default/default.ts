@@ -28,6 +28,7 @@ import type {
   BodyRegisterFavoriteImage,
   FetchFilteredThumnailImagesParams,
   FetchOriginalImageParams,
+  FetchSimilarImagesParams,
   FetchTranslatedTagsParams,
   HTTPValidationError,
   OriginalImage,
@@ -376,6 +377,109 @@ export const useDeleteImage = <TError = HTTPValidationError,
       return useMutation(mutationOptions , queryClient);
     }
     /**
+ * 指定された画像IDに基づいて、類似画像のサムネイル一覧を取得します。
+
+- `image_id`: 類似画像検索の基準となる画像のIDを指定します。
+- `show_sensitive`: センシティブな画像（NSFWなど）を含めるかどうかを指定します（True で含める）。
+- `top_k`: 類似度が高い上位K件の画像を取得します（デフォルト: 20）。
+
+類似度の計算には、事前に保存された埋め込みベクトルを使用し、コサイン類似度に基づいて類似画像を検索します。
+センシティブ画像の除外も埋め込み検索対象からフィルタリングされます。
+
+### レスポンス
+- `200 OK`: 類似画像のサムネイル情報のリスト（`ThumbnailImage`）を返します。
+
+### エラー
+- `404 Not Found`: 指定された画像に埋め込みベクトルが存在しないか、該当する画像が見つからない場合。
+- `500 Internal Server Error`: 類似画像の検索処理中にエラーが発生した場合。
+ * @summary Fetch Similar Images
+ */
+export const fetchSimilarImages = (
+    params: FetchSimilarImagesParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customAxios<ThumbnailImage[]>(
+      {url: `/image/similar`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getFetchSimilarImagesQueryKey = (params: FetchSimilarImagesParams,) => {
+    return [`/image/similar`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getFetchSimilarImagesQueryOptions = <TData = Awaited<ReturnType<typeof fetchSimilarImages>>, TError = HTTPValidationError>(params: FetchSimilarImagesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchSimilarImages>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getFetchSimilarImagesQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof fetchSimilarImages>>> = ({ signal }) => fetchSimilarImages(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof fetchSimilarImages>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FetchSimilarImagesQueryResult = NonNullable<Awaited<ReturnType<typeof fetchSimilarImages>>>
+export type FetchSimilarImagesQueryError = HTTPValidationError
+
+
+export function useFetchSimilarImages<TData = Awaited<ReturnType<typeof fetchSimilarImages>>, TError = HTTPValidationError>(
+ params: FetchSimilarImagesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchSimilarImages>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof fetchSimilarImages>>,
+          TError,
+          Awaited<ReturnType<typeof fetchSimilarImages>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFetchSimilarImages<TData = Awaited<ReturnType<typeof fetchSimilarImages>>, TError = HTTPValidationError>(
+ params: FetchSimilarImagesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchSimilarImages>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof fetchSimilarImages>>,
+          TError,
+          Awaited<ReturnType<typeof fetchSimilarImages>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFetchSimilarImages<TData = Awaited<ReturnType<typeof fetchSimilarImages>>, TError = HTTPValidationError>(
+ params: FetchSimilarImagesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchSimilarImages>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Fetch Similar Images
+ */
+
+export function useFetchSimilarImages<TData = Awaited<ReturnType<typeof fetchSimilarImages>>, TError = HTTPValidationError>(
+ params: FetchSimilarImagesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchSimilarImages>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getFetchSimilarImagesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
  * 翻訳済みのタグ一覧を取得するエンドポイント。
 
 - 指定した言語（例: `"ja"` や `"en"`）に対応したタグを返します。

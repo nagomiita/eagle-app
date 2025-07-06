@@ -1,9 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAppContext } from "../contexts/AppContext";
-import { deleteImage, fetchOriginalImage } from "../api/default/default";
+import {
+  deleteImage,
+  fetchOriginalImage,
+  fetchSimilarImages,
+} from "../api/default/default";
 import { HeartIcon } from "@heroicons/react/24/solid";
 import { registerFavoriteImage } from "../api/default/default";
 import { TrashIcon } from "@heroicons/react/24/solid";
+import { ThumbnailImage } from "../api/model";
 
 const SWIPE_CLOSE_THRESHOLD = 100; // 上スワイプで閉じる距離
 const SWIPE_IMAGE_THRESHOLD = 80; // 左右スワイプで画像切り替え距離
@@ -18,8 +23,14 @@ interface TouchState {
 }
 
 const ImageModal: React.FC = () => {
-  const { selectedImage, setSelectedImage, closeModal, images, setImages } =
-    useAppContext();
+  const {
+    selectedImage,
+    setSelectedImage,
+    closeModal,
+    images,
+    setImages,
+    includeSensitive,
+  } = useAppContext();
 
   const modalRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -32,12 +43,46 @@ const ImageModal: React.FC = () => {
     isDragging: false,
   });
   const [showOptionPanel, setShowOptionPanel] = useState(false);
+  const [similarImages, setSimilarImages] = useState<ThumbnailImage[]>([]);
 
   // オプション切り替え
   const toggleOptionPanel = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     setShowOptionPanel((prev) => !prev);
   };
+
+  const handleThumbnailClick = async (imageId: number) => {
+    try {
+      const originalImage = await fetchOriginalImage({ id: imageId });
+
+      if (!originalImage) {
+        console.warn(`📛 画像が見つかりません: ID = ${imageId}`);
+        return;
+      }
+
+      setSelectedImage(originalImage);
+      setShowOptionPanel(false);
+    } catch (error) {
+      console.error("❌ オリジナル画像の取得中にエラーが発生:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchSimilar = async () => {
+      if (!selectedImage) return;
+      try {
+        const SimilarImages = await fetchSimilarImages({
+          image_id: selectedImage.id,
+          show_sensitive: includeSensitive,
+        });
+        setSimilarImages(SimilarImages);
+      } catch (error) {
+        console.error("❌ 類似画像の取得に失敗しました:", error);
+      }
+    };
+
+    fetchSimilar();
+  }, [selectedImage]);
 
   // 画像クリック時にFABトグル
   const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
@@ -261,19 +306,22 @@ const ImageModal: React.FC = () => {
         <div className="absolute right-0 top-0 bottom-0 w-72 bg-white dark:bg-gray-900 text-black dark:text-white shadow-lg overflow-y-auto z-40 p-4">
           <h2 className="text-lg font-bold mb-2">オプション</h2>
 
-          {/* 類似画像のダミー例 */}
+          {/* 類似画像 */}
           <div className="mb-4">
             <h3 className="font-semibold mb-1">類似画像</h3>
             <div className="grid grid-cols-3 gap-1">
-              {/* サムネイルを並べる（仮） */}
-              {images.slice(0, 6).map((img) => (
-                <img
+              {similarImages.map((img) => (
+                <div
                   key={img.id}
-                  src={`http://192.168.11.11/api/static/${img.thumbnail}`}
-                  alt={`thumb-${img.id}`}
-                  className="w-full h-auto cursor-pointer"
-                  onClick={() => setSelectedImage(img)}
-                />
+                  className="relative w-full pt-[100%] bg-gray-100 overflow-hidden rounded cursor-pointer"
+                  onClick={() => handleThumbnailClick(img.id)}
+                >
+                  <img
+                    src={`http://192.168.11.11/api/static/${img.thumbnail}`}
+                    alt={`thumb-${img.id}`}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                </div>
               ))}
             </div>
           </div>
@@ -281,11 +329,16 @@ const ImageModal: React.FC = () => {
           {/* タグ一覧（仮） */}
           <div>
             <h3 className="font-semibold mb-1">タグ</h3>
-            <ul className="text-sm list-disc list-inside">
+            <div className="flex flex-wrap gap-2 text-sm">
               {(selectedImage?.tags ?? []).map((tag, i) => (
-                <li key={i}>{tag}</li>
+                <span
+                  key={i}
+                  className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-gray-800 dark:text-gray-100"
+                >
+                  {tag}
+                </span>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
       )}

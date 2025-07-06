@@ -4,6 +4,7 @@ from app.db.models import (
 )
 from app.db.query_performance import measure_query_time, measure_time
 from app.db.session import get_session
+from app.schemas.image import ThumbnailImage
 
 
 @measure_time("get_filtered_image_entries")
@@ -77,3 +78,60 @@ def query_image_path_by_id(image_id: int) -> str | None:
             entry.view_count += 1
             session.commit()
             return entry.image_path
+
+
+@measure_time("query_image_tag_embedding")
+def query_image_tag_embedding(image_id: int) -> bytes | None:
+    with get_session() as session:
+        with measure_query_time(f"query_image_embedding_{image_id}"):
+            entry = session.get(ImageEntry, image_id)
+            if entry and entry.tag_embedding_blob:
+                return entry.tag_embedding_blob
+        return None
+
+
+@measure_time("query_all_image_tag_embedding")
+def query_all_image_tag_embedding(
+    exclude_id: int | None = None, show_sensitive: bool = True
+) -> list[tuple[int, bytes]]:
+    with get_session() as session:
+        with measure_query_time("build_embedding_query"):
+            query = session.query(ImageEntry.id, ImageEntry.tag_embedding_blob).filter(
+                ImageEntry.tag_embedding_blob.isnot(None)
+            )
+
+            if exclude_id is not None:
+                query = query.filter(ImageEntry.id != exclude_id)
+
+            if not show_sensitive:
+                query = query.filter(ImageEntry.is_sensitive.is_(False))
+
+        with measure_query_time("execute_embedding_query"):
+            return query.all()
+
+
+@measure_time("query_thumbnails_by_ids")
+def query_thumbnails_by_ids(image_ids: list[int]) -> list[ThumbnailImage]:
+    if not image_ids:
+        return []
+
+    with get_session() as session:
+        with measure_query_time("fetch_thumbnails_by_ids"):
+            # SQLAlchemy の in_ でIDリストを指定して一括取得
+            entries = (
+                session.query(ImageEntry).filter(ImageEntry.id.in_(image_ids)).all()
+            )
+
+    # ID順の整列（入力順を保ちたい場合）
+    entry_map = {entry.id: entry for entry in entries}
+    sorted_entries = [entry_map[i] for i in image_ids if i in entry_map]
+
+    # ThumbnailImage に変換
+    return [
+        ThumbnailImage(
+            id=entry.id,
+            thumbnail=entry.thumbnail_path,
+            is_favorite=entry.is_favorite,
+        )
+        for entry in sorted_entries
+    ]

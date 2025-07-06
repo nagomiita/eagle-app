@@ -156,6 +156,55 @@
         }
       }
     },
+    "/image/similar": {
+      "get": {
+        "summary": "Fetch Similar Images",
+        "description": "指定された画像IDに基づいて、類似画像のサムネイル一覧を取得します。\n\n- `image_id`: 類似画像検索の基準となる画像のIDを指定します。\n- `show_sensitive`: センシティブな画像（NSFWなど）を含めるかどうかを指定します（True で含める）。\n- `top_k`: 類似度が高い上位K件の画像を取得します（デフォルト: 20）。\n\n類似度の計算には、事前に保存された埋め込みベクトルを使用し、コサイン類似度に基づいて類似画像を検索します。\nセンシティブ画像の除外も埋め込み検索対象からフィルタリングされます。\n\n### レスポンス\n- `200 OK`: 類似画像のサムネイル情報のリスト（`ThumbnailImage`）を返します。\n\n### エラー\n- `404 Not Found`: 指定された画像に埋め込みベクトルが存在しないか、該当する画像が見つからない場合。\n- `500 Internal Server Error`: 類似画像の検索処理中にエラーが発生した場合。",
+        "operationId": "fetch_similar_images",
+        "parameters": [
+          {
+            "name": "image_id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "title": "Image Id" }
+          },
+          {
+            "name": "show_sensitive",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "boolean", "title": "Show Sensitive" }
+          },
+          {
+            "name": "top_k",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 20, "title": "Top K" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ThumbnailImage" },
+                  "title": "Response Fetch Similar Images"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tags/list": {
       "get": {
         "summary": "Fetch Translated Tags",

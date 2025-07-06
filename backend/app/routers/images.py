@@ -125,3 +125,40 @@ async def delete_image(image_id: int = Body(..., embed=True)):
     except Exception as e:
         logger.error(f"画像削除中にエラー: {e}")
         raise HTTPException(status_code=500, detail="画像削除中にエラーが発生しました")
+
+
+@router.get(
+    "/image/similar",
+    response_model=list[ThumbnailImage],
+    operation_id="fetch_similar_images",
+    description="""
+指定された画像IDに基づいて、類似画像のサムネイル一覧を取得します。
+
+- `image_id`: 類似画像検索の基準となる画像のIDを指定します。
+- `show_sensitive`: センシティブな画像（NSFWなど）を含めるかどうかを指定します（True で含める）。
+- `top_k`: 類似度が高い上位K件の画像を取得します（デフォルト: 20）。
+
+類似度の計算には、事前に保存された埋め込みベクトルを使用し、コサイン類似度に基づいて類似画像を検索します。
+センシティブ画像の除外も埋め込み検索対象からフィルタリングされます。
+
+### レスポンス
+- `200 OK`: 類似画像のサムネイル情報のリスト（`ThumbnailImage`）を返します。
+
+### エラー
+- `404 Not Found`: 指定された画像に埋め込みベクトルが存在しないか、該当する画像が見つからない場合。
+- `500 Internal Server Error`: 類似画像の検索処理中にエラーが発生した場合。
+""",
+)
+async def fetch_similar_images(image_id: int, show_sensitive: bool, top_k: int = 20):
+    try:
+        similar_images = image_service.fetch_similar_images(
+            image_id, show_sensitive, top_k
+        )
+        return similar_images
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=f"画像が見つかりません: {e}")
+    except Exception as e:
+        logger.exception(f"類似画像の取得中にエラーが発生しました: {e}")
+        raise HTTPException(
+            status_code=500, detail="類似画像の取得中にエラーが発生しました"
+        )
