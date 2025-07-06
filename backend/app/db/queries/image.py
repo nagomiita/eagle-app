@@ -65,3 +65,11 @@ def delete_image_by_path(image_path: str) -> ImageEntry:
         session.delete(image)
         session.commit()
         return deleted_image
+
+
+def query_increment_view_count(image_path: str) -> None:
+    with get_session() as session:
+        entry = session.query(ImageEntry).filter_by(image_path=image_path).first()
+        if entry:
+            entry.view_count += 1
+            session.commit()

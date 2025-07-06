@@ -23,7 +23,7 @@ const ImageModal: React.FC = () => {
 
   const modalRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [showFab, setShowFab] = useState(false);
+  const [showButton, setShowButton] = useState(false);
   const [touchState, setTouchState] = useState<TouchState>({
     startX: null,
     startY: null,
@@ -35,7 +35,7 @@ const ImageModal: React.FC = () => {
   // 画像クリック時にFABトグル
   const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
     e.stopPropagation();
-    setShowFab((prev) => !prev);
+    setShowButton((prev) => !prev);
   };
 
   // モバイル判定
@@ -241,7 +241,7 @@ const ImageModal: React.FC = () => {
           上にスワイプで閉じる・左右で画像切替
         </div>
       )}
-      {showFab && currentImage && (
+      {showButton && currentImage && (
         <>
           {/* ゴミ箱ボタン（左下） */}
           <button

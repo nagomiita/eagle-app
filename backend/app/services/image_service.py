@@ -66,6 +66,7 @@ def fetch_original_image(id: str) -> OriginalImage:
         OriginalImage: Base64エンコードされた画像を含むデータオブジェクト。
     """
     path = Path(IMAGE_DIR, id)
+    image.query_increment_view_count(id)
 
     if not path.exists():
         raise FileNotFoundError(f"画像が見つかりません: {id}")
