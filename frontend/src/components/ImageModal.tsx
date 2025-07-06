@@ -7,10 +7,10 @@ import {
 } from "../api/default/default";
 import { registerFavoriteImage } from "../api/default/default";
 import { ThumbnailImage } from "../api/model";
-import { SidebarUi } from "../components/ui/SidebarUi"; // Sidebarをインポート
-import ThumbnailGrid from "./ui/ThumbnailGrid";
-import ActionButton from "./ui/ActionButton";
-import TagList from "./ui/TagList";
+import { SidebarUi } from "./parts/SidebarUi"; // Sidebarをインポート
+import ThumbnailGrid from "./parts/ThumbnailGrid";
+import ActionButton from "./parts/ActionButton";
+import TagList from "./parts/TagList";
 
 const SWIPE_CLOSE_THRESHOLD = 100; // 上スワイプで閉じる距離
 const SWIPE_IMAGE_THRESHOLD = 80; // 左右スワイプで画像切り替え距離

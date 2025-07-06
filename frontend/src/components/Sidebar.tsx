@@ -1,6 +1,6 @@
 import React from "react";
 import Controls from "./Controls";
-import { SidebarUi } from "./ui/SidebarUi";
+import { SidebarUi } from "./parts/SidebarUi";
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;

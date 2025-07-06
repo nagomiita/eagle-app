@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppContext } from "../contexts/AppContext";
-import ThumbnailGrid from "./ui/ThumbnailGrid";
+import ThumbnailGrid from "./parts/ThumbnailGrid";
 import ImageModal from "./ImageModal";
 
 const ImageGrid: React.FC = () => {

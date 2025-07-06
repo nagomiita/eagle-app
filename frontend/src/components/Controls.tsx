@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useAppContext } from "../contexts/AppContext";
-import { LabeledSelectBox } from "./ui/ControlsUi";
-import { TagSelector } from "./ui/ControlsUi";
-import { ToggleSwitch } from "./ui/ControlsUi";
-import { ColumnSlider } from "./ui/ControlsUi";
+import { LabeledSelectBox } from "./parts/ControlsUi";
+import { TagSelector } from "./parts/ControlsUi";
+import { ToggleSwitch } from "./parts/ControlsUi";
+import { ColumnSlider } from "./parts/ControlsUi";
 
 const Controls: React.FC = () => {
   const {
