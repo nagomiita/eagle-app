@@ -349,11 +349,7 @@ const ImageModal: React.FC = () => {
 
       {/* 右側からのサイドバー */}
       {showOptionPanel && (
-        <SidebarUi
-          position="right"
-          title="画像オプション"
-          onClose={closeSidebar}
-        >
+        <SidebarUi position="right" onClose={closeSidebar}>
           {/* 類似画像 */}
           <ThumbnailGrid
             images={similarImages}

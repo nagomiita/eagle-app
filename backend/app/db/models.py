@@ -54,6 +54,42 @@ class ImageEntry(Base):
     )
 
 
+class ImageFolderAssociation(Base):
+    __tablename__ = "image_folder_associations"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    folder_id = Column(
+        Integer, ForeignKey("image_folders.id", ondelete="CASCADE"), nullable=False
+    )
+    image_id = Column(
+        Integer, ForeignKey("images.id", ondelete="CASCADE"), nullable=False
+    )
+    position = Column(Integer, nullable=False, default=0)  # 順番用のカラム
+
+    folder = relationship("ImageFolder", back_populates="images")
+    image = relationship("ImageEntry", backref="folder_associations")
+
+    __table_args__ = (
+        UniqueConstraint("folder_id", "image_id", name="uix_folder_image"),
+        Index("idx_folder_image_order", "folder_id", "position"),
+    )
+
+
+class ImageFolder(Base):
+    __tablename__ = "image_folders"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False, unique=True)
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.now)
+
+    images = relationship(
+        "ImageFolderAssociation", back_populates="folder", cascade="all, delete-orphan"
+    )
+
+    __table_args__ = (Index("idx_image_folders_name", "name"),)
+
+
 class Tag(Base):
     __tablename__ = "tags"
 

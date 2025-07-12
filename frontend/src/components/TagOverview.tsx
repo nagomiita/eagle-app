@@ -99,7 +99,7 @@ const TagOverview: React.FC = () => {
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl shadow-2xl text-white max-h-[85vh] flex flex-col">
       {/* ヘッダー */}
       <div className="p-2 border-b border-gray-700/50">
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-1">
           <div className="p-2 bg-blue-500/20 rounded-lg">
             <TagIcon className="w-6 h-6 text-blue-400" />
           </div>
@@ -109,7 +109,7 @@ const TagOverview: React.FC = () => {
         </div>
 
         {/* 統計カード */}
-        <div className="grid grid-cols-2 gap-2 mb-4">
+        <div className="grid grid-cols-2 gap-2 mb-2">
           <div className="bg-gray-800/50 rounded-lg p-2 backdrop-blur-sm">
             <div className="text-lg font-bold text-blue-400">{stats.total}</div>
             <div className="text-xs text-gray-400">総タグ数</div>
@@ -135,7 +135,7 @@ const TagOverview: React.FC = () => {
         </div>
 
         {/* 検索とフィルター */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <div className="relative">
             <input
               type="text"
