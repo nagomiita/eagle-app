@@ -5,7 +5,9 @@ function AppView() {
   return (
     <div className={"min-h-screendark bg-gray-900 text-white"}>
       <div className="max-w-8xl mx-auto p-1">
-        <Header />
+        <div className="sticky top-0 z-50 bg-gray-900">
+          <Header />
+        </div>
         <ImageGallery />
       </div>
     </div>
