@@ -13,7 +13,7 @@ import {
 import { useTagToggle } from "../hooks/useTags";
 
 const TagOverview: React.FC = () => {
-  const { tags, setSelectedTag } = useAppContext();
+  const { selectedTag, tags, setSelectedTag } = useAppContext();
   const { tagSettings, setTagSettings, toggleTagSetting } = useTagToggle();
   const [searchQuery, setSearchQuery] = useState("");
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>(
@@ -237,10 +237,18 @@ const TagOverview: React.FC = () => {
                             return (
                               <div
                                 key={tag.tag_id}
-                                onClick={() =>
-                                  setSelectedTag(String(tag.tag_id))
-                                }
-                                className="group bg-gray-700/50 hover:bg-gray-700/80 rounded-lg p-3 transition-all duration-200 border border-gray-600/30 hover:border-gray-500/50"
+                                onClick={() => {
+                                  if (selectedTag === String(tag.tag_id)) {
+                                    setSelectedTag(""); // または null
+                                  } else {
+                                    setSelectedTag(String(tag.tag_id));
+                                  }
+                                }}
+                                className={`group rounded-lg p-3 transition-all duration-200 border ${
+                                  selectedTag === String(tag.tag_id)
+                                    ? "bg-blue-700 border-blue-500"
+                                    : "bg-gray-700/50 hover:bg-gray-700/80 border-gray-600/30 hover:border-gray-500/50"
+                                }`}
                               >
                                 <div className="flex items-start justify-between gap-2 mb-2">
                                   <span className="font-medium text-gray-200 group-hover:text-white transition-colors text-sm leading-tight break-words flex-1 min-w-0">

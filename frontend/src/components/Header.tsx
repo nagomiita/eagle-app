@@ -12,6 +12,8 @@ const Header: React.FC = () => {
     setOnlyFavorite,
     columnCount,
     setColumnCount,
+    selectedTag,
+    setSelectedTag,
   } = useAppContext();
 
   const handleSidebarToggle = () => {
@@ -48,6 +50,8 @@ const Header: React.FC = () => {
           setShowFavoriteOnly={setOnlyFavorite}
           showSensitive={includeSensitive}
           setShowSensitive={setIncludeSensitive}
+          selectedTag={selectedTag}
+          setSelectedTag={setSelectedTag}
         />
       </div>
 
