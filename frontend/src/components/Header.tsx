@@ -37,7 +37,7 @@ const Header: React.FC = () => {
           >
             &#9776;
           </button>
-          <h1 className="text-2xl font-bold">Tag Palette</h1>
+          <h1 className="text-xl font-bold">Tag Palette</h1>
         </div>
 
         {/* 右：フィルターボタン */}

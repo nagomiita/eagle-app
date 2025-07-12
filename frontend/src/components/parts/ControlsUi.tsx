@@ -87,7 +87,7 @@ export const ColumnSlider = ({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => (
   <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-    <div className="flex-1 max-w-xs">
+    <div className="flex-1 max-w-[100px]">
       <input
         id="column-slider"
         type="range"
