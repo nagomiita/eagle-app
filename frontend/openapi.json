@@ -206,6 +206,24 @@
       }
     },
     "/folder": {
+      "get": {
+        "summary": "全フォルダ情報を取得",
+        "operationId": "fetch_all_folders",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/FolderInfo" },
+                  "type": "array",
+                  "title": "Response Fetch All Folders"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "summary": "画像フォルダの作成とサムネイル取得",
         "operationId": "register_image_folder",
@@ -358,6 +376,21 @@
         "type": "object",
         "required": ["folder_name", "image_ids"],
         "title": "FolderCreateRequest"
+      },
+      "FolderInfo": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "name": { "type": "string", "title": "Name" },
+          "description": { "type": "string", "title": "Description" },
+          "thumbnail_images": {
+            "items": { "$ref": "#/components/schemas/ThumbnailImage" },
+            "type": "array",
+            "title": "Thumbnail Images"
+          }
+        },
+        "type": "object",
+        "required": ["id", "name", "description", "thumbnail_images"],
+        "title": "FolderInfo"
       },
       "HTTPValidationError": {
         "properties": {

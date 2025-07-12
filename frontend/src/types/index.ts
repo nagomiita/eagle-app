@@ -1,4 +1,4 @@
-import { ThumbnailImage, OriginalImage, Tag } from "../api/model";
+import { ThumbnailImage, OriginalImage, Tag, FolderInfo } from "../api/model";
 
 export interface AppContextType {
   // From useThumbnailImages
@@ -12,8 +12,6 @@ export interface AppContextType {
   setIncludeSensitive: React.Dispatch<React.SetStateAction<boolean>>;
   onlyFavorite: boolean;
   setOnlyFavorite: React.Dispatch<React.SetStateAction<boolean>>;
-  showFolders: boolean;
-  setShowFolders: React.Dispatch<React.SetStateAction<boolean>>;
   // From useOriginalImage
   selectedImage: OriginalImage | null;
   setSelectedImage: React.Dispatch<React.SetStateAction<OriginalImage | null>>;
@@ -24,4 +22,11 @@ export interface AppContextType {
   tags: Tag[] | null;
   selectedTag: string;
   setSelectedTag: (tag: string) => void;
+
+  // From useFolder
+  showFolders: boolean;
+  setShowFolders: React.Dispatch<React.SetStateAction<boolean>>;
+  folders: FolderInfo[];
+  setFolders: React.Dispatch<React.SetStateAction<FolderInfo[]>>;
+  fetchFolders: () => Promise<void>;
 }

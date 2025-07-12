@@ -34,12 +34,12 @@ const Header: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={handleSidebarToggle}
-            className="text-2xl font-bold focus:outline-none text-gray-300"
+            className="text-xl font-bold focus:outline-none text-gray-300"
             aria-label="サイドバーを開く"
           >
             &#9776;
           </button>
-          <h1 className="text-xl font-bold">Tag Palette</h1>
+          <h1 className="font-bold">Tag Palette</h1>
         </div>
 
         {/* 右：フィルターボタン */}

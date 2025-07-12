@@ -12,6 +12,8 @@ export * from './fetchOriginalImageParams';
 export * from './fetchSimilarImagesParams';
 export * from './fetchTranslatedTagsParams';
 export * from './folderCreateRequest';
+export * from './folderInfo';
+export * from './folderInfoResponse';
 export * from './hTTPValidationError';
 export * from './originalImage';
 export * from './originalImageImage';

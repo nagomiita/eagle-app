@@ -1,8 +1,8 @@
 import { createContext, ReactNode, useContext, useEffect } from "react";
 
-import { useOriginalImage } from "../hooks/useOriginalImage";
+import { useOriginalImage, useThumbnailImages } from "../hooks/useImage";
 import { useTags } from "../hooks/useTags";
-import { useThumbnailImages } from "../hooks/useThumbnailImages";
+import { useFolder } from "../hooks/useFolder";
 import { AppContextType } from "../types";
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -15,8 +15,11 @@ export function AppProvider({ children }: AppProviderProps) {
   const thumbnailImagesState = useThumbnailImages();
   const OriginalImageState = useOriginalImage();
   const tagState = useTags();
+  const folderState = useFolder();
+
   useEffect(() => {
     thumbnailImagesState.fetchImages(tagState.selectedTag);
+    folderState.fetchFolders();
   }, [
     tagState.selectedTag,
     thumbnailImagesState.includeSensitive,
@@ -27,6 +30,7 @@ export function AppProvider({ children }: AppProviderProps) {
     ...thumbnailImagesState,
     ...OriginalImageState,
     ...tagState,
+    ...folderState,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

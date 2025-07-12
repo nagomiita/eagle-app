@@ -1,4 +1,4 @@
-from app.db.models import ImageFolder, ImageFolderAssociation
+from app.db.models import ImageEntry, ImageFolder, ImageFolderAssociation
 from app.db.session import get_session
 
 
@@ -23,3 +23,43 @@ def create_image_folder(
             session.add(association)
 
         session.commit()
+
+
+def query_all_folders() -> list[dict]:
+    with get_session() as session:
+        # フォルダ情報 + 紐づく画像IDを一括で取得
+        results = (
+            session.query(
+                ImageFolder.id,
+                ImageFolder.name,
+                ImageFolder.description,
+                ImageFolderAssociation.image_id,
+            )
+            .join(
+                ImageFolderAssociation,
+                ImageFolder.id == ImageFolderAssociation.folder_id,
+            )
+            .order_by(ImageFolder.id, ImageFolderAssociation.position)
+            .all()
+        )
+
+        # dict にまとめる
+        folder_map: dict[int, dict] = {}
+
+        for folder_id, name, desc, image_id in results:
+            image_entry = session.query(ImageEntry).filter_by(id=image_id).first()
+            image_ids: dict = {
+                "id": image_entry.id,
+                "thumbnail": image_entry.thumbnail_path,
+                "is_favorite": image_entry.is_favorite,
+            }
+            if folder_id not in folder_map:
+                folder_map[folder_id] = {
+                    "id": folder_id,
+                    "name": name,
+                    "description": desc or "",
+                    "thumbnail_images": [],
+                }
+            folder_map[folder_id]["thumbnail_images"].append(image_ids)
+
+        return list(folder_map.values())

@@ -1,5 +1,5 @@
 from app.core.logger import setup_logging
-from app.schemas.folder import FolderCreateRequest
+from app.schemas.folder import FolderCreateRequest, FolderInfo
 from app.services import folder_service
 from fastapi import APIRouter, HTTPException
 
@@ -28,3 +28,17 @@ async def register_folder(request: FolderCreateRequest):
     except Exception as e:
         logger.exception(f"❌ 未処理の例外: {e}")
         raise HTTPException(status_code=500, detail="予期しないエラーが発生しました")
+
+
+@router.get(
+    "/folder",
+    response_model=list[FolderInfo],
+    operation_id="fetch_all_folders",
+    summary="全フォルダ情報を取得",
+)
+async def fetch_all_folders():
+    try:
+        return folder_service.fetch_all_folders()
+    except Exception:
+        logger.exception("❌ フォルダ情報取得中にエラーが発生しました")
+        raise HTTPException(status_code=500, detail="フォルダ取得に失敗しました")
