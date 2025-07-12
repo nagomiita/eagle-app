@@ -8,7 +8,7 @@ logger = setup_logging()
 
 
 @router.get(
-    "/tags",
+    "/tag/list",
     response_model=list[Tag],
     operation_id="fetch_translated_tags",
     description="""
@@ -41,7 +41,7 @@ async def fetch_translated_tags(
 
 
 @router.patch(
-    "/tags/{tag_id}/toggle_flag",
+    "/tag/{tag_id}/toggle_flag",
     response_model=Tag,
     operation_id="toggle_tag_flag",
     description="""

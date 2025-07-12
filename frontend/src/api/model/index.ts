@@ -11,6 +11,7 @@ export * from './fetchFilteredThumnailImagesParams';
 export * from './fetchOriginalImageParams';
 export * from './fetchSimilarImagesParams';
 export * from './fetchTranslatedTagsParams';
+export * from './folderCreateRequest';
 export * from './hTTPValidationError';
 export * from './originalImage';
 export * from './originalImageImage';

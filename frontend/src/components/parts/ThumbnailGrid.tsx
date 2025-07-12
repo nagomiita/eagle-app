@@ -11,7 +11,7 @@ interface ThumbnailGridProps {
 
 const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
   images,
-  columnCount = 3,
+  columnCount = 4,
   onClick,
 }) => {
   return (

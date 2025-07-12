@@ -1,11 +1,14 @@
 import React from "react";
-import { HeartIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import {
+  HeartIcon,
   HeartIcon as HeartSolidIcon,
+  EyeSlashIcon,
   EyeSlashIcon as EyeSlashSolidIcon,
+  FolderIcon,
+  FolderOpenIcon,
+  TagIcon,
+  TagIcon as TagSolidIcon,
 } from "@heroicons/react/24/solid";
-import { TagIcon } from "@heroicons/react/24/outline";
-import { TagIcon as TagSolidIcon } from "@heroicons/react/24/solid";
 
 export const ImageFilterButtons = ({
   showFavoriteOnly,
@@ -14,6 +17,8 @@ export const ImageFilterButtons = ({
   setShowSensitive,
   selectedTag,
   setSelectedTag,
+  showFolders,
+  setShowFolders,
 }: {
   showFavoriteOnly: boolean;
   setShowFavoriteOnly: (val: boolean) => void;
@@ -21,13 +26,13 @@ export const ImageFilterButtons = ({
   setShowSensitive: (val: boolean) => void;
   selectedTag: string;
   setSelectedTag: (tagId: string) => void;
+  showFolders: boolean;
+  setShowFolders: (val: boolean) => void;
 }) => (
   <div className="flex gap-2 items-center">
-    {/* タグ選択フィルター解除ボタン */}
+    {/* タグ選択フィルター解除 */}
     <button
-      onClick={
-        () => setSelectedTag(selectedTag ? "" : selectedTag) // クリックで解除
-      }
+      onClick={() => setSelectedTag(selectedTag ? "" : selectedTag)}
       className={`rounded-full transition-all ${
         selectedTag
           ? "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
@@ -39,6 +44,23 @@ export const ImageFilterButtons = ({
         <TagSolidIcon className="w-5 h-5" />
       ) : (
         <TagIcon className="w-5 h-5" />
+      )}
+    </button>
+
+    {/* フォルダ表示切り替えボタン */}
+    <button
+      onClick={() => setShowFolders(!showFolders)}
+      className={`rounded-full transition-all ${
+        showFolders
+          ? "bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30"
+          : "text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10"
+      }`}
+      title="フォルダ表示の切り替え"
+    >
+      {showFolders ? (
+        <FolderOpenIcon className="w-5 h-5" />
+      ) : (
+        <FolderIcon className="w-5 h-5" />
       )}
     </button>
 
@@ -59,7 +81,7 @@ export const ImageFilterButtons = ({
       )}
     </button>
 
-    {/* センシティブフィルター */}
+    {/* センシティブ表示切り替え */}
     <button
       onClick={() => setShowSensitive(!showSensitive)}
       className={`rounded-full transition-all ${

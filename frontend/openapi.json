@@ -205,7 +205,35 @@
         }
       }
     },
-    "/tags": {
+    "/folder": {
+      "post": {
+        "summary": "画像フォルダの作成とサムネイル取得",
+        "operationId": "register_image_folder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FolderCreateRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tag/list": {
       "get": {
         "summary": "Fetch Translated Tags",
         "description": "翻訳済みのタグ一覧を取得するエンドポイント。\n\n- 指定した言語（例: `\"ja\"` や `\"en\"`）に対応したタグを返します。\n- 使用用途：多言語対応のフロントエンド表示など。\n\n### クエリパラメータ:\n- `language` (str): 翻訳対象の言語コード（デフォルト: `\"ja\"`）\n\n### レスポンス:\n- `200 OK`: 成功時に翻訳済みタグの配列を返します\n- `404 Not Found`: タグが存在しない場合\n- `500 Internal Server Error`: サーバ内部でエラーが発生した場合",
@@ -248,7 +276,7 @@
         }
       }
     },
-    "/tags/{tag_id}/toggle_flag": {
+    "/tag/{tag_id}/toggle_flag": {
       "patch": {
         "summary": "Toggle Tag Flag",
         "description": "タグのお気に入りまたはセンシティブフラグをオン/オフします。\n\n### パスパラメータ:\n- `tag_id` (int): フラグを変更する対象のタグID\n\n### リクエストボディ:\n- `flag` (str): `\"favorite\"` もしくは `\"sensitive\"`\n- `value` (bool): `true` でオン、`false` でオフ\n\n### レスポンス:\n- `200 OK`: 更新されたタグ情報\n- `400 Bad Request`: 不正なフラグ指定\n- `404 Not Found`: 指定IDのタグが存在しない",
@@ -312,6 +340,24 @@
         "type": "object",
         "required": ["image_id"],
         "title": "Body_register_favorite_image"
+      },
+      "FolderCreateRequest": {
+        "properties": {
+          "folder_name": { "type": "string", "title": "Folder Name" },
+          "image_ids": {
+            "items": { "type": "integer" },
+            "type": "array",
+            "title": "Image Ids"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": ["folder_name", "image_ids"],
+        "title": "FolderCreateRequest"
       },
       "HTTPValidationError": {
         "properties": {

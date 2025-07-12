@@ -30,6 +30,7 @@ import type {
   FetchOriginalImageParams,
   FetchSimilarImagesParams,
   FetchTranslatedTagsParams,
+  FolderCreateRequest,
   HTTPValidationError,
   OriginalImage,
   Tag,
@@ -481,6 +482,70 @@ export function useFetchSimilarImages<TData = Awaited<ReturnType<typeof fetchSim
 
 
 /**
+ * @summary 画像フォルダの作成とサムネイル取得
+ */
+export const registerImageFolder = (
+    folderCreateRequest: FolderCreateRequest,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customAxios<unknown>(
+      {url: `/folder`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: folderCreateRequest, signal
+    },
+      );
+    }
+  
+
+
+export const getRegisterImageFolderMutationOptions = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerImageFolder>>, TError,{data: FolderCreateRequest}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof registerImageFolder>>, TError,{data: FolderCreateRequest}, TContext> => {
+
+const mutationKey = ['registerImageFolder'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof registerImageFolder>>, {data: FolderCreateRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  registerImageFolder(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RegisterImageFolderMutationResult = NonNullable<Awaited<ReturnType<typeof registerImageFolder>>>
+    export type RegisterImageFolderMutationBody = FolderCreateRequest
+    export type RegisterImageFolderMutationError = HTTPValidationError
+
+    /**
+ * @summary 画像フォルダの作成とサムネイル取得
+ */
+export const useRegisterImageFolder = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerImageFolder>>, TError,{data: FolderCreateRequest}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof registerImageFolder>>,
+        TError,
+        {data: FolderCreateRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getRegisterImageFolderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
  * 翻訳済みのタグ一覧を取得するエンドポイント。
 
 - 指定した言語（例: `"ja"` や `"en"`）に対応したタグを返します。
@@ -502,7 +567,7 @@ export const fetchTranslatedTags = (
       
       
       return customAxios<Tag[]>(
-      {url: `/tags`, method: 'GET',
+      {url: `/tag/list`, method: 'GET',
         params, signal
     },
       );
@@ -510,7 +575,7 @@ export const fetchTranslatedTags = (
   
 
 export const getFetchTranslatedTagsQueryKey = (params?: FetchTranslatedTagsParams,) => {
-    return [`/tags`, ...(params ? [params]: [])] as const;
+    return [`/tag/list`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -603,7 +668,7 @@ export const toggleTagFlag = (
       
       
       return customAxios<Tag>(
-      {url: `/tags/${tagId}/toggle_flag`, method: 'PATCH',
+      {url: `/tag/${tagId}/toggle_flag`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: tagFlagUpdate
     },

@@ -7,6 +7,7 @@ export const useThumbnailImages = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [includeSensitive, setIncludeSensitive] = useState<boolean>(false);
   const [onlyFavorite, setOnlyFavorite] = useState<boolean>(false);
+  const [showFolders, setShowFolders] = useState<boolean>(false);
   const [columnCount, setColumnCount] = useState<number>(() => {
     const width = window.innerWidth;
     if (width < 600) return 4; // モバイル
@@ -41,5 +42,7 @@ export const useThumbnailImages = () => {
     setIncludeSensitive,
     onlyFavorite,
     setOnlyFavorite,
+    showFolders,
+    setShowFolders,
   };
 };

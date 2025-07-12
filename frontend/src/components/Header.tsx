@@ -14,6 +14,8 @@ const Header: React.FC = () => {
     setColumnCount,
     selectedTag,
     setSelectedTag,
+    showFolders,
+    setShowFolders,
   } = useAppContext();
 
   const handleSidebarToggle = () => {
@@ -52,6 +54,8 @@ const Header: React.FC = () => {
           setShowSensitive={setIncludeSensitive}
           selectedTag={selectedTag}
           setSelectedTag={setSelectedTag}
+          showFolders={showFolders}
+          setShowFolders={setShowFolders}
         />
       </div>
 
