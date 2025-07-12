@@ -4,7 +4,6 @@ import { fetchTranslatedTags, useToggleTagFlag } from "../api/default/default";
 export const useTags = () => {
   const [tags, setTags] = useState<Tag[] | null>(null);
   const [selectedTag, setSelectedTag] = useState<string>("");
-  const [showTagOverview, setShowTagOverview] = useState(false);
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -27,8 +26,6 @@ export const useTags = () => {
     tags,
     selectedTag,
     setSelectedTag: handleTagChange,
-    showTagOverview,
-    setShowTagOverview,
   };
 };
 
