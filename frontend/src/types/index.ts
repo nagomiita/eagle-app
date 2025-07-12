@@ -22,4 +22,6 @@ export interface AppContextType {
   tags: Tag[] | null;
   selectedTag: string;
   setSelectedTag: (tag: string) => void;
+  showTagOverview: boolean;
+  setShowTagOverview: React.Dispatch<React.SetStateAction<boolean>>;
 }

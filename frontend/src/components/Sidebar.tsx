@@ -1,12 +1,15 @@
 import React from "react";
 import Controls from "./Controls";
 import { SidebarUi } from "./parts/SidebarUi";
+import TagOverview from "./TagOverview";
+import { useAppContext } from "../contexts/AppContext";
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const { showTagOverview } = useAppContext();
   return (
     <>
       {/* オーバーレイ */}
@@ -19,7 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       {isOpen && (
         <SidebarUi onClose={onClose}>
-          <Controls />
+          {showTagOverview ? <TagOverview /> : <Controls />}
         </SidebarUi>
       )}
     </>

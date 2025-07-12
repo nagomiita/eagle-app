@@ -13,6 +13,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.orm import declarative_base, relationship
 
@@ -45,8 +46,6 @@ class ImageEntry(Base):
         Index("idx_images_favorite_sensitive", "is_favorite", "is_sensitive"),
         # ソート最適化用インデックス
         Index("idx_images_id_desc", "id"),
-        # 埋め込みベクトル検索用（部分インデックス的な効果）
-        Index("idx_images_tag_embedding", "tag_embedding"),
         # 日時ソート用
         Index("idx_images_created_at", "created_at"),
         Index("idx_images_registered_at", "registered_at"),
@@ -66,6 +65,7 @@ class Tag(Base):
     embedding = Column(Text)
     embedding_blob = Column(LargeBinary)
     registered_at = Column(DateTime, default=datetime.now)
+    is_favorite = Column(Boolean, server_default=text("0"), nullable=False)
     is_sensitive = Column(Boolean, default=False)
     disable = Column(Boolean, default=False)
     category = relationship("Category", back_populates="tags")

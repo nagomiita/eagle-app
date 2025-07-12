@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect } from "react";
 
 import { useOriginalImage } from "../hooks/useOriginalImage";
-import useTags from "../hooks/useTags";
+import { useTags } from "../hooks/useTags";
 import { useThumbnailImages } from "../hooks/useThumbnailImages";
 import { AppContextType } from "../types";
 

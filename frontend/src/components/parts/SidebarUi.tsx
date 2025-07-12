@@ -27,9 +27,9 @@ export const SidebarUi: React.FC<SidebarUiProps> = ({
       {/* サイドバー本体 */}
       <div
         className={`fixed top-0 ${positionClasses} h-full 
-          w-64 sm:w-80 md:w-96 lg:w-[28rem]
-          bg-gray-900 text-white shadow-lg z-50 
-          transform transition-transform duration-300 translate-x-0`}
+        w-72 sm:w-96 md:w-[28rem] lg:w-[32rem] xl:w-[36rem]
+        bg-gray-900 text-white shadow-lg z-50 
+        transform transition-transform duration-300 translate-x-0`}
       >
         {/* ヘッダー */}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">

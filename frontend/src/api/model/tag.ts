@@ -12,4 +12,6 @@ export interface Tag {
   tag_name: string;
   category?: TagCategory;
   genre?: TagGenre;
+  is_sensitive?: boolean;
+  is_favorite?: boolean;
 }

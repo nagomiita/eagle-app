@@ -30,6 +30,34 @@ def fetch_translated_tags(language: str = "ja") -> list[Tag]:
             tag_name=translated_name or default_name,
             category=category,
             genre=genre,
+            is_sensitive=is_sensitive,
+            is_favorite=is_favorite,
         )
-        for tag_id, default_name, translated_name, category, genre in tags
+        for tag_id, default_name, translated_name, category, genre, is_sensitive, is_favorite in tags
     ]
+
+
+def toggle_tag_flag(tag_id: int, flag: str, value: bool) -> Tag:
+    """
+    タグのお気に入りまたはセンシティブフラグをオン/オフする
+    Args:
+        tag_id (int): フラグを変更する対象のタグID
+        flag (str): フラグの種類。'favorite' または 'sensitive'
+        value (bool): フラグの値。True でオン、False でオフ
+    Raises:
+        ValueError: 無効なフラグ名が指定された場合
+        RuntimeError: タグの更新中に予期しないエラーが発生した場合
+    Returns:
+        Tag: 更新されたタグ情報
+    """
+    if flag not in ["favorite", "sensitive"]:
+        raise ValueError(
+            "無効なフラグ名です。'favorite' または 'sensitive' を指定してください。"
+        )
+
+    try:
+        updated_tag = tag.update_tag_flag(tag_id, flag, value)
+    except Exception as e:
+        raise RuntimeError(f"タグの更新に失敗しました: {e}") from e
+
+    return Tag(**updated_tag)

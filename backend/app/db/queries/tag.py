@@ -30,6 +30,8 @@ def query_all_translated_tags(language: str = "ja") -> list[tuple]:
                     TagTranslation.translated_name.label("translated_name"),
                     Category.name.label("category"),
                     Genre.name.label("genre_name"),
+                    Tag.is_sensitive.label("is_sensitive"),
+                    Tag.is_favorite.label("is_favorite"),
                 )
                 .order_by(Tag.name)
                 .all()
@@ -66,3 +68,53 @@ def query_translated_tag_names_by_image_id(
                 }
                 for tag_id, default_name, translated_name in results
             ]
+
+
+def update_tag_flag(tag_id: int, flag: str, value: bool, language: str = "ja") -> dict:
+    """
+    タグのお気に入りまたはセンシティブフラグをオン/オフする
+
+    Args:
+        tag_id (int): フラグを変更する対象のタグID
+        flag (str): フラグの種類。'favorite' または 'sensitive'
+        value (bool): フラグの値。True でオン、False でオフ
+
+    Raises:
+        ValueError: 無効なフラグ名が指定された場合
+        RuntimeError: タグの更新中に予期しないエラーが発生した場合
+
+    Returns:
+        dict: 更新されたタグ情報の辞書
+    """
+    if flag not in ["favorite", "sensitive"]:
+        raise ValueError(
+            "無効なフラグ名です。'favorite' または 'sensitive' を指定してください。"
+        )
+
+    with get_session() as session:
+        tag = session.query(Tag).filter(Tag.id == tag_id).one_or_none()
+        if not tag:
+            raise RuntimeError(f"タグID {tag_id} が見つかりません")
+
+        setattr(tag, f"is_{flag}", value)
+        session.commit()
+        translated = (
+            session.query(TagTranslation.translated_name)
+            .filter(
+                TagTranslation.tag_id == tag_id,
+                TagTranslation.language == language,
+            )
+            .scalar()
+        )
+
+        # 必要に応じて他のフィールドも追加可能
+        return {
+            "tag_id": tag.id,
+            "tag_name": translated if translated else tag.name,
+            "is_favorite": tag.is_favorite,
+            "is_sensitive": tag.is_sensitive,
+            "category": tag.category.name if tag.category else None,
+            "genre": next(
+                (rel.genre.name for rel in tag.genre_relations if rel.genre), None
+            ),
+        }

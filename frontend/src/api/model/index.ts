@@ -17,6 +17,7 @@ export * from './originalImageImage';
 export * from './registerFavoriteImageParams';
 export * from './tag';
 export * from './tagCategory';
+export * from './tagFlagUpdate';
 export * from './tagGenre';
 export * from './thumbnailImage';
 export * from './thumbnailImageThumbnail';

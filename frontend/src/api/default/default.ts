@@ -33,6 +33,7 @@ import type {
   HTTPValidationError,
   OriginalImage,
   Tag,
+  TagFlagUpdate,
   ThumbnailImage
 } from '.././model';
 
@@ -501,7 +502,7 @@ export const fetchTranslatedTags = (
       
       
       return customAxios<Tag[]>(
-      {url: `/tags/list`, method: 'GET',
+      {url: `/tags`, method: 'GET',
         params, signal
     },
       );
@@ -509,7 +510,7 @@ export const fetchTranslatedTags = (
   
 
 export const getFetchTranslatedTagsQueryKey = (params?: FetchTranslatedTagsParams,) => {
-    return [`/tags/list`, ...(params ? [params]: [])] as const;
+    return [`/tags`, ...(params ? [params]: [])] as const;
     }
 
     
@@ -579,3 +580,81 @@ export function useFetchTranslatedTags<TData = Awaited<ReturnType<typeof fetchTr
 
 
 
+/**
+ * タグのお気に入りまたはセンシティブフラグをオン/オフします。
+
+### パスパラメータ:
+- `tag_id` (int): フラグを変更する対象のタグID
+
+### リクエストボディ:
+- `flag` (str): `"favorite"` もしくは `"sensitive"`
+- `value` (bool): `true` でオン、`false` でオフ
+
+### レスポンス:
+- `200 OK`: 更新されたタグ情報
+- `400 Bad Request`: 不正なフラグ指定
+- `404 Not Found`: 指定IDのタグが存在しない
+ * @summary Toggle Tag Flag
+ */
+export const toggleTagFlag = (
+    tagId: number,
+    tagFlagUpdate: TagFlagUpdate,
+ ) => {
+      
+      
+      return customAxios<Tag>(
+      {url: `/tags/${tagId}/toggle_flag`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: tagFlagUpdate
+    },
+      );
+    }
+  
+
+
+export const getToggleTagFlagMutationOptions = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof toggleTagFlag>>, TError,{tagId: number;data: TagFlagUpdate}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof toggleTagFlag>>, TError,{tagId: number;data: TagFlagUpdate}, TContext> => {
+
+const mutationKey = ['toggleTagFlag'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof toggleTagFlag>>, {tagId: number;data: TagFlagUpdate}> = (props) => {
+          const {tagId,data} = props ?? {};
+
+          return  toggleTagFlag(tagId,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ToggleTagFlagMutationResult = NonNullable<Awaited<ReturnType<typeof toggleTagFlag>>>
+    export type ToggleTagFlagMutationBody = TagFlagUpdate
+    export type ToggleTagFlagMutationError = HTTPValidationError
+
+    /**
+ * @summary Toggle Tag Flag
+ */
+export const useToggleTagFlag = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof toggleTagFlag>>, TError,{tagId: number;data: TagFlagUpdate}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof toggleTagFlag>>,
+        TError,
+        {tagId: number;data: TagFlagUpdate},
+        TContext
+      > => {
+
+      const mutationOptions = getToggleTagFlagMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    

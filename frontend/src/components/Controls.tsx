@@ -16,6 +16,7 @@ const Controls: React.FC = () => {
     setIncludeSensitive,
     onlyFavorite,
     setOnlyFavorite,
+    setShowTagOverview,
   } = useAppContext();
 
   const [selectedCategory, setSelectedCategory] = useState<string>("全て");
@@ -92,6 +93,12 @@ const Controls: React.FC = () => {
         value={columnCount}
         onChange={(e) => setColumnCount(Number(e.target.value))}
       />
+      <button
+        className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+        onClick={() => setShowTagOverview(true)}
+      >
+        タグ一覧を見る
+      </button>
     </div>
   );
 };
