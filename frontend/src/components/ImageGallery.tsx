@@ -79,11 +79,24 @@ const ImageGrid: React.FC = () => {
           }}
         />
       ) : (
-        <ThumbnailGrid
-          images={images}
-          columnCount={columnCount}
-          onClick={(id) => openModal(id)}
-        />
+        <div>
+          <FolderGrid
+            folders={folders}
+            columnCount={columnCount}
+            onClickFolder={(id) => {
+              const folder = folders.find((f) => String(f.id) === id);
+              if (folder) {
+                setSelectedFolder(folder);
+                setIsEditMode(false);
+              }
+            }}
+          />
+          <ThumbnailGrid
+            images={images}
+            columnCount={columnCount}
+            onClick={(id) => openModal(id)}
+          />
+        </div>
       )}
 
       <ImageModal />

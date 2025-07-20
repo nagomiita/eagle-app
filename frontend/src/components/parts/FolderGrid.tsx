@@ -26,7 +26,9 @@ const FolderGrid: React.FC<FolderGridProps> = ({
           onClick={() => onClickFolder?.(String(folder.id))}
         >
           <div className="relative aspect-square w-full overflow-hidden">
-            {/* サムネイル画像の重ね表示 */}
+            <div className="absolute top-1 right-1 bg-white/80 text-gray-800 text-xs font-bold px-2 py-0.5 rounded-full z-40">
+              {folder.thumbnail_images.length}
+            </div>
             {folder.thumbnail_images.slice(0, 3).map((thumb, index) => (
               <img
                 key={thumb.id}

@@ -32,6 +32,7 @@ def fetch_filtered_thumnail_images(
             include_sensitive=include_sensitive,
             favorites_only=favorites_only,
             tag_id=selected_tag,
+            exclude_in_folder=True,
         )
     except Exception as e:
         raise RuntimeError("画像データの取得に失敗しました") from e
