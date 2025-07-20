@@ -45,6 +45,7 @@ def fetch_filtered_thumnail_images(
         thumbnails.append(
             ThumbnailImage(
                 id=entry.id,
+                name=Path(entry.image_path).name,
                 thumbnail=entry.thumbnail_path,
                 is_favorite=entry.is_favorite,
             )
@@ -125,4 +126,12 @@ def fetch_similar_images(
     # 4. 類似画像のサムネイル情報を取得
     similar_thumbnails = image.query_thumbnails_by_ids(top_ids)
 
-    return similar_thumbnails
+    return [
+        ThumbnailImage(
+            id=entry.id,
+            name=Path(entry.image_path).name,
+            thumbnail=entry.thumbnail_path,
+            is_favorite=entry.is_favorite,
+        )
+        for entry in similar_thumbnails
+    ]

@@ -33,6 +33,9 @@ const SortableImage: React.FC<{ image: ThumbnailImage }> = ({ image }) => {
         alt=""
         className="w-full rounded mb-1"
       />
+      <div className="text-sm text-white-700 truncate text-center">
+        {image.name}
+      </div>
     </div>
   );
 };
@@ -44,6 +47,21 @@ const FolderImageEditor: React.FC<Props> = ({
   columnCount = 4,
 }) => {
   const [images, setImages] = useState(initialImages);
+
+  const sortByName = () => {
+    const extractNumber = (name: string) => {
+      const match = name.match(/\d+/);
+      return match ? parseInt(match[0], 10) : 0;
+    };
+
+    const sorted = [...images].sort((a, b) => {
+      const numA = extractNumber(a.name);
+      const numB = extractNumber(b.name);
+      return numA - numB;
+    });
+
+    setImages(sorted);
+  };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -85,6 +103,12 @@ const FolderImageEditor: React.FC<Props> = ({
         </SortableContext>
       </DndContext>
       <div className="fixed bottom-0 left-0 w-full bg-gray-900 bg-opacity-90 z-50 p-4 flex justify-center items-center gap-4 shadow-md">
+        <button
+          className="bg-green-600 text-white px-3 py-2 rounded"
+          onClick={sortByName}
+        >
+          🔤 名前で並べ替え
+        </button>
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded"
           onClick={saveOrder}

@@ -1,6 +1,12 @@
 import { useInView } from "react-intersection-observer";
 
-const LazyImage = ({ src, alt }: { src: string; alt: string }) => {
+type LazyImageProps = {
+  src: string;
+  alt: string;
+  className?: string;
+};
+
+const LazyImage = ({ src, alt, className }: LazyImageProps) => {
   const { ref, inView } = useInView({ triggerOnce: true });
 
   return (
@@ -9,7 +15,9 @@ const LazyImage = ({ src, alt }: { src: string; alt: string }) => {
         <img
           src={src}
           alt={alt}
-          className="w-full h-full object-cover cursor-pointer rounded"
+          className={`w-full h-full object-cover cursor-pointer rounded ${
+            className ?? ""
+          }`}
         />
       )}
     </div>

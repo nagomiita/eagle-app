@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from app.db.models import ImageEntry, ImageFolder, ImageFolderAssociation
 from app.db.session import get_session
 
@@ -39,7 +41,7 @@ def query_all_folders() -> list[dict]:
                 ImageFolderAssociation,
                 ImageFolder.id == ImageFolderAssociation.folder_id,
             )
-            .order_by(ImageFolder.id, ImageFolderAssociation.position)
+            .order_by(ImageFolderAssociation.position)
             .all()
         )
 
@@ -50,6 +52,7 @@ def query_all_folders() -> list[dict]:
             image_entry = session.query(ImageEntry).filter_by(id=image_id).first()
             image_ids: dict = {
                 "id": image_entry.id,
+                "name": Path(image_entry.image_path).name,
                 "thumbnail": image_entry.thumbnail_path,
                 "is_favorite": image_entry.is_favorite,
             }

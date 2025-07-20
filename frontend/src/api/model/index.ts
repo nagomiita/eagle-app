@@ -22,6 +22,8 @@ export * from './tagCategory';
 export * from './tagFlagUpdate';
 export * from './tagGenre';
 export * from './thumbnailImage';
+export * from './thumbnailImageFileName';
+export * from './thumbnailImageName';
 export * from './thumbnailImageThumbnail';
 export * from './validationError';
 export * from './validationErrorLocItem';

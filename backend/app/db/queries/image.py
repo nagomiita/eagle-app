@@ -4,7 +4,6 @@ from app.db.models import (
 )
 from app.db.query_performance import measure_query_time, measure_time
 from app.db.session import get_session
-from app.schemas.image import ThumbnailImage
 
 
 @measure_time("get_filtered_image_entries")
@@ -111,7 +110,7 @@ def query_all_image_tag_embedding(
 
 
 @measure_time("query_thumbnails_by_ids")
-def query_thumbnails_by_ids(image_ids: list[int]) -> list[ThumbnailImage]:
+def query_thumbnails_by_ids(image_ids: list[int]) -> list[ImageEntry]:
     if not image_ids:
         return []
 
@@ -125,13 +124,4 @@ def query_thumbnails_by_ids(image_ids: list[int]) -> list[ThumbnailImage]:
     # ID順の整列（入力順を保ちたい場合）
     entry_map = {entry.id: entry for entry in entries}
     sorted_entries = [entry_map[i] for i in image_ids if i in entry_map]
-
-    # ThumbnailImage に変換
-    return [
-        ThumbnailImage(
-            id=entry.id,
-            thumbnail=entry.thumbnail_path,
-            is_favorite=entry.is_favorite,
-        )
-        for entry in sorted_entries
-    ]
+    return sorted_entries

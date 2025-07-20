@@ -103,7 +103,11 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
         {images.map((image) => (
           <div
             key={image.id}
-            className="relative w-full h-full cursor-pointer"
+            className={`relative w-full h-full cursor-pointer ${
+              isCheckMode && selectedIds.includes(image.id)
+                ? "bg-gray-400 bg-opacity-50"
+                : ""
+            }`}
             onClick={() =>
               isCheckMode ? toggleSelect(image.id) : onClick?.(image.id)
             }
@@ -114,6 +118,7 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
             <LazyImage
               src={`http://192.168.11.11/api/static/${image.thumbnail}`}
               alt={`Thumbnail ${image.id}`}
+              className={selectedIds.includes(image.id) ? "opacity-60" : ""}
             />
 
             {selectedIds.includes(image.id) && (
