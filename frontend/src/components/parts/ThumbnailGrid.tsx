@@ -16,6 +16,9 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
 }) => {
   const [isCheckMode, setIsCheckMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
+    null
+  );
 
   let longPressTimer: NodeJS.Timeout | null = null;
 
@@ -24,6 +27,8 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
     if (!isCheckMode) {
       setIsCheckMode(true);
       setSelectedIds([imageId]);
+      const index = images.findIndex((img) => img.id === imageId);
+      setLastSelectedIndex(index);
     }
   };
 
@@ -32,6 +37,8 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
       if (!isCheckMode) {
         setIsCheckMode(true);
         setSelectedIds([imageId]);
+        const index = images.findIndex((img) => img.id === imageId);
+        setLastSelectedIndex(index);
       }
     }, 600);
   };
@@ -47,6 +54,46 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
+    const index = images.findIndex((img) => img.id === id);
+    setLastSelectedIndex(index);
+  };
+
+  const handleShiftClick = (currentImageId: number) => {
+    const currentIndex = images.findIndex((img) => img.id === currentImageId);
+
+    if (lastSelectedIndex === null) {
+      // 最初の選択の場合
+      setSelectedIds([currentImageId]);
+      setLastSelectedIndex(currentIndex);
+      return;
+    }
+
+    // 範囲選択の開始と終了のインデックスを決定
+    const startIndex = Math.min(lastSelectedIndex, currentIndex);
+    const endIndex = Math.max(lastSelectedIndex, currentIndex);
+
+    // 範囲内の画像IDを取得
+    const rangeIds = images
+      .slice(startIndex, endIndex + 1)
+      .map((img) => img.id);
+
+    // 既存の選択に追加（重複は自動的に除去される）
+    setSelectedIds((prev) => {
+      const newSelection = new Set([...prev, ...rangeIds]);
+      return Array.from(newSelection);
+    });
+  };
+
+  const handleImageClick = (e: React.MouseEvent, imageId: number) => {
+    if (isCheckMode) {
+      if (e.shiftKey) {
+        handleShiftClick(imageId);
+      } else {
+        toggleSelect(imageId);
+      }
+    } else {
+      onClick?.(imageId);
+    }
   };
 
   const createFolder = async () => {
@@ -67,6 +114,7 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
       alert("フォルダを作成しました");
       setIsCheckMode(false);
       setSelectedIds([]);
+      setLastSelectedIndex(null);
     } else {
       alert("作成に失敗しました");
     }
@@ -86,6 +134,7 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
             onClick={() => {
               setIsCheckMode(false);
               setSelectedIds([]);
+              setLastSelectedIndex(null);
             }}
             className="bg-gray-500 text-white px-4 py-2 rounded"
           >
@@ -108,9 +157,7 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
                 ? "bg-gray-400 bg-opacity-50"
                 : ""
             }`}
-            onClick={() =>
-              isCheckMode ? toggleSelect(image.id) : onClick?.(image.id)
-            }
+            onClick={(e) => handleImageClick(e, image.id)}
             onContextMenu={(e) => handleContextMenu(e, image.id)}
             onTouchStart={() => handleTouchStart(image.id)}
             onTouchEnd={handleTouchEnd}

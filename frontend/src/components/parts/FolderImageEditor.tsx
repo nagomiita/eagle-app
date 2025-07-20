@@ -48,16 +48,22 @@ const FolderImageEditor: React.FC<Props> = ({
 }) => {
   const [images, setImages] = useState(initialImages);
 
-  const sortByName = () => {
-    const extractNumber = (name: string) => {
-      const match = name.match(/\d+/);
-      return match ? parseInt(match[0], 10) : 0;
-    };
+  const extractNumbers = (name: string): number[] => {
+    return name.match(/\d+/g)?.map((n) => parseInt(n, 10)) ?? [];
+  };
 
+  const sortByName = () => {
     const sorted = [...images].sort((a, b) => {
-      const numA = extractNumber(a.name);
-      const numB = extractNumber(b.name);
-      return numA - numB;
+      const numsA = extractNumbers(a.name);
+      const numsB = extractNumbers(b.name);
+
+      const len = Math.max(numsA.length, numsB.length);
+      for (let i = 0; i < len; i++) {
+        const aNum = numsA[i] ?? 0;
+        const bNum = numsB[i] ?? 0;
+        if (aNum !== bNum) return aNum - bNum;
+      }
+      return 0; // 完全一致なら順序維持
     });
 
     setImages(sorted);
