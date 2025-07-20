@@ -32,6 +32,7 @@ import type {
   FetchTranslatedTagsParams,
   FolderCreateRequest,
   FolderInfo,
+  FolderReorderRequest,
   HTTPValidationError,
   OriginalImage,
   Tag,
@@ -630,6 +631,69 @@ export const useRegisterImageFolder = <TError = HTTPValidationError,
       > => {
 
       const mutationOptions = getRegisterImageFolderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * @summary フォルダ内の画像順序を更新
+ */
+export const updateFolderOrder = (
+    folderReorderRequest: FolderReorderRequest,
+ ) => {
+      
+      
+      return customAxios<unknown>(
+      {url: `/folder/order`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: folderReorderRequest
+    },
+      );
+    }
+  
+
+
+export const getUpdateFolderOrderMutationOptions = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateFolderOrder>>, TError,{data: FolderReorderRequest}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof updateFolderOrder>>, TError,{data: FolderReorderRequest}, TContext> => {
+
+const mutationKey = ['updateFolderOrder'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateFolderOrder>>, {data: FolderReorderRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updateFolderOrder(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateFolderOrderMutationResult = NonNullable<Awaited<ReturnType<typeof updateFolderOrder>>>
+    export type UpdateFolderOrderMutationBody = FolderReorderRequest
+    export type UpdateFolderOrderMutationError = HTTPValidationError
+
+    /**
+ * @summary フォルダ内の画像順序を更新
+ */
+export const useUpdateFolderOrder = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateFolderOrder>>, TError,{data: FolderReorderRequest}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateFolderOrder>>,
+        TError,
+        {data: FolderReorderRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateFolderOrderMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

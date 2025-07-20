@@ -1,5 +1,5 @@
 from app.core.logger import setup_logging
-from app.schemas.folder import FolderCreateRequest, FolderInfo
+from app.schemas.folder import FolderCreateRequest, FolderInfo, FolderReorderRequest
 from app.services import folder_service
 from fastapi import APIRouter, HTTPException
 
@@ -42,3 +42,20 @@ async def fetch_all_folders():
     except Exception:
         logger.exception("❌ フォルダ情報取得中にエラーが発生しました")
         raise HTTPException(status_code=500, detail="フォルダ取得に失敗しました")
+
+
+@router.put(
+    "/folder/order",
+    summary="フォルダ内の画像順序を更新",
+    operation_id="update_folder_order",
+)
+async def update_folder_order(request: FolderReorderRequest):
+    try:
+        folder_service.update_folder_order(
+            request.folder_id,
+            request.image_ids,
+        )
+        return {"message": "順番を更新しました"}
+    except Exception:
+        logger.exception("❌ フォルダ順序更新エラー")
+        raise HTTPException(status_code=500, detail="順番の更新に失敗しました")

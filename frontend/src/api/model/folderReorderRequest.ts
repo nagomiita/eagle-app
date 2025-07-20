@@ -5,6 +5,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type RegisterFavoriteImageParams = {
-image_id: string;
-};
+export interface FolderReorderRequest {
+  folder_id: number;
+  image_ids: number[];
+}

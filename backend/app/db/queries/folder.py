@@ -63,3 +63,16 @@ def query_all_folders() -> list[dict]:
             folder_map[folder_id]["thumbnail_images"].append(image_ids)
 
         return list(folder_map.values())
+
+
+def query_update_folder_order(folder_id: int, image_ids: list[int]) -> None:
+    with get_session() as session:
+        for position, image_id in enumerate(image_ids):
+            assoc = (
+                session.query(ImageFolderAssociation)
+                .filter_by(folder_id=folder_id, image_id=image_id)
+                .first()
+            )
+            if assoc:
+                assoc.position = position
+        session.commit()
