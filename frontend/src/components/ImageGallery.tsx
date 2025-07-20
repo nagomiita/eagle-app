@@ -61,6 +61,7 @@ const ImageGrid: React.FC = () => {
           ) : (
             <ThumbnailGrid
               images={selectedFolder.thumbnail_images}
+              folders={folders}
               columnCount={columnCount}
               onClick={(id) => openModal(id)}
             />
@@ -93,6 +94,7 @@ const ImageGrid: React.FC = () => {
           />
           <ThumbnailGrid
             images={images}
+            folders={folders}
             columnCount={columnCount}
             onClick={(id) => openModal(id)}
           />

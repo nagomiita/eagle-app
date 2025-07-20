@@ -1,5 +1,5 @@
 from app.core.logger import setup_logging
-from app.schemas.folder import FolderCreateRequest, FolderInfo, FolderReorderRequest
+from app.schemas.folder import FolderCreateRequest, FolderInfo
 from app.services import folder_service
 from fastapi import APIRouter, HTTPException
 
@@ -9,12 +9,12 @@ logger = setup_logging()
 
 @router.post(
     "/folder",
-    operation_id="register_image_folder",
+    operation_id="create_image_folder",
     summary="画像フォルダの作成とサムネイル取得",
 )
 async def register_folder(request: FolderCreateRequest):
     try:
-        folder_service.register_image_folder(
+        folder_service.create_image_folder(
             request.folder_name,
             request.image_ids,
             request.description,
@@ -45,17 +45,31 @@ async def fetch_all_folders():
 
 
 @router.put(
-    "/folder/order",
+    "/folder/{folder_id}/order",
     summary="フォルダ内の画像順序を更新",
     operation_id="update_folder_order",
 )
-async def update_folder_order(request: FolderReorderRequest):
+async def update_folder_order(folder_id: int, image_ids: list[int]):
     try:
         folder_service.update_folder_order(
-            request.folder_id,
-            request.image_ids,
+            folder_id,
+            image_ids,
         )
         return {"message": "順番を更新しました"}
     except Exception:
         logger.exception("❌ フォルダ順序更新エラー")
         raise HTTPException(status_code=500, detail="順番の更新に失敗しました")
+
+
+@router.put(
+    "/folder/{folder_id}/add_images",
+    summary="既存のフォルダに画像を追加",
+    operation_id="add_images_to_folder",
+)
+async def add_images_to_folder(folder_id: int, image_ids: list[int]):
+    try:
+        folder_service.add_images_to_folder(folder_id, image_ids)
+        return {"message": "画像をフォルダに追加しました"}
+    except Exception:
+        logger.exception("❌ フォルダへの画像追加エラー")
+        raise HTTPException(status_code=500, detail="画像の追加に失敗しました")

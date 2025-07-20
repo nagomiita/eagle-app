@@ -1,21 +1,28 @@
 import React, { useState } from "react";
-import { ThumbnailImage } from "../../api/model";
+import { FolderInfo, ThumbnailImage } from "../../api/model";
 import LazyImage from "./LazyImage";
 import { HeartIcon, CheckIcon } from "@heroicons/react/24/solid";
+import {
+  createImageFolder,
+  addImagesToFolder,
+} from "../../api/default/default";
 
 interface ThumbnailGridProps {
   images: ThumbnailImage[];
+  folders: FolderInfo[];
   columnCount?: number;
   onClick?: (id: number) => void;
 }
 
 const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
   images,
+  folders,
   columnCount = 4,
   onClick,
 }) => {
   const [isCheckMode, setIsCheckMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
   );
@@ -100,17 +107,13 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
     const folderName = prompt("フォルダ名を入力してください：");
     if (!folderName) return;
 
-    const res = await fetch("http://localhost:8000/folder", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        folder_name: folderName,
-        image_ids: selectedIds,
-        description: "", // 任意で記述可能
-      }),
+    const res = await createImageFolder({
+      folder_name: folderName,
+      image_ids: selectedIds,
+      description: "",
     });
 
-    if (res.ok) {
+    if (res) {
       alert("フォルダを作成しました");
       setIsCheckMode(false);
       setSelectedIds([]);
@@ -124,6 +127,42 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
     <div>
       {isCheckMode && (
         <div className="fixed bottom-0 left-0 w-full bg-gray-900 bg-opacity-90 z-50 p-4 flex justify-center items-center gap-4 shadow-md">
+          <select
+            value={selectedFolderId ?? ""}
+            onChange={(e) => setSelectedFolderId(e.target.value)}
+            className="px-2 py-1 rounded bg-white text-black border"
+          >
+            <option value="">📁 フォルダを選択</option>
+            {folders.map((folder) => (
+              <option key={folder.id} value={folder.id}>
+                {folder.name}
+              </option>
+            ))}
+          </select>
+
+          <button
+            disabled={!selectedFolderId}
+            onClick={async () => {
+              if (!selectedFolderId) return;
+              const res = await addImagesToFolder(
+                parseInt(selectedFolderId),
+                selectedIds
+              );
+
+              if (res) {
+                alert("✅ フォルダに追加しました");
+                setIsCheckMode(false);
+                setSelectedIds([]);
+                setLastSelectedIndex(null);
+                setSelectedFolderId(null);
+              } else {
+                alert("❌ 追加に失敗しました");
+              }
+            }}
+            className="bg-yellow-600 text-white px-4 py-2 rounded disabled:opacity-50"
+          >
+            ➕ 既存フォルダに追加（{selectedIds.length} 枚）
+          </button>
           <button
             onClick={createFolder}
             className="bg-blue-600 text-white px-4 py-2 rounded"

@@ -32,7 +32,6 @@ import type {
   FetchTranslatedTagsParams,
   FolderCreateRequest,
   FolderInfo,
-  FolderReorderRequest,
   HTTPValidationError,
   OriginalImage,
   Tag,
@@ -573,7 +572,7 @@ export function useFetchAllFolders<TData = Awaited<ReturnType<typeof fetchAllFol
 /**
  * @summary 画像フォルダの作成とサムネイル取得
  */
-export const registerImageFolder = (
+export const createImageFolder = (
     folderCreateRequest: FolderCreateRequest,
  signal?: AbortSignal
 ) => {
@@ -589,11 +588,11 @@ export const registerImageFolder = (
   
 
 
-export const getRegisterImageFolderMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerImageFolder>>, TError,{data: FolderCreateRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof registerImageFolder>>, TError,{data: FolderCreateRequest}, TContext> => {
+export const getCreateImageFolderMutationOptions = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createImageFolder>>, TError,{data: FolderCreateRequest}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof createImageFolder>>, TError,{data: FolderCreateRequest}, TContext> => {
 
-const mutationKey = ['registerImageFolder'];
+const mutationKey = ['createImageFolder'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -603,10 +602,10 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof registerImageFolder>>, {data: FolderCreateRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createImageFolder>>, {data: FolderCreateRequest}> = (props) => {
           const {data} = props ?? {};
 
-          return  registerImageFolder(data,)
+          return  createImageFolder(data,)
         }
 
         
@@ -614,23 +613,23 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type RegisterImageFolderMutationResult = NonNullable<Awaited<ReturnType<typeof registerImageFolder>>>
-    export type RegisterImageFolderMutationBody = FolderCreateRequest
-    export type RegisterImageFolderMutationError = HTTPValidationError
+    export type CreateImageFolderMutationResult = NonNullable<Awaited<ReturnType<typeof createImageFolder>>>
+    export type CreateImageFolderMutationBody = FolderCreateRequest
+    export type CreateImageFolderMutationError = HTTPValidationError
 
     /**
  * @summary 画像フォルダの作成とサムネイル取得
  */
-export const useRegisterImageFolder = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerImageFolder>>, TError,{data: FolderCreateRequest}, TContext>, }
+export const useCreateImageFolder = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createImageFolder>>, TError,{data: FolderCreateRequest}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof registerImageFolder>>,
+        Awaited<ReturnType<typeof createImageFolder>>,
         TError,
         {data: FolderCreateRequest},
         TContext
       > => {
 
-      const mutationOptions = getRegisterImageFolderMutationOptions(options);
+      const mutationOptions = getCreateImageFolderMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }
@@ -638,14 +637,15 @@ export const useRegisterImageFolder = <TError = HTTPValidationError,
  * @summary フォルダ内の画像順序を更新
  */
 export const updateFolderOrder = (
-    folderReorderRequest: FolderReorderRequest,
+    folderId: number,
+    updateFolderOrderBody: number[],
  ) => {
       
       
       return customAxios<unknown>(
-      {url: `/folder/order`, method: 'PUT',
+      {url: `/folder/${folderId}/order`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
-      data: folderReorderRequest
+      data: updateFolderOrderBody
     },
       );
     }
@@ -653,8 +653,8 @@ export const updateFolderOrder = (
 
 
 export const getUpdateFolderOrderMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateFolderOrder>>, TError,{data: FolderReorderRequest}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof updateFolderOrder>>, TError,{data: FolderReorderRequest}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateFolderOrder>>, TError,{folderId: number;data: number[]}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof updateFolderOrder>>, TError,{folderId: number;data: number[]}, TContext> => {
 
 const mutationKey = ['updateFolderOrder'];
 const {mutation: mutationOptions} = options ?
@@ -666,10 +666,10 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateFolderOrder>>, {data: FolderReorderRequest}> = (props) => {
-          const {data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateFolderOrder>>, {folderId: number;data: number[]}> = (props) => {
+          const {folderId,data} = props ?? {};
 
-          return  updateFolderOrder(data,)
+          return  updateFolderOrder(folderId,data,)
         }
 
         
@@ -678,22 +678,86 @@ const {mutation: mutationOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type UpdateFolderOrderMutationResult = NonNullable<Awaited<ReturnType<typeof updateFolderOrder>>>
-    export type UpdateFolderOrderMutationBody = FolderReorderRequest
+    export type UpdateFolderOrderMutationBody = number[]
     export type UpdateFolderOrderMutationError = HTTPValidationError
 
     /**
  * @summary フォルダ内の画像順序を更新
  */
 export const useUpdateFolderOrder = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateFolderOrder>>, TError,{data: FolderReorderRequest}, TContext>, }
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateFolderOrder>>, TError,{folderId: number;data: number[]}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateFolderOrder>>,
         TError,
-        {data: FolderReorderRequest},
+        {folderId: number;data: number[]},
         TContext
       > => {
 
       const mutationOptions = getUpdateFolderOrderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * @summary 既存のフォルダに画像を追加
+ */
+export const addImagesToFolder = (
+    folderId: number,
+    addImagesToFolderBody: number[],
+ ) => {
+      
+      
+      return customAxios<unknown>(
+      {url: `/folder/${folderId}/add_images`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: addImagesToFolderBody
+    },
+      );
+    }
+  
+
+
+export const getAddImagesToFolderMutationOptions = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addImagesToFolder>>, TError,{folderId: number;data: number[]}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof addImagesToFolder>>, TError,{folderId: number;data: number[]}, TContext> => {
+
+const mutationKey = ['addImagesToFolder'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof addImagesToFolder>>, {folderId: number;data: number[]}> = (props) => {
+          const {folderId,data} = props ?? {};
+
+          return  addImagesToFolder(folderId,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AddImagesToFolderMutationResult = NonNullable<Awaited<ReturnType<typeof addImagesToFolder>>>
+    export type AddImagesToFolderMutationBody = number[]
+    export type AddImagesToFolderMutationError = HTTPValidationError
+
+    /**
+ * @summary 既存のフォルダに画像を追加
+ */
+export const useAddImagesToFolder = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addImagesToFolder>>, TError,{folderId: number;data: number[]}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof addImagesToFolder>>,
+        TError,
+        {folderId: number;data: number[]},
+        TContext
+      > => {
+
+      const mutationOptions = getAddImagesToFolderMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

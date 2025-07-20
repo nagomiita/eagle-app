@@ -13,8 +13,3 @@ class FolderInfo(BaseModel):
     name: str
     description: str
     thumbnail_images: list[ThumbnailImage]
-
-
-class FolderReorderRequest(BaseModel):
-    folder_id: int
-    image_ids: list[int]

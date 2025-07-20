@@ -2,6 +2,7 @@ from pathlib import Path
 
 from app.db.models import ImageEntry, ImageFolder, ImageFolderAssociation
 from app.db.session import get_session
+from sqlalchemy import func
 
 
 def create_image_folder(
@@ -78,4 +79,33 @@ def query_update_folder_order(folder_id: int, image_ids: list[int]) -> None:
             )
             if assoc:
                 assoc.position = position
+        session.commit()
+
+
+def query_add_images_to_folder(folder_id: int, image_ids: list[int]):
+    with get_session() as session:
+        # 🔹 既存の最大 position を取得（None の場合は 0 とする）
+        max_position = (
+            session.query(func.max(ImageFolderAssociation.position))
+            .filter(ImageFolderAssociation.folder_id == folder_id)
+            .scalar()
+        )
+        next_position = (max_position or 0) + 1
+
+        for image_id in image_ids:
+            # 🔸 すでに含まれていればスキップ
+            exists = (
+                session.query(ImageFolderAssociation)
+                .filter_by(folder_id=folder_id, image_id=image_id)
+                .first()
+            )
+            if exists:
+                continue
+
+            assoc = ImageFolderAssociation(
+                folder_id=folder_id, image_id=image_id, position=next_position
+            )
+            session.add(assoc)
+            next_position += 1  # 位置をインクリメント
+
         session.commit()

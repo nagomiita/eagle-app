@@ -2,7 +2,7 @@ from app.db.queries import folder
 from app.schemas.folder import FolderInfo
 
 
-def register_image_folder(
+def create_image_folder(
     folder_name: str, image_ids: list[int], description: str
 ) -> bool:
     folder.create_image_folder(folder_name, image_ids, description)
@@ -29,3 +29,7 @@ def update_folder_order(folder_id: int, image_ids: list[int]) -> None:
         folder.query_update_folder_order(folder_id, image_ids)
     except Exception as e:
         raise RuntimeError(f"フォルダの順序更新に失敗しました: {e}") from e
+
+
+def add_images_to_folder(folder_id: int, image_ids: list[int]):
+    folder.query_add_images_to_folder(folder_id, image_ids)
