@@ -56,6 +56,7 @@ const ImageGrid: React.FC = () => {
               folderId={selectedFolder.id}
               initialImages={selectedFolder.thumbnail_images}
               onExitEditMode={() => setIsEditMode(false)}
+              columnCount={columnCount}
             />
           ) : (
             <ThumbnailGrid

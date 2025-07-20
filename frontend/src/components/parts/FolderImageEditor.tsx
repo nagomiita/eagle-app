@@ -1,19 +1,20 @@
 // FolderImageEditor.tsx
-import React, { useState } from "react";
-import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
+import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
 import {
-  SortableContext,
-  verticalListSortingStrategy,
-  useSortable,
   arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import React, { useState } from "react";
 import { ThumbnailImage } from "../../api/model";
 
 interface Props {
   folderId: number;
   initialImages: ThumbnailImage[];
   onExitEditMode: () => void;
+  columnCount: number;
 }
 
 const SortableImage: React.FC<{ image: ThumbnailImage }> = ({ image }) => {
@@ -40,6 +41,7 @@ const FolderImageEditor: React.FC<Props> = ({
   folderId,
   initialImages,
   onExitEditMode,
+  columnCount = 4,
 }) => {
   const [images, setImages] = useState(initialImages);
 
@@ -70,7 +72,12 @@ const FolderImageEditor: React.FC<Props> = ({
           items={images.map((i) => i.id)}
           strategy={verticalListSortingStrategy}
         >
-          <div className="grid grid-cols-4 gap-2">
+          <div
+            className="grid gap-2"
+            style={{
+              gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
+            }}
+          >
             {images.map((img) => (
               <SortableImage key={img.id} image={img} />
             ))}
