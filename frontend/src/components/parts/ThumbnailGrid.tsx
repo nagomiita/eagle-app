@@ -156,11 +156,11 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
   return (
     <div>
       {isCheckMode && (
-        <div className="fixed bottom-0 left-0 w-full bg-gray-900 bg-opacity-90 z-50 p-4 flex justify-center items-center gap-4 shadow-md">
+        <div className="fixed bottom-0 left-0 w-full bg-gray-900 bg-opacity-90 z-50 p-4 flex flex-col sm:flex-row justify-center items-center gap-4 shadow-md">
           <select
             value={selectedFolderId ?? ""}
             onChange={(e) => setSelectedFolderId(e.target.value)}
-            className="px-2 py-1 rounded bg-white text-black border"
+            className="px-2 py-1 rounded bg-white text-black border w-full sm:w-auto"
           >
             <option value="">📁 フォルダを選択</option>
             {(folders ?? []).map((folder) => (
@@ -189,23 +189,25 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
                 alert("❌ 追加に失敗しました");
               }
             }}
-            className="bg-yellow-600 text-white px-4 py-2 rounded disabled:opacity-50"
+            className="bg-yellow-600 text-white px-4 py-2 rounded disabled:opacity-50 w-full sm:w-auto"
           >
             ➕ 既存フォルダに追加（{selectedIds.length} 枚）
           </button>
+
           <button
             onClick={createFolder}
-            className="bg-blue-600 text-white px-4 py-2 rounded"
+            className="bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto"
           >
             📁 フォルダ作成（{selectedIds.length} 枚）
           </button>
+
           <button
             onClick={() => {
               setIsCheckMode(false);
               setSelectedIds([]);
               setLastSelectedIndex(null);
             }}
-            className="bg-gray-500 text-white px-4 py-2 rounded"
+            className="bg-gray-500 text-white px-4 py-2 rounded w-full sm:w-auto"
           >
             キャンセル
           </button>
