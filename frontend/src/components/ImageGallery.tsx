@@ -11,7 +11,7 @@ const ImageGrid: React.FC = () => {
     useAppContext();
 
   const [selectedFolder, setSelectedFolder] = useState<FolderInfo | null>(null);
-  const [isEditMode, setIsEditMode] = useState(false); // 並び替えモード切替用
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const LoadingIndicator = () => (
     <div className="flex justify-center items-center h-64">
@@ -72,7 +72,7 @@ const ImageGrid: React.FC = () => {
           folders={folders}
           columnCount={columnCount}
           onClickFolder={(id) => {
-            const folder = folders.find((f) => String(f.id) === id);
+            const folder = folders.find((f) => f.id === id);
             if (folder) {
               setSelectedFolder(folder);
               setIsEditMode(false);
@@ -85,7 +85,7 @@ const ImageGrid: React.FC = () => {
             folders={folders}
             columnCount={columnCount}
             onClickFolder={(id) => {
-              const folder = folders.find((f) => String(f.id) === id);
+              const folder = folders.find((f) => f.id === id);
               if (folder) {
                 setSelectedFolder(folder);
                 setIsEditMode(false);
@@ -100,8 +100,11 @@ const ImageGrid: React.FC = () => {
           />
         </div>
       )}
-
-      <ImageModal />
+      {selectedFolder ? (
+        <ImageModal images={selectedFolder.thumbnail_images} />
+      ) : (
+        <ImageModal images={images} />
+      )}
     </>
   );
 };

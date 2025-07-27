@@ -9,9 +9,9 @@ import {
 
 interface ThumbnailGridProps {
   images: ThumbnailImage[];
-  folders: FolderInfo[];
+  folders?: FolderInfo[];
   columnCount?: number;
-  onClick?: (id: number) => void;
+  onClick: (id: number) => void;
 }
 
 const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
@@ -26,7 +26,7 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
   );
-
+  //長押しで選択モードに入るためのタイマー
   let longPressTimer: NodeJS.Timeout | null = null;
 
   const handleContextMenu = (e: React.MouseEvent, imageId: number) => {
@@ -133,7 +133,7 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
             className="px-2 py-1 rounded bg-white text-black border"
           >
             <option value="">📁 フォルダを選択</option>
-            {folders.map((folder) => (
+            {(folders ?? []).map((folder) => (
               <option key={folder.id} value={folder.id}>
                 {folder.name}
               </option>

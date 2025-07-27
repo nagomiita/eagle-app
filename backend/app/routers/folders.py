@@ -19,6 +19,7 @@ async def register_folder(request: FolderCreateRequest):
             request.image_ids,
             request.description,
         )
+        return {"message": "フォルダを作成しました"}
     except ValueError as ve:
         logger.warning(f"📛 フォルダ作成エラー: {ve}")
         raise HTTPException(status_code=400, detail=str(ve))

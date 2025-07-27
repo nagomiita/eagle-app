@@ -4,7 +4,7 @@ import { FolderInfo } from "../../api/model";
 interface FolderGridProps {
   folders: FolderInfo[];
   columnCount?: number;
-  onClickFolder?: (id: string) => void;
+  onClickFolder?: (id: number) => void;
 }
 
 const FolderGrid: React.FC<FolderGridProps> = ({
@@ -23,7 +23,7 @@ const FolderGrid: React.FC<FolderGridProps> = ({
         <div
           key={folder.id}
           className="cursor-pointer group"
-          onClick={() => onClickFolder?.(String(folder.id))}
+          onClick={() => onClickFolder?.(folder.id)}
         >
           <div className="relative aspect-square w-full overflow-hidden">
             <div className="absolute top-1 right-1 bg-white/80 text-gray-800 text-xs font-bold px-2 py-0.5 rounded-full z-40">

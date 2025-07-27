@@ -7,7 +7,7 @@ export interface TagItem {
 
 interface TagListProps {
   tags: TagItem[];
-  onTagClick: (tagId: string) => () => void;
+  onTagClick: (tagId: number) => () => void;
 }
 
 const TagList: React.FC<TagListProps> = ({ tags, onTagClick }) => {
@@ -22,7 +22,7 @@ const TagList: React.FC<TagListProps> = ({ tags, onTagClick }) => {
         {tags.map((tag) => (
           <span
             key={tag.tag_id}
-            onClick={onTagClick(String(tag.tag_id))}
+            onClick={onTagClick(tag.tag_id)}
             className="px-2 py-1 bg-gray-700 rounded text-gray-100 hover:bg-gray-600 cursor-pointer transition-colors"
           >
             {tag.tag_name}

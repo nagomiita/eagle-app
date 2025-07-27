@@ -5,7 +5,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 def find_similar_image_ids(
     query_vector_blob: bytes,
     candidate_vector_blobs: list[tuple[int, bytes]],
-    top_k: int = 30,
+    top_k: int = 60,
 ) -> list[int]:
     """
     クエリ画像に類似する画像IDを取得する。
@@ -25,7 +25,7 @@ def __load_vector_from_blob(blob: bytes) -> np.ndarray:
 
 
 def __search_top_similar_image_ids(
-    query_vec: np.ndarray, db_vectors: list[tuple[int, np.ndarray]], top_k: int = 30
+    query_vec: np.ndarray, db_vectors: list[tuple[int, np.ndarray]], top_k: int = 60
 ) -> list[int]:
     if query_vec is None or not db_vectors:
         return []

@@ -24,12 +24,15 @@ interface TouchState {
   isDragging: boolean;
 }
 
-const ImageModal: React.FC = () => {
+interface ImageModalProps {
+  images: ThumbnailImage[];
+}
+
+const ImageModal: React.FC<ImageModalProps> = ({ images }) => {
   const {
     selectedImage,
     setSelectedImage,
     closeModal,
-    images,
     setImages,
     includeSensitive,
     setSelectedTag,
@@ -93,8 +96,8 @@ const ImageModal: React.FC = () => {
     setShowButton((prev) => !prev);
   };
 
-  const handleTagClick = (tagId: string) => () => {
-    setSelectedTag(tagId);
+  const handleTagClick = (tagId: number) => () => {
+    setSelectedTag(String(tagId));
     setShowOptionPanel(false);
     closeModal();
   };
@@ -350,17 +353,16 @@ const ImageModal: React.FC = () => {
       {/* 右側からのサイドバー */}
       {showOptionPanel && (
         <SidebarUi position="right" onClose={closeSidebar}>
+          {/* タグ一覧 */}
+          <TagList
+            tags={selectedImage?.tags ?? []}
+            onTagClick={handleTagClick}
+          />
           {/* 類似画像 */}
           <ThumbnailGrid
             images={similarImages}
             columnCount={3}
             onClick={handleThumbnailClick}
-          />
-
-          {/* タグ一覧 */}
-          <TagList
-            tags={selectedImage?.tags ?? []}
-            onTagClick={handleTagClick}
           />
         </SidebarUi>
       )}

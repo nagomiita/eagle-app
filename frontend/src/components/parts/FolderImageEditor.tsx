@@ -1,4 +1,3 @@
-// FolderImageEditor.tsx
 import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -9,7 +8,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import React, { useState } from "react";
 import { ThumbnailImage } from "../../api/model";
-
+import { updateFolderOrder } from "../../api/default/default";
 interface Props {
   folderId: number;
   initialImages: ThumbnailImage[];
@@ -80,11 +79,9 @@ const FolderImageEditor: React.FC<Props> = ({
 
   const saveOrder = async () => {
     const image_ids = images.map((img) => img.id);
-    await fetch("http://localhost:8000/folder/order", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ folder_id: folderId, image_ids }),
-    });
+    await updateFolderOrder(folderId, image_ids);
+    console.log("Updated order:", images);
+    setImages(images);
     alert("✅ 並び順を保存しました");
     onExitEditMode();
   };
