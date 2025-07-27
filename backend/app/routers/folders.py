@@ -1,5 +1,5 @@
 from app.core.logger import setup_logging
-from app.schemas.folder import FolderCreateRequest, FolderInfo
+from app.schemas.folder import FolderCreateRequest, FolderInfo, FolderRenameRequest
 from app.services import folder_service
 from fastapi import APIRouter, HTTPException
 
@@ -74,3 +74,23 @@ async def add_images_to_folder(folder_id: int, image_ids: list[int]):
     except Exception:
         logger.exception("❌ フォルダへの画像追加エラー")
         raise HTTPException(status_code=500, detail="画像の追加に失敗しました")
+
+
+@router.put(
+    "/folder/rename",
+    summary="フォルダ名を変更",
+    operation_id="rename_folder",
+)
+async def rename_folder(request: FolderRenameRequest):
+    try:
+        folder_service.rename_folder(
+            folder_id=request.folder_id,
+            new_name=request.new_name,
+        )
+        return {"message": "フォルダ名を変更しました"}
+    except ValueError as ve:
+        logger.warning(f"📛 フォルダ名変更バリデーションエラー: {ve}")
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.exception(f"❌ フォルダ名変更中に例外発生: {e}")
+        raise HTTPException(status_code=500, detail="フォルダ名の変更に失敗しました")

@@ -107,3 +107,20 @@ def query_add_images_to_folder(folder_id: int, image_ids: list[int]):
             next_position += 1  # 位置をインクリメント
 
         session.commit()
+
+
+def query_rename_folder(folder_id: int, new_name: str) -> None:
+    with get_session() as session:
+        folder = session.query(ImageFolder).filter(ImageFolder.id == folder_id).first()
+        if not folder:
+            raise ValueError(f"Folder ID {folder_id} does not exist.")
+
+        # 重複チェック
+        existing = (
+            session.query(ImageFolder).filter(ImageFolder.name == new_name).first()
+        )
+        if existing and existing.id != folder_id:
+            raise ValueError(f"Folder name '{new_name}' is already used.")
+
+        folder.name = new_name
+        session.commit()

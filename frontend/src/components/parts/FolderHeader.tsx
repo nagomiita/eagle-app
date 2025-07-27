@@ -30,7 +30,7 @@ export const FolderHeader: React.FC<FolderHeaderProps> = ({
         onClick={onToggleEditMode}
         className="text-sm text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded"
       >
-        ✏️ 並び順を変更
+        ✏️ フォルダ編集
       </button>
     )}
   </div>

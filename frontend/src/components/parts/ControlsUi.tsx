@@ -12,18 +12,7 @@ import {
   PhotoIcon as PhotoSolidIcon,
 } from "@heroicons/react/24/solid";
 
-export const ImageFilterButtons = ({
-  showFavoriteOnly,
-  setShowFavoriteOnly,
-  showSensitive,
-  setShowSensitive,
-  selectedTag,
-  setSelectedTag,
-  showFolders,
-  setShowFolders,
-  excludeInFolder,
-  setExcludeInFolder,
-}: {
+interface ImageFilterButtonsProps {
   showFavoriteOnly: boolean;
   setShowFavoriteOnly: (val: boolean) => void;
   showSensitive: boolean;
@@ -34,6 +23,19 @@ export const ImageFilterButtons = ({
   setShowFolders: (val: boolean) => void;
   excludeInFolder: boolean;
   setExcludeInFolder: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const ImageFilterButtons: React.FC<ImageFilterButtonsProps> = ({
+  showFavoriteOnly,
+  setShowFavoriteOnly,
+  showSensitive,
+  setShowSensitive,
+  selectedTag,
+  setSelectedTag,
+  showFolders,
+  setShowFolders,
+  excludeInFolder,
+  setExcludeInFolder,
 }) => (
   <div className="flex gap-2 items-center">
     {/* タグ選択フィルター解除 */}

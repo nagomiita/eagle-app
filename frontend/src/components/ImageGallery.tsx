@@ -73,6 +73,7 @@ const ImageGrid: React.FC = () => {
           {isEditMode ? (
             <FolderImageEditor
               folderId={selectedFolderId}
+              originalFolderName={folders[selectedFolderIndex].name}
               initialImages={folders[selectedFolderIndex].thumbnail_images}
               onExitEditMode={() => setIsEditMode(false)}
               setFolders={setFolders}

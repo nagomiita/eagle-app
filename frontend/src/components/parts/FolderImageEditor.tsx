@@ -7,11 +7,11 @@ import {
 
 import React, { useState } from "react";
 import { FolderInfo, ThumbnailImage } from "../../api/model";
-import { updateFolderOrder } from "../../api/default/default";
+import { updateFolderOrder, renameFolder } from "../../api/default/default";
 import { SortableImage } from "./SortableImage";
-
 interface Props {
   folderId: number;
+  originalFolderName: string;
   initialImages: ThumbnailImage[];
   onExitEditMode: () => void;
   setFolders: React.Dispatch<React.SetStateAction<FolderInfo[]>>;
@@ -20,12 +20,14 @@ interface Props {
 
 const FolderImageEditor: React.FC<Props> = ({
   folderId,
+  originalFolderName,
   initialImages,
   onExitEditMode,
   setFolders,
   columnCount = 4,
 }) => {
   const [images, setImages] = useState(initialImages);
+  const [folderName, setFolderName] = useState(originalFolderName);
 
   const extractNumbers = (name: string): number[] => {
     return name.match(/\d+/g)?.map((n) => parseInt(n, 10)) ?? [];
@@ -73,6 +75,21 @@ const FolderImageEditor: React.FC<Props> = ({
     onExitEditMode();
   };
 
+  const saveFolderName = async () => {
+    try {
+      await renameFolder({ folder_id: folderId, new_name: folderName });
+      setFolders((prevFolders) =>
+        prevFolders.map((folder) =>
+          folder.id === folderId ? { ...folder, name: folderName } : folder
+        )
+      );
+      alert("✅ フォルダ名を変更しました");
+    } catch (error) {
+      console.error("❌ フォルダ名変更エラー:", error);
+      alert("❌ フォルダ名の変更に失敗しました");
+    }
+  };
+
   return (
     <div>
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -92,7 +109,26 @@ const FolderImageEditor: React.FC<Props> = ({
           </div>
         </SortableContext>
       </DndContext>
-      <div className="fixed bottom-0 left-0 w-full bg-gray-900 bg-opacity-90 z-50 p-4 flex justify-center items-center gap-4 shadow-md">
+
+      <div className="fixed bottom-0 left-0 w-full bg-gray-900 bg-opacity-90 z-50 p-4 flex flex-wrap justify-center items-end gap-4 shadow-md">
+        <div className="flex flex-col items-start">
+          <label className="text-white text-sm font-bold mb-1">
+            フォルダ名の変更
+          </label>
+          <input
+            type="text"
+            className="p-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={folderName}
+            onChange={(e) => setFolderName(e.target.value)}
+          />
+        </div>
+        <button
+          className="bg-yellow-600 text-white px-4 py-2 rounded"
+          onClick={saveFolderName}
+        >
+          📝 名前を保存
+        </button>
+
         <button
           className="bg-green-600 text-white px-3 py-2 rounded"
           onClick={sortByName}

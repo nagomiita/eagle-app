@@ -348,6 +348,34 @@
         }
       }
     },
+    "/folder/rename": {
+      "put": {
+        "summary": "フォルダ名を変更",
+        "operationId": "rename_folder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FolderRenameRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tag/list": {
       "get": {
         "summary": "Fetch Translated Tags",
@@ -488,6 +516,15 @@
         "type": "object",
         "required": ["id", "name", "description", "thumbnail_images"],
         "title": "FolderInfo"
+      },
+      "FolderRenameRequest": {
+        "properties": {
+          "folder_id": { "type": "integer", "title": "Folder Id" },
+          "new_name": { "type": "string", "title": "New Name" }
+        },
+        "type": "object",
+        "required": ["folder_id", "new_name"],
+        "title": "FolderRenameRequest"
       },
       "HTTPValidationError": {
         "properties": {

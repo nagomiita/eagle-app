@@ -32,6 +32,7 @@ import type {
   FetchTranslatedTagsParams,
   FolderCreateRequest,
   FolderInfo,
+  FolderRenameRequest,
   HTTPValidationError,
   OriginalImage,
   Tag,
@@ -758,6 +759,69 @@ export const useAddImagesToFolder = <TError = HTTPValidationError,
       > => {
 
       const mutationOptions = getAddImagesToFolderMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    /**
+ * @summary フォルダ名を変更
+ */
+export const renameFolder = (
+    folderRenameRequest: FolderRenameRequest,
+ ) => {
+      
+      
+      return customAxios<unknown>(
+      {url: `/folder/rename`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: folderRenameRequest
+    },
+      );
+    }
+  
+
+
+export const getRenameFolderMutationOptions = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof renameFolder>>, TError,{data: FolderRenameRequest}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof renameFolder>>, TError,{data: FolderRenameRequest}, TContext> => {
+
+const mutationKey = ['renameFolder'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof renameFolder>>, {data: FolderRenameRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  renameFolder(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RenameFolderMutationResult = NonNullable<Awaited<ReturnType<typeof renameFolder>>>
+    export type RenameFolderMutationBody = FolderRenameRequest
+    export type RenameFolderMutationError = HTTPValidationError
+
+    /**
+ * @summary フォルダ名を変更
+ */
+export const useRenameFolder = <TError = HTTPValidationError,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof renameFolder>>, TError,{data: FolderRenameRequest}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof renameFolder>>,
+        TError,
+        {data: FolderRenameRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getRenameFolderMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

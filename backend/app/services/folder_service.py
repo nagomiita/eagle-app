@@ -33,3 +33,23 @@ def update_folder_order(folder_id: int, image_ids: list[int]) -> None:
 
 def add_images_to_folder(folder_id: int, image_ids: list[int]):
     folder.query_add_images_to_folder(folder_id, image_ids)
+
+
+def rename_folder(folder_id: int, new_name: str) -> None:
+    """
+    フォルダの名前を変更する
+
+    Args:
+        folder_id (int): 変更対象のフォルダID
+        new_name (str): 新しいフォルダ名
+
+    Raises:
+        ValueError: フォルダが存在しない場合
+        RuntimeError: フォルダの更新中に予期しないエラーが発生した場合
+    """
+    try:
+        folder.query_rename_folder(folder_id, new_name)
+    except ValueError as ve:
+        raise ve
+    except Exception as e:
+        raise RuntimeError(f"フォルダ名の変更に失敗しました: {e}") from e

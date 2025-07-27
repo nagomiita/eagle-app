@@ -13,6 +13,7 @@ export * from './fetchSimilarImagesParams';
 export * from './fetchTranslatedTagsParams';
 export * from './folderCreateRequest';
 export * from './folderInfo';
+export * from './folderRenameRequest';
 export * from './folderReorderRequest';
 export * from './hTTPValidationError';
 export * from './originalImage';
