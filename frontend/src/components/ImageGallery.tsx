@@ -21,6 +21,15 @@ const ImageGrid: React.FC = () => {
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
 
+  // フォルダクリック時の共通処理
+  const handleFolderClick = (id: number) => {
+    const folder = folders.find((f) => f.id === id);
+    if (folder) {
+      setSelectedFolderId(folder.id);
+      setIsEditMode(false);
+    }
+  };
+
   const LoadingIndicator = () => (
     <div className="flex justify-center items-center h-64">
       <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900 dark:border-white"></div>
@@ -82,13 +91,7 @@ const ImageGrid: React.FC = () => {
         <FolderGrid
           folders={folders}
           columnCount={columnCount}
-          onClickFolder={(id) => {
-            const folder = folders.find((f) => f.id === id);
-            if (folder) {
-              setSelectedFolderId(folder.id);
-              setIsEditMode(false);
-            }
-          }}
+          onClickFolder={handleFolderClick}
         />
       ) : (
         <div>
@@ -96,13 +99,7 @@ const ImageGrid: React.FC = () => {
             <FolderGrid
               folders={folders}
               columnCount={columnCount}
-              onClickFolder={(id) => {
-                const folder = folders.find((f) => f.id === id);
-                if (folder) {
-                  setSelectedFolderId(folder.id);
-                  setIsEditMode(false);
-                }
-              }}
+              onClickFolder={handleFolderClick}
             />
           )}
           <ThumbnailGrid
