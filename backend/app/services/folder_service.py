@@ -4,8 +4,8 @@ from app.schemas.folder import FolderInfo
 
 def create_image_folder(
     folder_name: str, image_ids: list[int], description: str
-) -> bool:
-    folder.create_image_folder(folder_name, image_ids, description)
+) -> int:
+    return folder.create_image_folder(folder_name, image_ids, description)
 
 
 def fetch_all_folders() -> list[FolderInfo]:

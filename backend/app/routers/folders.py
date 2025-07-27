@@ -10,16 +10,16 @@ logger = setup_logging()
 @router.post(
     "/folder",
     operation_id="create_image_folder",
+    response_model=int,
     summary="画像フォルダの作成とサムネイル取得",
 )
 async def register_folder(request: FolderCreateRequest):
     try:
-        folder_service.create_image_folder(
+        return folder_service.create_image_folder(
             request.folder_name,
             request.image_ids,
             request.description,
         )
-        return {"message": "フォルダを作成しました"}
     except ValueError as ve:
         logger.warning(f"📛 フォルダ作成エラー: {ve}")
         raise HTTPException(status_code=400, detail=str(ve))

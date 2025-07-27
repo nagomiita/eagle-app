@@ -578,7 +578,7 @@ export const createImageFolder = (
 ) => {
       
       
-      return customAxios<unknown>(
+      return customAxios<number>(
       {url: `/folder`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: folderCreateRequest, signal

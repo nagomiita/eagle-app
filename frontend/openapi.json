@@ -1,1 +1,576 @@
-{"openapi":"3.1.0","info":{"title":"FastAPI","version":"0.1.0"},"servers":[{"url":"/api"}],"paths":{"/image/thumbnails":{"get":{"summary":"Fetch Filtered Thumnail Images","description":"指定された条件に基づいて、画像のサムネイル一覧を取得します。\n\n- `include_sensitive`: センシティブな画像（NSFWなど）も含めるかどうかを指定します（デフォルト: False）。\n- `favorites_only`: お気に入りに登録された画像のみを対象とするかを指定します（デフォルト: False）。\n- `selected_tag`: 特定のタグに紐づいた画像のみを対象とする場合に指定します。\n\n取得に失敗した場合は、適切なエラーメッセージとステータスコードを返します。","operationId":"fetch_filtered_thumnail_images","parameters":[{"name":"include_sensitive","in":"query","required":false,"schema":{"type":"boolean","default":false,"title":"Include Sensitive"}},{"name":"favorites_only","in":"query","required":false,"schema":{"type":"boolean","default":false,"title":"Favorites Only"}},{"name":"selected_tag","in":"query","required":false,"schema":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Selected Tag"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/ThumbnailImage"},"title":"Response Fetch Filtered Thumnail Images"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/image/original":{"get":{"summary":"Fetch Original Image","description":"指定された画像IDに対応するオリジナル画像をBase64形式で取得します。\n\n- `id`: オリジナル画像ファイルのidを指定します。\n\n対応形式は `.png`, `.jpg`, `.jpeg`, `.webp` のみです。\n\n### エラー\n- 404: 指定された画像ファイルが存在しない場合\n- 400: 対応していない画像形式の場合\n- 500: その他の内部エラー","operationId":"fetch_original_image","parameters":[{"name":"id","in":"query","required":true,"schema":{"type":"integer","title":"Id"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/OriginalImage"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/image/favorite":{"post":{"summary":"Register Favorite Image","description":"指定された画像IDをお気に入りとして登録します。\n\n- `image_id`: お気に入り登録対象の画像IDを指定します。\n\n成功時はステータス200を返します。","operationId":"register_favorite_image","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Body_register_favorite_image"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/image":{"delete":{"summary":"Delete Image","description":"指定された画像IDに対応する画像を削除します。\n\n- `image_id`: 削除対象の画像IDを指定します。\n\n### 成功時\n- ステータス200（削除成功）\n\n### 失敗時\n- 404: 対象画像が存在しない\n- 500: その他の削除処理中のエラー","operationId":"delete_image","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Body_delete_image"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/image/similar":{"get":{"summary":"Fetch Similar Images","description":"指定された画像IDに基づいて、類似画像のサムネイル一覧を取得します。\n\n- `image_id`: 類似画像検索の基準となる画像のIDを指定します。\n- `show_sensitive`: センシティブな画像（NSFWなど）を含めるかどうかを指定します（True で含める）。\n- `top_k`: 類似度が高い上位K件の画像を取得します（デフォルト: 20）。\n\n類似度の計算には、事前に保存された埋め込みベクトルを使用し、コサイン類似度に基づいて類似画像を検索します。\nセンシティブ画像の除外も埋め込み検索対象からフィルタリングされます。\n\n### レスポンス\n- `200 OK`: 類似画像のサムネイル情報のリスト（`ThumbnailImage`）を返します。\n\n### エラー\n- `404 Not Found`: 指定された画像に埋め込みベクトルが存在しないか、該当する画像が見つからない場合。\n- `500 Internal Server Error`: 類似画像の検索処理中にエラーが発生した場合。","operationId":"fetch_similar_images","parameters":[{"name":"image_id","in":"query","required":true,"schema":{"type":"integer","title":"Image Id"}},{"name":"show_sensitive","in":"query","required":true,"schema":{"type":"boolean","title":"Show Sensitive"}},{"name":"top_k","in":"query","required":false,"schema":{"type":"integer","default":21,"title":"Top K"}}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/ThumbnailImage"},"title":"Response Fetch Similar Images"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/folder":{"get":{"summary":"全フォルダ情報を取得","operationId":"fetch_all_folders","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"items":{"$ref":"#/components/schemas/FolderInfo"},"type":"array","title":"Response Fetch All Folders"}}}}}},"post":{"summary":"画像フォルダの作成とサムネイル取得","operationId":"create_image_folder","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/FolderCreateRequest"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/folder/{folder_id}/order":{"put":{"summary":"フォルダ内の画像順序を更新","operationId":"update_folder_order","parameters":[{"name":"folder_id","in":"path","required":true,"schema":{"type":"integer","title":"Folder Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"array","items":{"type":"integer"},"title":"Image Ids"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/folder/{folder_id}/add_images":{"put":{"summary":"既存のフォルダに画像を追加","operationId":"add_images_to_folder","parameters":[{"name":"folder_id","in":"path","required":true,"schema":{"type":"integer","title":"Folder Id"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"type":"array","items":{"type":"integer"},"title":"Image Ids"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/tag/list":{"get":{"summary":"Fetch Translated Tags","description":"翻訳済みのタグ一覧を取得するエンドポイント。\n\n- 指定した言語（例: `\"ja\"` や `\"en\"`）に対応したタグを返します。\n- 使用用途：多言語対応のフロントエンド表示など。\n\n### クエリパラメータ:\n- `language` (str): 翻訳対象の言語コード（デフォルト: `\"ja\"`）\n\n### レスポンス:\n- `200 OK`: 成功時に翻訳済みタグの配列を返します\n- `404 Not Found`: タグが存在しない場合\n- `500 Internal Server Error`: サーバ内部でエラーが発生した場合","operationId":"fetch_translated_tags","parameters":[{"name":"language","in":"query","required":false,"schema":{"type":"string","description":"翻訳対象の言語コード（例: 'ja', 'en'）","default":"ja","title":"Language"},"description":"翻訳対象の言語コード（例: 'ja', 'en'）"}],"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/Tag"},"title":"Response Fetch Translated Tags"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/tag/{tag_id}/toggle_flag":{"patch":{"summary":"Toggle Tag Flag","description":"タグのお気に入りまたはセンシティブフラグをオン/オフします。\n\n### パスパラメータ:\n- `tag_id` (int): フラグを変更する対象のタグID\n\n### リクエストボディ:\n- `flag` (str): `\"favorite\"` もしくは `\"sensitive\"`\n- `value` (bool): `true` でオン、`false` でオフ\n\n### レスポンス:\n- `200 OK`: 更新されたタグ情報\n- `400 Bad Request`: 不正なフラグ指定\n- `404 Not Found`: 指定IDのタグが存在しない","operationId":"toggle_tag_flag","parameters":[{"name":"tag_id","in":"path","required":true,"schema":{"type":"integer","description":"対象のタグID","title":"Tag Id"},"description":"対象のタグID"}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/TagFlagUpdate"}}}},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{"$ref":"#/components/schemas/Tag"}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}}},"components":{"schemas":{"Body_delete_image":{"properties":{"image_id":{"type":"integer","title":"Image Id"}},"type":"object","required":["image_id"],"title":"Body_delete_image"},"Body_register_favorite_image":{"properties":{"image_id":{"type":"integer","title":"Image Id"}},"type":"object","required":["image_id"],"title":"Body_register_favorite_image"},"FolderCreateRequest":{"properties":{"folder_name":{"type":"string","title":"Folder Name"},"image_ids":{"items":{"type":"integer"},"type":"array","title":"Image Ids"},"description":{"type":"string","title":"Description","default":""}},"type":"object","required":["folder_name","image_ids"],"title":"FolderCreateRequest"},"FolderInfo":{"properties":{"id":{"type":"integer","title":"Id"},"name":{"type":"string","title":"Name"},"description":{"type":"string","title":"Description"},"thumbnail_images":{"items":{"$ref":"#/components/schemas/ThumbnailImage"},"type":"array","title":"Thumbnail Images"}},"type":"object","required":["id","name","description","thumbnail_images"],"title":"FolderInfo"},"HTTPValidationError":{"properties":{"detail":{"items":{"$ref":"#/components/schemas/ValidationError"},"type":"array","title":"Detail"}},"type":"object","title":"HTTPValidationError"},"OriginalImage":{"properties":{"id":{"type":"integer","title":"Id"},"image":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Image"},"tags":{"items":{"$ref":"#/components/schemas/Tag"},"type":"array","title":"Tags"}},"type":"object","required":["id","tags"],"title":"OriginalImage"},"Tag":{"properties":{"tag_id":{"type":"integer","title":"Tag Id"},"tag_name":{"type":"string","title":"Tag Name"},"category":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Category"},"genre":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Genre"},"is_sensitive":{"type":"boolean","title":"Is Sensitive","default":false},"is_favorite":{"type":"boolean","title":"Is Favorite","default":false}},"type":"object","required":["tag_id","tag_name"],"title":"Tag"},"TagFlagUpdate":{"properties":{"flag":{"type":"string","title":"Flag"},"value":{"type":"boolean","title":"Value"}},"type":"object","required":["flag","value"],"title":"TagFlagUpdate"},"ThumbnailImage":{"properties":{"id":{"type":"integer","title":"Id"},"name":{"type":"string","title":"Name"},"thumbnail":{"anyOf":[{"type":"string"},{"type":"null"}],"title":"Thumbnail"},"is_favorite":{"type":"boolean","title":"Is Favorite"}},"type":"object","required":["id","name","is_favorite"],"title":"ThumbnailImage"},"ValidationError":{"properties":{"loc":{"items":{"anyOf":[{"type":"string"},{"type":"integer"}]},"type":"array","title":"Location"},"msg":{"type":"string","title":"Message"},"type":{"type":"string","title":"Error Type"}},"type":"object","required":["loc","msg","type"],"title":"ValidationError"}}}}
+{
+  "openapi": "3.1.0",
+  "info": { "title": "FastAPI", "version": "0.1.0" },
+  "servers": [{ "url": "/api" }],
+  "paths": {
+    "/image/thumbnails": {
+      "get": {
+        "summary": "Fetch Filtered Thumnail Images",
+        "description": "指定された条件に基づいて、画像のサムネイル一覧を取得します。\n\n- `include_sensitive`: センシティブな画像（NSFWなど）も含めるかどうかを指定します（デフォルト: False）。\n- `favorites_only`: お気に入りに登録された画像のみを対象とするかを指定します（デフォルト: False）。\n- `selected_tag`: 特定のタグに紐づいた画像のみを対象とする場合に指定します。\n\n取得に失敗した場合は、適切なエラーメッセージとステータスコードを返します。",
+        "operationId": "fetch_filtered_thumnail_images",
+        "parameters": [
+          {
+            "name": "include_sensitive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Sensitive"
+            }
+          },
+          {
+            "name": "favorites_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Favorites Only"
+            }
+          },
+          {
+            "name": "selected_tag",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Selected Tag"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ThumbnailImage" },
+                  "title": "Response Fetch Filtered Thumnail Images"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/image/original": {
+      "get": {
+        "summary": "Fetch Original Image",
+        "description": "指定された画像IDに対応するオリジナル画像をBase64形式で取得します。\n\n- `id`: オリジナル画像ファイルのidを指定します。\n\n対応形式は `.png`, `.jpg`, `.jpeg`, `.webp` のみです。\n\n### エラー\n- 404: 指定された画像ファイルが存在しない場合\n- 400: 対応していない画像形式の場合\n- 500: その他の内部エラー",
+        "operationId": "fetch_original_image",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "title": "Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OriginalImage" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/image/favorite": {
+      "post": {
+        "summary": "Register Favorite Image",
+        "description": "指定された画像IDをお気に入りとして登録します。\n\n- `image_id`: お気に入り登録対象の画像IDを指定します。\n\n成功時はステータス200を返します。",
+        "operationId": "register_favorite_image",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_register_favorite_image"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/image": {
+      "delete": {
+        "summary": "Delete Image",
+        "description": "指定された画像IDに対応する画像を削除します。\n\n- `image_id`: 削除対象の画像IDを指定します。\n\n### 成功時\n- ステータス200（削除成功）\n\n### 失敗時\n- 404: 対象画像が存在しない\n- 500: その他の削除処理中のエラー",
+        "operationId": "delete_image",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Body_delete_image" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/image/similar": {
+      "get": {
+        "summary": "Fetch Similar Images",
+        "description": "指定された画像IDに基づいて、類似画像のサムネイル一覧を取得します。\n\n- `image_id`: 類似画像検索の基準となる画像のIDを指定します。\n- `show_sensitive`: センシティブな画像（NSFWなど）を含めるかどうかを指定します（True で含める）。\n- `top_k`: 類似度が高い上位K件の画像を取得します（デフォルト: 20）。\n\n類似度の計算には、事前に保存された埋め込みベクトルを使用し、コサイン類似度に基づいて類似画像を検索します。\nセンシティブ画像の除外も埋め込み検索対象からフィルタリングされます。\n\n### レスポンス\n- `200 OK`: 類似画像のサムネイル情報のリスト（`ThumbnailImage`）を返します。\n\n### エラー\n- `404 Not Found`: 指定された画像に埋め込みベクトルが存在しないか、該当する画像が見つからない場合。\n- `500 Internal Server Error`: 類似画像の検索処理中にエラーが発生した場合。",
+        "operationId": "fetch_similar_images",
+        "parameters": [
+          {
+            "name": "image_id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "title": "Image Id" }
+          },
+          {
+            "name": "show_sensitive",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "boolean", "title": "Show Sensitive" }
+          },
+          {
+            "name": "top_k",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 60, "title": "Top K" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ThumbnailImage" },
+                  "title": "Response Fetch Similar Images"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/folder": {
+      "get": {
+        "summary": "全フォルダ情報を取得",
+        "operationId": "fetch_all_folders",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/FolderInfo" },
+                  "type": "array",
+                  "title": "Response Fetch All Folders"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "画像フォルダの作成とサムネイル取得",
+        "operationId": "create_image_folder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FolderCreateRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "title": "Response Create Image Folder"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/folder/{folder_id}/order": {
+      "put": {
+        "summary": "フォルダ内の画像順序を更新",
+        "operationId": "update_folder_order",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Folder Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { "type": "integer" },
+                "title": "Image Ids"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/folder/{folder_id}/add_images": {
+      "put": {
+        "summary": "既存のフォルダに画像を追加",
+        "operationId": "add_images_to_folder",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Folder Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": { "type": "integer" },
+                "title": "Image Ids"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tag/list": {
+      "get": {
+        "summary": "Fetch Translated Tags",
+        "description": "翻訳済みのタグ一覧を取得するエンドポイント。\n\n- 指定した言語（例: `\"ja\"` や `\"en\"`）に対応したタグを返します。\n- 使用用途：多言語対応のフロントエンド表示など。\n\n### クエリパラメータ:\n- `language` (str): 翻訳対象の言語コード（デフォルト: `\"ja\"`）\n\n### レスポンス:\n- `200 OK`: 成功時に翻訳済みタグの配列を返します\n- `404 Not Found`: タグが存在しない場合\n- `500 Internal Server Error`: サーバ内部でエラーが発生した場合",
+        "operationId": "fetch_translated_tags",
+        "parameters": [
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "翻訳対象の言語コード（例: 'ja', 'en'）",
+              "default": "ja",
+              "title": "Language"
+            },
+            "description": "翻訳対象の言語コード（例: 'ja', 'en'）"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Tag" },
+                  "title": "Response Fetch Translated Tags"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tag/{tag_id}/toggle_flag": {
+      "patch": {
+        "summary": "Toggle Tag Flag",
+        "description": "タグのお気に入りまたはセンシティブフラグをオン/オフします。\n\n### パスパラメータ:\n- `tag_id` (int): フラグを変更する対象のタグID\n\n### リクエストボディ:\n- `flag` (str): `\"favorite\"` もしくは `\"sensitive\"`\n- `value` (bool): `true` でオン、`false` でオフ\n\n### レスポンス:\n- `200 OK`: 更新されたタグ情報\n- `400 Bad Request`: 不正なフラグ指定\n- `404 Not Found`: 指定IDのタグが存在しない",
+        "operationId": "toggle_tag_flag",
+        "parameters": [
+          {
+            "name": "tag_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "description": "対象のタグID",
+              "title": "Tag Id"
+            },
+            "description": "対象のタグID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TagFlagUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Tag" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_delete_image": {
+        "properties": {
+          "image_id": { "type": "integer", "title": "Image Id" }
+        },
+        "type": "object",
+        "required": ["image_id"],
+        "title": "Body_delete_image"
+      },
+      "Body_register_favorite_image": {
+        "properties": {
+          "image_id": { "type": "integer", "title": "Image Id" }
+        },
+        "type": "object",
+        "required": ["image_id"],
+        "title": "Body_register_favorite_image"
+      },
+      "FolderCreateRequest": {
+        "properties": {
+          "folder_name": { "type": "string", "title": "Folder Name" },
+          "image_ids": {
+            "items": { "type": "integer" },
+            "type": "array",
+            "title": "Image Ids"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": ["folder_name", "image_ids"],
+        "title": "FolderCreateRequest"
+      },
+      "FolderInfo": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "name": { "type": "string", "title": "Name" },
+          "description": { "type": "string", "title": "Description" },
+          "thumbnail_images": {
+            "items": { "$ref": "#/components/schemas/ThumbnailImage" },
+            "type": "array",
+            "title": "Thumbnail Images"
+          }
+        },
+        "type": "object",
+        "required": ["id", "name", "description", "thumbnail_images"],
+        "title": "FolderInfo"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "OriginalImage": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "image": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Image"
+          },
+          "tags": {
+            "items": { "$ref": "#/components/schemas/Tag" },
+            "type": "array",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": ["id", "tags"],
+        "title": "OriginalImage"
+      },
+      "Tag": {
+        "properties": {
+          "tag_id": { "type": "integer", "title": "Tag Id" },
+          "tag_name": { "type": "string", "title": "Tag Name" },
+          "category": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Category"
+          },
+          "genre": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Genre"
+          },
+          "is_sensitive": {
+            "type": "boolean",
+            "title": "Is Sensitive",
+            "default": false
+          },
+          "is_favorite": {
+            "type": "boolean",
+            "title": "Is Favorite",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": ["tag_id", "tag_name"],
+        "title": "Tag"
+      },
+      "TagFlagUpdate": {
+        "properties": {
+          "flag": { "type": "string", "title": "Flag" },
+          "value": { "type": "boolean", "title": "Value" }
+        },
+        "type": "object",
+        "required": ["flag", "value"],
+        "title": "TagFlagUpdate"
+      },
+      "ThumbnailImage": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "name": { "type": "string", "title": "Name" },
+          "thumbnail": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Thumbnail"
+          },
+          "is_favorite": { "type": "boolean", "title": "Is Favorite" }
+        },
+        "type": "object",
+        "required": ["id", "name", "is_favorite"],
+        "title": "ThumbnailImage"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": { "type": "string", "title": "Message" },
+          "type": { "type": "string", "title": "Error Type" }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

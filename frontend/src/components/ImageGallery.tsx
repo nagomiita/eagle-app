@@ -9,6 +9,7 @@ import FolderImageEditor from "./parts/FolderImageEditor";
 const ImageGrid: React.FC = () => {
   const {
     images,
+    setImages,
     folders,
     setFolders,
     isLoading,
@@ -107,6 +108,8 @@ const ImageGrid: React.FC = () => {
             folders={folders}
             columnCount={columnCount}
             onClick={(id) => openModal(id)}
+            setFolders={setFolders}
+            setImages={setImages}
           />
         </div>
       )}

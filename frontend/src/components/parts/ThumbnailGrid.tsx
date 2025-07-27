@@ -12,6 +12,8 @@ interface ThumbnailGridProps {
   folders?: FolderInfo[];
   columnCount?: number;
   onClick: (id: number) => void;
+  setImages?: React.Dispatch<React.SetStateAction<ThumbnailImage[]>>;
+  setFolders?: React.Dispatch<React.SetStateAction<FolderInfo[]>>;
 }
 
 const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
@@ -19,6 +21,8 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
   folders,
   columnCount = 4,
   onClick,
+  setImages,
+  setFolders,
 }) => {
   const [isCheckMode, setIsCheckMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -107,14 +111,40 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
     const folderName = prompt("フォルダ名を入力してください：");
     if (!folderName) return;
 
-    const res = await createImageFolder({
+    const resFolderId = await createImageFolder({
       folder_name: folderName,
       image_ids: selectedIds,
       description: "",
     });
 
-    if (res) {
+    if (resFolderId) {
       alert("フォルダを作成しました");
+
+      const selectedImages = images.filter((img) =>
+        selectedIds.includes(img.id)
+      );
+
+      // フォルダに追加
+      const newFolder: FolderInfo = {
+        id: resFolderId,
+        name: folderName,
+        description: "",
+        thumbnail_images: selectedImages,
+      };
+
+      // 🔄 フォルダ更新（参照を変える）
+      if (setFolders) {
+        setFolders((prev) => [...prev, newFolder]);
+      }
+
+      // 🔄 画像一覧から削除（参照が変わるように）
+      if (setImages) {
+        setImages((prev) =>
+          prev.filter((img) => !selectedIds.includes(img.id))
+        );
+      }
+
+      // UI状態の初期化
       setIsCheckMode(false);
       setSelectedIds([]);
       setLastSelectedIndex(null);
