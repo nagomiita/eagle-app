@@ -2,47 +2,27 @@ import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
-  useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+
 import React, { useState } from "react";
-import { ThumbnailImage } from "../../api/model";
+import { FolderInfo, ThumbnailImage } from "../../api/model";
 import { updateFolderOrder } from "../../api/default/default";
+import { SortableImage } from "./SortableImage";
+
 interface Props {
   folderId: number;
   initialImages: ThumbnailImage[];
   onExitEditMode: () => void;
+  setFolders: React.Dispatch<React.SetStateAction<FolderInfo[]>>;
   columnCount: number;
 }
-
-const SortableImage: React.FC<{ image: ThumbnailImage }> = ({ image }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: image.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <img
-        src={`http://192.168.11.11/api/static/${image.thumbnail}`}
-        alt=""
-        className="w-full rounded mb-1"
-      />
-      <div className="text-sm text-white-700 truncate text-center">
-        {image.name}
-      </div>
-    </div>
-  );
-};
 
 const FolderImageEditor: React.FC<Props> = ({
   folderId,
   initialImages,
   onExitEditMode,
+  setFolders,
   columnCount = 4,
 }) => {
   const [images, setImages] = useState(initialImages);
@@ -81,7 +61,14 @@ const FolderImageEditor: React.FC<Props> = ({
     const image_ids = images.map((img) => img.id);
     await updateFolderOrder(folderId, image_ids);
     console.log("Updated order:", images);
-    setImages(images);
+    // フォルダの画像を更新
+    setFolders((prevFolders) =>
+      prevFolders.map((folder) =>
+        folder.id === folderId
+          ? { ...folder, thumbnail_images: images }
+          : folder
+      )
+    );
     alert("✅ 並び順を保存しました");
     onExitEditMode();
   };

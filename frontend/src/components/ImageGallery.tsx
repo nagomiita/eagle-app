@@ -3,14 +3,20 @@ import { useAppContext } from "../contexts/AppContext";
 import ThumbnailGrid from "./parts/ThumbnailGrid";
 import FolderGrid from "./parts/FolderGrid";
 import ImageModal from "./ImageModal";
-import { FolderInfo } from "../api/model";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import FolderImageEditor from "./parts/FolderImageEditor";
 const ImageGrid: React.FC = () => {
-  const { images, folders, isLoading, columnCount, openModal, showFolders } =
-    useAppContext();
+  const {
+    images,
+    folders,
+    setFolders,
+    isLoading,
+    columnCount,
+    openModal,
+    showFolders,
+  } = useAppContext();
 
-  const [selectedFolder, setSelectedFolder] = useState<FolderInfo | null>(null);
+  const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
 
   const LoadingIndicator = () => (
@@ -25,13 +31,13 @@ const ImageGrid: React.FC = () => {
 
   return (
     <>
-      {selectedFolder ? (
+      {selectedFolderId ? (
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
-                  setSelectedFolder(null);
+                  setSelectedFolderId(null);
                   setIsEditMode(false);
                 }}
                 className="text-blue-500 hover:text-blue-700 p-2 rounded-full hover:bg-blue-100 transition-all"
@@ -39,7 +45,9 @@ const ImageGrid: React.FC = () => {
               >
                 <ArrowLeftIcon className="w-5 h-5" />
               </button>
-              <h2 className="text-lg font-bold">📁 {selectedFolder.name}</h2>
+              <h2 className="text-lg font-bold">
+                📁 {folders[selectedFolderId - 1].name}
+              </h2>
             </div>
             {!isEditMode && (
               <button
@@ -53,14 +61,15 @@ const ImageGrid: React.FC = () => {
 
           {isEditMode ? (
             <FolderImageEditor
-              folderId={selectedFolder.id}
-              initialImages={selectedFolder.thumbnail_images}
+              folderId={selectedFolderId}
+              initialImages={folders[selectedFolderId - 1].thumbnail_images}
               onExitEditMode={() => setIsEditMode(false)}
+              setFolders={setFolders}
               columnCount={columnCount}
             />
           ) : (
             <ThumbnailGrid
-              images={selectedFolder.thumbnail_images}
+              images={folders[selectedFolderId - 1].thumbnail_images}
               folders={folders}
               columnCount={columnCount}
               onClick={(id) => openModal(id)}
@@ -74,7 +83,7 @@ const ImageGrid: React.FC = () => {
           onClickFolder={(id) => {
             const folder = folders.find((f) => f.id === id);
             if (folder) {
-              setSelectedFolder(folder);
+              setSelectedFolderId(folder.id);
               setIsEditMode(false);
             }
           }}
@@ -87,7 +96,7 @@ const ImageGrid: React.FC = () => {
             onClickFolder={(id) => {
               const folder = folders.find((f) => f.id === id);
               if (folder) {
-                setSelectedFolder(folder);
+                setSelectedFolderId(folder.id);
                 setIsEditMode(false);
               }
             }}
@@ -100,8 +109,8 @@ const ImageGrid: React.FC = () => {
           />
         </div>
       )}
-      {selectedFolder ? (
-        <ImageModal images={selectedFolder.thumbnail_images} />
+      {selectedFolderId ? (
+        <ImageModal images={folders[selectedFolderId - 1].thumbnail_images} />
       ) : (
         <ImageModal images={images} />
       )}
