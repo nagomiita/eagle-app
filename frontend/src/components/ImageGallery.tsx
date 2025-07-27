@@ -3,8 +3,9 @@ import { useAppContext } from "../contexts/AppContext";
 import ThumbnailGrid from "./parts/ThumbnailGrid";
 import FolderGrid from "./parts/FolderGrid";
 import ImageModal from "./ImageModal";
-import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import FolderImageEditor from "./parts/FolderImageEditor";
+import { SectionDivider, SectionHeader } from "./parts/Section";
+import { FolderHeader } from "./parts/FolderHeader";
 
 const ImageGrid: React.FC = () => {
   const {
@@ -17,10 +18,16 @@ const ImageGrid: React.FC = () => {
     openModal,
     showFolders,
     selectedTag,
+    tags,
   } = useAppContext();
 
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+
+  //選択されたタグをIDから名前に変換
+  const selectedTagName = tags?.find(
+    (tag) => tag.tag_id === Number(selectedTag)
+  )?.tag_name;
 
   // フォルダクリック時の共通処理
   const handleFolderClick = (id: number) => {
@@ -29,6 +36,16 @@ const ImageGrid: React.FC = () => {
       setSelectedFolderId(folder.id);
       setIsEditMode(false);
     }
+  };
+
+  // フォルダヘッダーのハンドラー
+  const handleBackToFolders = () => {
+    setSelectedFolderId(null);
+    setIsEditMode(false);
+  };
+
+  const handleToggleEditMode = () => {
+    setIsEditMode(true);
   };
 
   const LoadingIndicator = () => (
@@ -45,31 +62,12 @@ const ImageGrid: React.FC = () => {
     <>
       {selectedFolderId ? (
         <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  setSelectedFolderId(null);
-                  setIsEditMode(false);
-                }}
-                className="text-blue-500 hover:text-blue-700 p-2 rounded-full hover:bg-blue-100 transition-all"
-                title="フォルダー一覧へ戻る"
-              >
-                <ArrowLeftIcon className="w-5 h-5" />
-              </button>
-              <h2 className="text-lg font-bold">
-                📁 {folders[selectedFolderId - 1].name}
-              </h2>
-            </div>
-            {!isEditMode && (
-              <button
-                onClick={() => setIsEditMode(true)}
-                className="text-sm text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded"
-              >
-                ✏️ 並び順を変更
-              </button>
-            )}
-          </div>
+          <FolderHeader
+            folderName={folders[selectedFolderId - 1].name}
+            isEditMode={isEditMode}
+            onBack={handleBackToFolders}
+            onToggleEditMode={handleToggleEditMode}
+          />
 
           {isEditMode ? (
             <FolderImageEditor
@@ -80,29 +78,89 @@ const ImageGrid: React.FC = () => {
               columnCount={columnCount}
             />
           ) : (
-            <ThumbnailGrid
-              images={folders[selectedFolderId - 1].thumbnail_images}
-              folders={folders}
-              columnCount={columnCount}
-              onClick={(id) => openModal(id)}
-            />
+            <div>
+              <SectionHeader
+                iconType="Folder"
+                title="フォルダ内の画像"
+                count={folders[selectedFolderId - 1].thumbnail_images.length}
+                subtitle={`${
+                  folders[selectedFolderId - 1].name
+                } フォルダの画像一覧`}
+              />
+              <ThumbnailGrid
+                images={folders[selectedFolderId - 1].thumbnail_images}
+                folders={folders}
+                columnCount={columnCount}
+                onClick={(id) => openModal(id)}
+              />
+
+              {selectedTag && (
+                <>
+                  <SectionDivider />
+                  <SectionHeader
+                    iconType="Image"
+                    title="タグで絞り込まれた画像"
+                    count={images.length}
+                    subtitle={`タグ "${selectedTagName}" に一致する画像`}
+                  />
+                  <ThumbnailGrid
+                    images={images}
+                    folders={folders}
+                    columnCount={columnCount}
+                    onClick={(id) => openModal(id)}
+                    setFolders={setFolders}
+                    setImages={setImages}
+                  />
+                </>
+              )}
+            </div>
           )}
         </div>
       ) : showFolders ? (
-        <FolderGrid
-          folders={folders}
-          columnCount={columnCount}
-          onClickFolder={handleFolderClick}
-        />
+        <>
+          <SectionHeader
+            iconType="Folder"
+            title="フォルダ一覧"
+            count={folders.length}
+            subtitle="画像が整理されたフォルダを表示しています"
+          />
+          <FolderGrid
+            folders={folders}
+            columnCount={columnCount}
+            onClickFolder={handleFolderClick}
+          />
+        </>
       ) : (
         <div>
           {!selectedTag && (
-            <FolderGrid
-              folders={folders}
-              columnCount={columnCount}
-              onClickFolder={handleFolderClick}
-            />
+            <>
+              <SectionHeader
+                iconType="Folder"
+                title="フォルダ"
+                count={folders.length}
+                subtitle="整理された画像コレクション"
+              />
+              <FolderGrid
+                folders={folders}
+                columnCount={columnCount}
+                onClickFolder={handleFolderClick}
+              />
+              <SectionDivider />
+            </>
           )}
+
+          <SectionHeader
+            iconType="Image"
+            title={
+              selectedTag ? `タグ: ${selectedTagName}` : "フォルダ外の画像"
+            }
+            count={images.length}
+            subtitle={
+              selectedTag
+                ? "タグで絞り込まれた画像一覧"
+                : "ライブラリ内のフォルダ外の画像"
+            }
+          />
           <ThumbnailGrid
             images={images}
             folders={folders}
