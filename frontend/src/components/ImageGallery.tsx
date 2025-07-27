@@ -5,6 +5,7 @@ import FolderGrid from "./parts/FolderGrid";
 import ImageModal from "./ImageModal";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import FolderImageEditor from "./parts/FolderImageEditor";
+
 const ImageGrid: React.FC = () => {
   const {
     images,
@@ -14,6 +15,7 @@ const ImageGrid: React.FC = () => {
     columnCount,
     openModal,
     showFolders,
+    selectedTag,
   } = useAppContext();
 
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
@@ -90,17 +92,19 @@ const ImageGrid: React.FC = () => {
         />
       ) : (
         <div>
-          <FolderGrid
-            folders={folders}
-            columnCount={columnCount}
-            onClickFolder={(id) => {
-              const folder = folders.find((f) => f.id === id);
-              if (folder) {
-                setSelectedFolderId(folder.id);
-                setIsEditMode(false);
-              }
-            }}
-          />
+          {!selectedTag && (
+            <FolderGrid
+              folders={folders}
+              columnCount={columnCount}
+              onClickFolder={(id) => {
+                const folder = folders.find((f) => f.id === id);
+                if (folder) {
+                  setSelectedFolderId(folder.id);
+                  setIsEditMode(false);
+                }
+              }}
+            />
+          )}
           <ThumbnailGrid
             images={images}
             folders={folders}
