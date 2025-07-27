@@ -178,9 +178,12 @@ const ImageGrid: React.FC = () => {
         </div>
       )}
       {selectedFolderId ? (
-        <ImageModal images={folders[selectedFolderIndex].thumbnail_images} />
+        <ImageModal
+          images={folders[selectedFolderIndex].thumbnail_images}
+          setFolders={setFolders}
+        />
       ) : (
-        <ImageModal images={images} />
+        <ImageModal images={images} setImages={setImages} />
       )}
     </>
   );

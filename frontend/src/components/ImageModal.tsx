@@ -6,7 +6,7 @@ import {
   fetchSimilarImages,
 } from "../api/default/default";
 import { registerFavoriteImage } from "../api/default/default";
-import { ThumbnailImage } from "../api/model";
+import { FolderInfo, ThumbnailImage } from "../api/model";
 import { SidebarUi } from "./parts/SidebarUi";
 import ThumbnailGrid from "./parts/ThumbnailGrid";
 import ActionButton from "./parts/ActionButton";
@@ -31,14 +31,19 @@ interface TouchState {
 
 interface ImageModalProps {
   images: ThumbnailImage[];
+  setImages?: React.Dispatch<React.SetStateAction<ThumbnailImage[]>>;
+  setFolders?: React.Dispatch<React.SetStateAction<FolderInfo[]>>;
 }
 
-const ImageModal: React.FC<ImageModalProps> = ({ images }) => {
+const ImageModal: React.FC<ImageModalProps> = ({
+  images,
+  setImages,
+  setFolders,
+}) => {
   const {
     selectedImage,
     setSelectedImage,
     closeModal,
-    setImages,
     includeSensitive,
     setSelectedTag,
   } = useAppContext();
@@ -311,13 +316,28 @@ const ImageModal: React.FC<ImageModalProps> = ({ images }) => {
     if (!selectedImage) return;
     await registerFavoriteImage({ image_id: selectedImage.id });
 
-    setImages((prev) =>
-      prev.map((img) =>
-        img.id === selectedImage.id
-          ? { ...img, is_favorite: !img.is_favorite }
-          : img
-      )
-    );
+    if (setImages) {
+      setImages((prev) =>
+        prev.map((img) =>
+          img.id === selectedImage.id
+            ? { ...img, is_favorite: !img.is_favorite }
+            : img
+        )
+      );
+    }
+    // setFoldersが存在する場合、フォルダ内の画像も更新
+    if (setFolders) {
+      setFolders((prev) =>
+        prev.map((folder) => ({
+          ...folder,
+          thumbnail_images: folder.thumbnail_images.map((img) =>
+            img.id === selectedImage.id
+              ? { ...img, is_favorite: !img.is_favorite }
+              : img
+          ),
+        }))
+      );
+    }
   };
 
   const handleDeleteImage = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -326,7 +346,21 @@ const ImageModal: React.FC<ImageModalProps> = ({ images }) => {
     if (!selectedImage) return;
     try {
       await deleteImage({ image_id: selectedImage.id });
-      setImages((prev) => prev.filter((img) => img.id !== selectedImage.id));
+      if (setImages) {
+        setImages((prev) => prev.filter((img) => img.id !== selectedImage.id));
+      }
+      // setFoldersが存在する場合、フォルダ内の画像も更新
+      if (setFolders) {
+        setFolders((prev) =>
+          prev.map((folder) => ({
+            ...folder,
+            thumbnail_images: folder.thumbnail_images.filter(
+              (img) => img.id !== selectedImage.id
+            ),
+          }))
+        );
+      }
+      alert("✅ 画像を削除しました");
       closeModal();
     } catch (err) {
       console.error("画像削除中にエラーが発生しました:", err);
