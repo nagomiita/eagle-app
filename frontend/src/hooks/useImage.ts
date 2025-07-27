@@ -38,6 +38,7 @@ export const useOriginalImage = () => {
 
 export const useThumbnailImages = () => {
   const [images, setImages] = useState<ThumbnailImage[]>([]);
+  const [excludeInFolder, setExcludeInFolder] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [includeSensitive, setIncludeSensitive] = useState<boolean>(false);
   const [onlyFavorite, setOnlyFavorite] = useState<boolean>(false);
@@ -55,6 +56,7 @@ export const useThumbnailImages = () => {
         include_sensitive: includeSensitive,
         favorites_only: onlyFavorite,
         selected_tag: selectedTag,
+        exclude_in_folder: excludeInFolder,
       });
       setImages(thumnailImages);
     } catch (error) {
@@ -67,6 +69,8 @@ export const useThumbnailImages = () => {
   return {
     images,
     setImages,
+    excludeInFolder,
+    setExcludeInFolder,
     isLoading,
     columnCount,
     setColumnCount,

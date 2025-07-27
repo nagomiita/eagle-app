@@ -6,6 +6,8 @@ import { ColumnSlider, ImageFilterButtons } from "./parts/ControlsUi";
 const Header: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const {
+    excludeInFolder,
+    setExcludeInFolder,
     includeSensitive,
     setIncludeSensitive,
     onlyFavorite,
@@ -48,6 +50,8 @@ const Header: React.FC = () => {
           onChange={(e) => setColumnCount(Number(e.target.value))}
         />
         <ImageFilterButtons
+          excludeInFolder={excludeInFolder}
+          setExcludeInFolder={setExcludeInFolder}
           showFavoriteOnly={onlyFavorite}
           setShowFavoriteOnly={setOnlyFavorite}
           showSensitive={includeSensitive}

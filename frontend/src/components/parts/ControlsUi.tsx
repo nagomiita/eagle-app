@@ -8,6 +8,8 @@ import {
   FolderOpenIcon,
   TagIcon,
   TagIcon as TagSolidIcon,
+  PhotoIcon,
+  PhotoIcon as PhotoSolidIcon,
 } from "@heroicons/react/24/solid";
 
 export const ImageFilterButtons = ({
@@ -19,6 +21,8 @@ export const ImageFilterButtons = ({
   setSelectedTag,
   showFolders,
   setShowFolders,
+  excludeInFolder,
+  setExcludeInFolder,
 }: {
   showFavoriteOnly: boolean;
   setShowFavoriteOnly: (val: boolean) => void;
@@ -28,6 +32,8 @@ export const ImageFilterButtons = ({
   setSelectedTag: (tagId: string) => void;
   showFolders: boolean;
   setShowFolders: (val: boolean) => void;
+  excludeInFolder: boolean;
+  setExcludeInFolder: React.Dispatch<React.SetStateAction<boolean>>;
 }) => (
   <div className="flex gap-2 items-center">
     {/* タグ選択フィルター解除 */}
@@ -44,6 +50,22 @@ export const ImageFilterButtons = ({
         <TagSolidIcon className="w-5 h-5" />
       ) : (
         <TagIcon className="w-5 h-5" />
+      )}
+    </button>
+    {/* イラスト全表示切り替えボタン */}
+    <button
+      onClick={() => setExcludeInFolder(!excludeInFolder)}
+      className={`rounded-full transition-all ${
+        !excludeInFolder
+          ? "bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30"
+          : "text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10"
+      }`}
+      title="フォルダ表示の切り替え"
+    >
+      {excludeInFolder ? (
+        <PhotoSolidIcon className="w-5 h-5" />
+      ) : (
+        <PhotoIcon className="w-5 h-5" />
       )}
     </button>
 

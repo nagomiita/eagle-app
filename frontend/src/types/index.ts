@@ -4,6 +4,8 @@ export interface AppContextType {
   // From useThumbnailImages
   images: ThumbnailImage[];
   setImages: React.Dispatch<React.SetStateAction<ThumbnailImage[]>>;
+  excludeInFolder: boolean;
+  setExcludeInFolder: React.Dispatch<React.SetStateAction<boolean>>;
   isLoading: boolean;
   columnCount: number;
   setColumnCount: React.Dispatch<React.SetStateAction<number>>;

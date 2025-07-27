@@ -24,6 +24,7 @@ export function AppProvider({ children }: AppProviderProps) {
     tagState.selectedTag,
     thumbnailImagesState.includeSensitive,
     thumbnailImagesState.onlyFavorite,
+    thumbnailImagesState.excludeInFolder,
   ]);
 
   const value: AppContextType = {

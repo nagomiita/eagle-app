@@ -27,10 +27,11 @@ async def fetch_filtered_thumnail_images(
     include_sensitive: bool = False,
     favorites_only: bool = False,
     selected_tag: str | None = None,
+    exclude_in_folder: bool = True,
 ):
     try:
         thumnail_images = image_service.fetch_filtered_thumnail_images(
-            include_sensitive, favorites_only, selected_tag
+            include_sensitive, favorites_only, selected_tag, exclude_in_folder
         )
         return thumnail_images
     except ValueError as ve:

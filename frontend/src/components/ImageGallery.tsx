@@ -19,6 +19,7 @@ const ImageGrid: React.FC = () => {
     showFolders,
     selectedTag,
     tags,
+    excludeInFolder,
   } = useAppContext();
 
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
@@ -132,7 +133,7 @@ const ImageGrid: React.FC = () => {
         </>
       ) : (
         <div>
-          {!selectedTag && (
+          {!selectedTag && excludeInFolder && (
             <>
               <SectionHeader
                 iconType="Folder"
@@ -152,11 +153,17 @@ const ImageGrid: React.FC = () => {
           <SectionHeader
             iconType="Image"
             title={
-              selectedTag ? `タグ: ${selectedTagName}` : "フォルダ外の画像"
+              !excludeInFolder
+                ? "すべての画像"
+                : selectedTag
+                ? `タグ: ${selectedTagName}`
+                : "フォルダ外の画像"
             }
             count={images.length}
             subtitle={
-              selectedTag
+              !excludeInFolder
+                ? "ライブラリ内のすべての画像"
+                : selectedTag
                 ? "タグで絞り込まれた画像一覧"
                 : "ライブラリ内のフォルダ外の画像"
             }

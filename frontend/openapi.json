@@ -37,6 +37,16 @@
               "anyOf": [{ "type": "string" }, { "type": "null" }],
               "title": "Selected Tag"
             }
+          },
+          {
+            "name": "exclude_in_folder",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Exclude In Folder"
+            }
           }
         ],
         "responses": {

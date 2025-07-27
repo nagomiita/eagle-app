@@ -10,7 +10,10 @@ from send2trash import send2trash
 
 
 def fetch_filtered_thumnail_images(
-    include_sensitive: bool, favorites_only: bool, selected_tag: str | None = None
+    include_sensitive: bool,
+    favorites_only: bool,
+    selected_tag: str | None = None,
+    exclude_in_folder: bool = True,
 ) -> list[ThumbnailImage]:
     """
     フィルタ条件に基づいて画像エントリを取得し、サムネイル情報のリストを返す。
@@ -32,7 +35,7 @@ def fetch_filtered_thumnail_images(
             include_sensitive=include_sensitive,
             favorites_only=favorites_only,
             tag_id=selected_tag,
-            exclude_in_folder=True,
+            exclude_in_folder=exclude_in_folder,
         )
     except Exception as e:
         raise RuntimeError("画像データの取得に失敗しました") from e
