@@ -6,6 +6,7 @@ import ImageModal from "./ImageModal";
 import FolderImageEditor from "./parts/FolderImageEditor";
 import { SectionDivider, SectionHeader } from "./parts/Section";
 import { FolderHeader } from "./parts/FolderHeader";
+import { LoadingIndicator } from "./parts/LoadingIndicator";
 
 const ImageGrid: React.FC = () => {
   const {
@@ -30,6 +31,11 @@ const ImageGrid: React.FC = () => {
     (tag) => tag.tag_id === Number(selectedTag)
   )?.tag_name;
 
+  //選択されたフォルダのインデックスを取得する
+  const selectedFolderIndex = folders.findIndex(
+    (folder) => folder.id === selectedFolderId
+  );
+
   // フォルダクリック時の共通処理
   const handleFolderClick = (id: number) => {
     const folder = folders.find((f) => f.id === id);
@@ -49,13 +55,6 @@ const ImageGrid: React.FC = () => {
     setIsEditMode(true);
   };
 
-  const LoadingIndicator = () => (
-    <div className="flex justify-center items-center h-64">
-      <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-300 dark:border-gray-700 border-t-blue-500"></div>
-    </div>
-  );
-  console.log(isLoading);
-
   if (isLoading) {
     return <LoadingIndicator />;
   }
@@ -65,7 +64,7 @@ const ImageGrid: React.FC = () => {
       {selectedFolderId ? (
         <div className="mb-4">
           <FolderHeader
-            folderName={folders[selectedFolderId - 1].name}
+            folderName={folders[selectedFolderIndex].name}
             isEditMode={isEditMode}
             onBack={handleBackToFolders}
             onToggleEditMode={handleToggleEditMode}
@@ -74,7 +73,7 @@ const ImageGrid: React.FC = () => {
           {isEditMode ? (
             <FolderImageEditor
               folderId={selectedFolderId}
-              initialImages={folders[selectedFolderId - 1].thumbnail_images}
+              initialImages={folders[selectedFolderIndex].thumbnail_images}
               onExitEditMode={() => setIsEditMode(false)}
               setFolders={setFolders}
               columnCount={columnCount}
@@ -84,13 +83,11 @@ const ImageGrid: React.FC = () => {
               <SectionHeader
                 iconType="Folder"
                 title="フォルダ内の画像"
-                count={folders[selectedFolderId - 1].thumbnail_images.length}
-                subtitle={`${
-                  folders[selectedFolderId - 1].name
-                } フォルダの画像一覧`}
+                count={folders[selectedFolderIndex].thumbnail_images.length}
+                subtitle={`${folders[selectedFolderIndex].name} フォルダの画像一覧`}
               />
               <ThumbnailGrid
-                images={folders[selectedFolderId - 1].thumbnail_images}
+                images={folders[selectedFolderIndex].thumbnail_images}
                 folders={folders}
                 columnCount={columnCount}
                 onClick={(id) => openModal(id)}
@@ -180,7 +177,7 @@ const ImageGrid: React.FC = () => {
         </div>
       )}
       {selectedFolderId ? (
-        <ImageModal images={folders[selectedFolderId - 1].thumbnail_images} />
+        <ImageModal images={folders[selectedFolderIndex].thumbnail_images} />
       ) : (
         <ImageModal images={images} />
       )}
