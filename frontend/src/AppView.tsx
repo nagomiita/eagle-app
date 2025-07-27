@@ -8,7 +8,9 @@ function AppView() {
         <div className="sticky top-0 z-50 bg-gray-900">
           <Header />
         </div>
-        <ImageGallery />
+        <div className="p-2">
+          <ImageGallery />
+        </div>
       </div>
     </div>
   );

@@ -62,7 +62,7 @@ const ImageGrid: React.FC = () => {
   return (
     <>
       {selectedFolderId ? (
-        <div className="mb-4">
+        <div>
           <FolderHeader
             folderName={folders[selectedFolderIndex].name}
             isEditMode={isEditMode}

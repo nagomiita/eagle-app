@@ -31,7 +31,7 @@ const Header: React.FC = () => {
   return (
     <>
       {/* ヘッダーの行全体 */}
-      <div className="flex justify-between items-center mb-5 px-4 py-2 bg-gray-800 text-white shadow-md rounded-lg">
+      <div className="flex justify-between items-center px-4 py-2 bg-gray-800 text-white shadow-md rounded-lg">
         {/* 左：サイドバーを開くボタン + タイトル */}
         <div className="flex items-center gap-3">
           <button
