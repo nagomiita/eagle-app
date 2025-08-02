@@ -575,6 +575,11 @@
             "type": "boolean",
             "title": "Is Favorite",
             "default": false
+          },
+          "usage_count": {
+            "type": "integer",
+            "title": "Usage Count",
+            "default": 0
           }
         },
         "type": "object",

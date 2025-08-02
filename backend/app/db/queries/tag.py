@@ -8,12 +8,22 @@ from app.db.models import (
 )
 from app.db.query_performance import measure_query_time, measure_time
 from app.db.session import get_session
+from sqlalchemy import func
 
 
 @measure_time("query_all_translated_tags")
 def query_all_translated_tags(language: str = "ja") -> list[tuple]:
     with get_session() as session:
         with measure_query_time("query_all_translated_tags"):
+            usage_counts_subq = (
+                session.query(
+                    ImageTag.tag_id.label("tag_id"),
+                    func.count(ImageTag.image_id).label("usage_count"),
+                )
+                .group_by(ImageTag.tag_id)
+                .having(func.count(ImageTag.image_id) >= 10)
+                .subquery()
+            )
             return (
                 session.query(Tag)
                 .outerjoin(
@@ -24,6 +34,7 @@ def query_all_translated_tags(language: str = "ja") -> list[tuple]:
                 .join(Tag.category)
                 .outerjoin(TagGenre, Tag.id == TagGenre.tag_id)
                 .outerjoin(Genre, TagGenre.genre_id == Genre.id)
+                .join(usage_counts_subq, Tag.id == usage_counts_subq.c.tag_id)
                 .with_entities(
                     Tag.id.label("tag_id"),
                     Tag.name.label("default_name"),
@@ -32,6 +43,7 @@ def query_all_translated_tags(language: str = "ja") -> list[tuple]:
                     Genre.name.label("genre_name"),
                     Tag.is_sensitive.label("is_sensitive"),
                     Tag.is_favorite.label("is_favorite"),
+                    usage_counts_subq.c.usage_count,
                 )
                 .order_by(Tag.name)
                 .all()

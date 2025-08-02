@@ -227,95 +227,103 @@ const TagOverview: React.FC = () => {
 
                       {openGenres[genre] && (
                         <div className="space-y-2">
-                          {(genreTags ?? []).map((tag) => {
-                            const key = String(tag.tag_id);
-                            const settings = tagSettings[key] || {
-                              isFavorite: false,
-                              isSensitive: false,
-                            };
+                          {[...(genreTags ?? [])]
+                            .sort(
+                              (a, b) =>
+                                (b.usage_count ?? 0) - (a.usage_count ?? 0)
+                            ) // 使用数の多い順にソート
+                            .map((tag) => {
+                              const key = String(tag.tag_id);
+                              const settings = tagSettings[key] || {
+                                isFavorite: false,
+                                isSensitive: false,
+                              };
 
-                            return (
-                              <div
-                                key={tag.tag_id}
-                                onClick={() => {
-                                  if (selectedTag === String(tag.tag_id)) {
-                                    setSelectedTag(""); // または null
-                                  } else {
-                                    setSelectedTag(String(tag.tag_id));
-                                  }
-                                }}
-                                className={`group rounded-lg p-3 transition-all duration-200 border ${
-                                  selectedTag === String(tag.tag_id)
-                                    ? "bg-blue-700 border-blue-500"
-                                    : "bg-gray-700/50 hover:bg-gray-700/80 border-gray-600/30 hover:border-gray-500/50"
-                                }`}
-                              >
-                                <div className="flex items-start justify-between gap-2 mb-2">
-                                  <span className="font-medium text-gray-200 group-hover:text-white transition-colors text-sm leading-tight break-words flex-1 min-w-0">
-                                    {tag.tag_name}
-                                  </span>
-                                  <div className="flex gap-1 flex-shrink-0">
-                                    <button
-                                      onClick={() =>
-                                        toggleTagSetting(
-                                          tag.tag_id,
-                                          "isFavorite"
-                                        )
-                                      }
-                                      className={`p-1 rounded-full transition-all ${
-                                        settings.isFavorite
-                                          ? "bg-pink-500/20 text-pink-400 hover:bg-pink-500/30"
-                                          : "text-gray-500 hover:text-pink-400 hover:bg-pink-500/10"
-                                      }`}
-                                      title="お気に入りに追加"
-                                    >
-                                      {settings.isFavorite ? (
-                                        <HeartSolidIcon className="w-3 h-3" />
-                                      ) : (
-                                        <HeartIcon className="w-3 h-3" />
-                                      )}
-                                    </button>
-                                    <button
-                                      onClick={() =>
-                                        toggleTagSetting(
-                                          tag.tag_id,
-                                          "isSensitive"
-                                        )
-                                      }
-                                      className={`p-1 rounded-full transition-all ${
-                                        settings.isSensitive
-                                          ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
-                                          : "text-gray-500 hover:text-red-400 hover:bg-red-500/10"
-                                      }`}
-                                      title="センシティブに設定"
-                                    >
-                                      {settings.isSensitive ? (
-                                        <EyeSlashSolidIcon className="w-3 h-3" />
-                                      ) : (
-                                        <EyeSlashIcon className="w-3 h-3" />
-                                      )}
-                                    </button>
+                              return (
+                                <div
+                                  key={tag.tag_id}
+                                  onClick={() => {
+                                    if (selectedTag === String(tag.tag_id)) {
+                                      setSelectedTag(""); // または null
+                                    } else {
+                                      setSelectedTag(String(tag.tag_id));
+                                    }
+                                  }}
+                                  className={`group rounded-lg p-3 transition-all duration-200 border ${
+                                    selectedTag === String(tag.tag_id)
+                                      ? "bg-blue-700 border-blue-500"
+                                      : "bg-gray-700/50 hover:bg-gray-700/80 border-gray-600/30 hover:border-gray-500/50"
+                                  }`}
+                                >
+                                  <div className="flex items-start justify-between gap-2 mb-2">
+                                    <span className="font-medium text-gray-200 group-hover:text-white transition-colors text-sm leading-tight break-words flex-1 min-w-0">
+                                      {tag.tag_name}
+                                      {tag.usage_count
+                                        ? ` (${tag.usage_count})`
+                                        : ""}
+                                    </span>
+                                    <div className="flex gap-1 flex-shrink-0">
+                                      <button
+                                        onClick={() =>
+                                          toggleTagSetting(
+                                            tag.tag_id,
+                                            "isFavorite"
+                                          )
+                                        }
+                                        className={`p-1 rounded-full transition-all ${
+                                          settings.isFavorite
+                                            ? "bg-pink-500/20 text-pink-400 hover:bg-pink-500/30"
+                                            : "text-gray-500 hover:text-pink-400 hover:bg-pink-500/10"
+                                        }`}
+                                        title="お気に入りに追加"
+                                      >
+                                        {settings.isFavorite ? (
+                                          <HeartSolidIcon className="w-3 h-3" />
+                                        ) : (
+                                          <HeartIcon className="w-3 h-3" />
+                                        )}
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          toggleTagSetting(
+                                            tag.tag_id,
+                                            "isSensitive"
+                                          )
+                                        }
+                                        className={`p-1 rounded-full transition-all ${
+                                          settings.isSensitive
+                                            ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                                            : "text-gray-500 hover:text-red-400 hover:bg-red-500/10"
+                                        }`}
+                                        title="センシティブに設定"
+                                      >
+                                        {settings.isSensitive ? (
+                                          <EyeSlashSolidIcon className="w-3 h-3" />
+                                        ) : (
+                                          <EyeSlashIcon className="w-3 h-3" />
+                                        )}
+                                      </button>
+                                    </div>
                                   </div>
+
+                                  {(settings.isFavorite ||
+                                    settings.isSensitive) && (
+                                    <div className="flex gap-1 flex-wrap">
+                                      {settings.isFavorite && (
+                                        <span className="px-2 py-0.5 bg-pink-500/20 text-pink-300 text-xs rounded-full">
+                                          お気に入り
+                                        </span>
+                                      )}
+                                      {settings.isSensitive && (
+                                        <span className="px-2 py-0.5 bg-red-500/20 text-red-300 text-xs rounded-full">
+                                          センシティブ
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
-
-                                {(settings.isFavorite ||
-                                  settings.isSensitive) && (
-                                  <div className="flex gap-1 flex-wrap">
-                                    {settings.isFavorite && (
-                                      <span className="px-2 py-0.5 bg-pink-500/20 text-pink-300 text-xs rounded-full">
-                                        お気に入り
-                                      </span>
-                                    )}
-                                    {settings.isSensitive && (
-                                      <span className="px-2 py-0.5 bg-red-500/20 text-red-300 text-xs rounded-full">
-                                        センシティブ
-                                      </span>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
+                              );
+                            })}
                         </div>
                       )}
                     </div>

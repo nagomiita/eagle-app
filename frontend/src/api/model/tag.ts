@@ -14,4 +14,5 @@ export interface Tag {
   genre?: TagGenre;
   is_sensitive?: boolean;
   is_favorite?: boolean;
+  usage_count?: number;
 }

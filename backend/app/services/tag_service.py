@@ -32,8 +32,9 @@ def fetch_translated_tags(language: str = "ja") -> list[Tag]:
             genre=genre,
             is_sensitive=is_sensitive,
             is_favorite=is_favorite,
+            usage_count=usage_count,
         )
-        for tag_id, default_name, translated_name, category, genre, is_sensitive, is_favorite in tags
+        for tag_id, default_name, translated_name, category, genre, is_sensitive, is_favorite, usage_count in tags
     ]
 
 

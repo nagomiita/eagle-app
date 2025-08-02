@@ -8,6 +8,7 @@ class Tag(BaseModel):
     genre: str | None = None
     is_sensitive: bool = False
     is_favorite: bool = False
+    usage_count: int = 0
 
 
 class TagFlagUpdate(BaseModel):
