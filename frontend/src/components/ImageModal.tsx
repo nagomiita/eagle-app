@@ -6,7 +6,7 @@ import {
   fetchSimilarImages,
 } from "../api/default/default";
 import { registerFavoriteImage } from "../api/default/default";
-import { FolderInfo, ThumbnailImage } from "../api/model";
+import { FolderInfo, OriginalImage, ThumbnailImage } from "../api/model";
 import { SidebarUi } from "./parts/SidebarUi";
 import ThumbnailGrid from "./parts/ThumbnailGrid";
 import ActionButton from "./parts/ActionButton";
@@ -65,6 +65,40 @@ const ImageModal: React.FC<ImageModalProps> = ({
   const [similarImages, setSimilarImages] = useState<ThumbnailImage[]>([]);
   const [showCarouselControls, setShowCarouselControls] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  //スライドショー機能
+  const [isSlideshowPlaying, setIsSlideshowPlaying] = useState(false);
+  const slideshowIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [slideshowIntervalSec, setSlideshowIntervalSec] = useState(1);
+
+  // 最新の状態を追跡するためのref
+  const latestStateRef = useRef<{
+    selectedImage: OriginalImage | ThumbnailImage | null;
+    images: ThumbnailImage[];
+    isSlideshowPlaying: boolean;
+  }>({
+    selectedImage: null,
+    images: [],
+    isSlideshowPlaying: false,
+  });
+
+  // 最新の状態をrefに同期
+  useEffect(() => {
+    latestStateRef.current.selectedImage = selectedImage;
+    latestStateRef.current.images = images;
+    latestStateRef.current.isSlideshowPlaying = isSlideshowPlaying;
+  }, [selectedImage, images, isSlideshowPlaying]);
+
+  // スライドショーの停止処理を確実にするためのクリーンアップ
+  useEffect(() => {
+    return () => {
+      setIsSlideshowPlaying(false);
+      if (slideshowIntervalRef.current) {
+        clearInterval(slideshowIntervalRef.current);
+        slideshowIntervalRef.current = null;
+      }
+    };
+  }, []);
 
   // 現在の画像インデックスを取得
   const currentIndex = useMemo(() => {
@@ -133,6 +167,73 @@ const ImageModal: React.FC<ImageModalProps> = ({
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  // スライドショー機能の修正版
+  useEffect(() => {
+    // スライドショーを停止する関数
+    const stopSlideshow = () => {
+      if (slideshowIntervalRef.current) {
+        clearInterval(slideshowIntervalRef.current);
+        slideshowIntervalRef.current = null;
+      }
+    };
+
+    if (isSlideshowPlaying) {
+      // 既存のインターバルをクリア
+      stopSlideshow();
+
+      // 新しいインターバルを設定
+      slideshowIntervalRef.current = setInterval(() => {
+        // refから最新の状態を取得
+        const {
+          selectedImage: currentSelectedImage,
+          images: currentImages,
+          isSlideshowPlaying: currentPlaying,
+        } = latestStateRef.current;
+
+        // スライドショーが停止されていたら処理を終了
+        if (!currentPlaying) {
+          stopSlideshow();
+          return;
+        }
+
+        if (!currentSelectedImage) {
+          setIsSlideshowPlaying(false);
+          return;
+        }
+
+        // 最新の状態を使用してインデックスを計算
+        const currentIdx = currentImages.findIndex(
+          (img) => img.id === currentSelectedImage.id
+        );
+        const hasNextImg =
+          currentIdx >= 0 && currentIdx < currentImages.length - 1;
+
+        if (hasNextImg) {
+          // 次の画像を非同期で取得
+          fetchOriginalImage({ id: currentImages[currentIdx + 1].id })
+            .then((originalImage) => {
+              if (originalImage && latestStateRef.current.isSlideshowPlaying) {
+                setSelectedImage(originalImage);
+              }
+            })
+            .catch((error) => {
+              console.error("次の画像の取得に失敗:", error);
+              setIsSlideshowPlaying(false);
+            });
+        } else {
+          // 最後の画像に到達したらスライドショーを停止
+          setIsSlideshowPlaying(false);
+        }
+      }, slideshowIntervalSec * 1000);
+    } else {
+      // スライドショーが停止された場合はインターバルをクリア
+      stopSlideshow();
+    }
+
+    // クリーンアップ
+    return stopSlideshow;
+  }, [isSlideshowPlaying, slideshowIntervalSec]); // 依存配列は最小限に
 
   useEffect(() => {
     if (!selectedImage) return;
@@ -367,6 +468,12 @@ const ImageModal: React.FC<ImageModalProps> = ({
     }
   };
 
+  // スライドショーの手動停止ハンドラー
+  const handleSlideshowToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsSlideshowPlaying((prev) => !prev);
+  };
+
   // キーボードショートカット
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -456,7 +563,29 @@ const ImageModal: React.FC<ImageModalProps> = ({
             &times;
           </button>
         )}
+        {showButton && (
+          <div className="absolute top-4 left-4 z-50 flex items-center space-x-2 bg-black bg-opacity-50 p-2 rounded">
+            <button
+              onClick={handleSlideshowToggle}
+              className="text-white hover:text-gray-300"
+            >
+              {isSlideshowPlaying ? "⏸ 停止" : "▶ 再生"}
+            </button>
 
+            <select
+              value={slideshowIntervalSec}
+              onClick={(e) => e.stopPropagation()}
+              onChange={(e) => setSlideshowIntervalSec(Number(e.target.value))}
+              className="bg-black text-white border border-white rounded px-2 py-1 text-sm"
+            >
+              {[0.5, 1, 2, 3, 5, 10].map((sec) => (
+                <option key={sec} value={sec}>
+                  {sec}秒
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         {/* デスクトップ用カルーセルナビゲーション */}
         {!isMobile && showCarouselControls && hasPrevious && (
           <button
