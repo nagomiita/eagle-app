@@ -65,6 +65,8 @@ const ImageModal: React.FC<ImageModalProps> = ({
   const [similarImages, setSimilarImages] = useState<ThumbnailImage[]>([]);
   const [showCarouselControls, setShowCarouselControls] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isFlippedH, setIsFlippedH] = useState(false); // 水平反転状態を管理
+  const [isFlippedV, setIsFlippedV] = useState(false); // 垂直反転状態を管理
 
   //スライドショー機能
   const [isSlideshowPlaying, setIsSlideshowPlaying] = useState(false);
@@ -88,6 +90,12 @@ const ImageModal: React.FC<ImageModalProps> = ({
     latestStateRef.current.images = images;
     latestStateRef.current.isSlideshowPlaying = isSlideshowPlaying;
   }, [selectedImage, images, isSlideshowPlaying]);
+
+  // 画像が変更されたときに反転状態をリセット
+  useEffect(() => {
+    setIsFlippedH(false);
+    setIsFlippedV(false);
+  }, [selectedImage]);
 
   // スライドショーの停止処理を確実にするためのクリーンアップ
   useEffect(() => {
@@ -157,6 +165,17 @@ const ImageModal: React.FC<ImageModalProps> = ({
     setSelectedTag(String(tagId));
     setShowOptionPanel(false);
     closeModal();
+  };
+
+  // 反転機能のハンドラー
+  const handleFlipHorizontal = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsFlippedH((prev) => !prev);
+  };
+
+  const handleFlipVertical = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsFlippedV((prev) => !prev);
   };
 
   useEffect(() => {
@@ -506,6 +525,16 @@ const ImageModal: React.FC<ImageModalProps> = ({
           setShowButton((prev) => !prev);
           setShowCarouselControls((prev) => !prev);
           break;
+        case "f": // Fキーで水平反転
+        case "F":
+          e.preventDefault();
+          setIsFlippedH((prev) => !prev);
+          break;
+        case "v": // Vキーで垂直反転
+        case "V":
+          e.preventDefault();
+          setIsFlippedV((prev) => !prev);
+          break;
       }
     };
 
@@ -584,8 +613,30 @@ const ImageModal: React.FC<ImageModalProps> = ({
                 </option>
               ))}
             </select>
+
+            {/* 反転ボタンを追加 */}
+            <button
+              onClick={handleFlipHorizontal}
+              className={`text-white hover:text-gray-300 px-2 py-1 rounded transition-colors ${
+                isFlippedH ? "bg-blue-600" : "bg-transparent"
+              }`}
+              title="左右反転 (Fキー)"
+            >
+              ↔️
+            </button>
+
+            <button
+              onClick={handleFlipVertical}
+              className={`text-white hover:text-gray-300 px-2 py-1 rounded transition-colors ${
+                isFlippedV ? "bg-blue-600" : "bg-transparent"
+              }`}
+              title="上下反転 (Vキー)"
+            >
+              ↕️
+            </button>
           </div>
         )}
+
         {/* デスクトップ用カルーセルナビゲーション */}
         {!isMobile && showCarouselControls && hasPrevious && (
           <button
@@ -621,11 +672,15 @@ const ImageModal: React.FC<ImageModalProps> = ({
           className="max-w-full max-h-full object-contain"
           onClick={handleImageClick}
           style={{
-            transform: `translate(${touchState.dragX}px, ${touchState.dragY}px)`,
+            transform: `translate(${touchState.dragX}px, ${
+              touchState.dragY
+            }px) scaleX(${isFlippedH ? -1 : 1}) scaleY(${isFlippedV ? -1 : 1})`,
             opacity: imageOpacity,
             transition:
               touchState.isDragging || isTransitioning
-                ? "none"
+                ? isFlippedH || isFlippedV
+                  ? "transform 0.3s ease-out"
+                  : "none"
                 : "transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.2s ease-out",
           }}
         />
@@ -638,14 +693,18 @@ const ImageModal: React.FC<ImageModalProps> = ({
         )}
 
         {isMobile && showButton && !showOptionPanel && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm opacity-70">
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm opacity-70 text-center">
             上にスワイプで閉じる・左右で画像切替
+            <br />
+            <span className="text-xs opacity-50">
+              Fキー: 左右反転 / Vキー: 上下反転
+            </span>
           </div>
         )}
 
         {/* モバイル用カルーセルインジケーター */}
         {isMobile && showButton && images.length > 1 && (
-          <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex space-x-1">
+          <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex space-x-1">
             {images.map((_, index) => (
               <div
                 key={index}
