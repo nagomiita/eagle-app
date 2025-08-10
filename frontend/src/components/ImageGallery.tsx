@@ -7,6 +7,7 @@ import FolderImageEditor from "./FolderImageEditor";
 import { SectionDivider, SectionHeader } from "./parts/Section";
 import { FolderHeader } from "./parts/FolderHeader";
 import { LoadingIndicator } from "./parts/LoadingIndicator";
+import { deleteFolder } from "../api/folders/folders";
 
 const ImageGrid: React.FC = () => {
   const {
@@ -43,6 +44,24 @@ const ImageGrid: React.FC = () => {
     if (folder) {
       setSelectedFolderId(folder.id);
       setIsEditMode(false);
+    }
+  };
+
+  const handleDeleteFolder = (id: number) => {
+    const folder = folders.find((f) => f.id === id);
+    if (folder) {
+      // 削除の確認ダイアログ
+      if (window.confirm(`フォルダ「${folder.name}」を削除しますか？`)) {
+        setFolders((prevFolders) => prevFolders.filter((f) => f.id !== id));
+        setSelectedFolderId(null);
+        deleteFolder(id)
+          .then(() => {
+            console.log(`Folder ${id} deleted successfully`);
+          })
+          .catch((error) => {
+            console.error("Error deleting folder:", error);
+          });
+      }
     }
   };
 
@@ -131,6 +150,7 @@ const ImageGrid: React.FC = () => {
             folders={folders}
             columnCount={columnCount}
             onClickFolder={handleFolderClick}
+            onDeleteFolder={handleDeleteFolder}
           />
         </>
       ) : (
@@ -147,6 +167,7 @@ const ImageGrid: React.FC = () => {
                 folders={folders}
                 columnCount={columnCount}
                 onClickFolder={handleFolderClick}
+                onDeleteFolder={handleDeleteFolder}
               />
               <SectionDivider />
             </>
