@@ -41,14 +41,7 @@ export const useThumbnailImages = () => {
   const [images, setImages] = useState<ThumbnailImage[]>([]);
   const [excludeInFolder, setExcludeInFolder] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const [includeSensitive, setIncludeSensitive] = useState<boolean>(false);
   const [onlyFavorite, setOnlyFavorite] = useState<boolean>(false);
-  const [columnCount, setColumnCount] = useState<number>(() => {
-    const width = window.innerWidth;
-    if (width < 600) return 4; // モバイル
-    if (width < 1024) return 6; // タブレット
-    return 8; // PC
-  });
 
   const fetchImages = async (
     selectedTag: string,
@@ -76,11 +69,7 @@ export const useThumbnailImages = () => {
     excludeInFolder,
     setExcludeInFolder,
     isLoading,
-    columnCount,
-    setColumnCount,
     fetchImages,
-    // includeSensitive,
-    // setIncludeSensitive,
     onlyFavorite,
     setOnlyFavorite,
   };

@@ -18,6 +18,8 @@ const Header: React.FC = () => {
     setSelectedTag,
     showFolders,
     setShowFolders,
+    aspectRatioSquare,
+    setAspectRatioSquare,
   } = useAppContext();
 
   const handleSidebarToggle = () => {
@@ -49,6 +51,38 @@ const Header: React.FC = () => {
           value={columnCount}
           onChange={(e) => setColumnCount(Number(e.target.value))}
         />
+        <button
+          onClick={() => setAspectRatioSquare((prev) => !prev)}
+          className={[
+            "relative flex items-center gap-2 px-1 py-1 rounded-full",
+            "transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95",
+            "font-medium text-sm shadow-lg hover:shadow-xl border-2",
+            aspectRatioSquare
+              ? "bg-gradient-to-r from-blue-500 to-purple-600 border-blue-400 text-white shadow-blue-500/25"
+              : "bg-gradient-to-r from-gray-600 to-gray-700 border-gray-500 text-gray-200 shadow-gray-500/25",
+          ].join(" ")}
+          aria-label={`画像比率を${
+            aspectRatioSquare ? "オリジナル" : "正方形"
+          }に切り替え`}
+        >
+          <div
+            className={`transition-transform duration-300 ${
+              aspectRatioSquare ? "rotate-180" : ""
+            }`}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              {aspectRatioSquare ? (
+                <rect x="2" y="2" width="12" height="12" rx="2" />
+              ) : (
+                <rect x="4" y="1" width="8" height="14" rx="2" />
+              )}
+            </svg>
+          </div>
+
+          {aspectRatioSquare && (
+            <div className="absolute inset-0 rounded-full bg-white opacity-20 animate-pulse" />
+          )}
+        </button>
         <ImageFilterButtons
           excludeInFolder={excludeInFolder}
           setExcludeInFolder={setExcludeInFolder}

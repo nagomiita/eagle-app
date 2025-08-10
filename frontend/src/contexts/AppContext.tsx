@@ -19,6 +19,13 @@ interface AppProviderProps {
 
 export function AppProvider({ children }: AppProviderProps) {
   const [includeSensitive, setIncludeSensitive] = useState<boolean>(false);
+  const [columnCount, setColumnCount] = useState<number>(() => {
+    const width = window.innerWidth;
+    if (width < 600) return 4; // モバイル
+    if (width < 1024) return 6; // タブレット
+    return 8; // PC
+  });
+  const [aspectRatioSquare, setAspectRatioSquare] = useState<boolean>(true);
   const thumbnailImagesState = useThumbnailImages();
   const OriginalImageState = useOriginalImage();
   const tagState = useTags();
@@ -37,6 +44,10 @@ export function AppProvider({ children }: AppProviderProps) {
   const value: AppContextType = {
     includeSensitive,
     setIncludeSensitive,
+    columnCount,
+    setColumnCount,
+    aspectRatioSquare,
+    setAspectRatioSquare,
     ...thumbnailImagesState,
     ...OriginalImageState,
     ...tagState,

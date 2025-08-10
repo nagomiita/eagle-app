@@ -1,6 +1,8 @@
 import { FolderInfo, OriginalImage, Tag, ThumbnailImage } from "../api/model";
 
 export interface AppContextType {
+  aspectRatioSquare: boolean;
+  setAspectRatioSquare: React.Dispatch<React.SetStateAction<boolean>>;
   // From useThumbnailImages
   images: ThumbnailImage[];
   setImages: React.Dispatch<React.SetStateAction<ThumbnailImage[]>>;

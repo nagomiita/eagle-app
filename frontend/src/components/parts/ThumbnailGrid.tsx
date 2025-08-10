@@ -14,6 +14,7 @@ interface ThumbnailGridProps {
   onClick: (id: number) => void;
   setImages?: React.Dispatch<React.SetStateAction<ThumbnailImage[]>>;
   setFolders?: React.Dispatch<React.SetStateAction<FolderInfo[]>>;
+  aspectRatioSquare?: boolean;
 }
 
 const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
@@ -23,6 +24,7 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
   onClick,
   setImages,
   setFolders,
+  aspectRatioSquare = true,
 }) => {
   const [isCheckMode, setIsCheckMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -237,6 +239,7 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
               src={`http://192.168.11.11/api/static/${image.thumbnail}`}
               alt={`Thumbnail ${image.id}`}
               className={selectedIds.includes(image.id) ? "opacity-60" : ""}
+              aspectRatioSquare={aspectRatioSquare}
             />
 
             {selectedIds.includes(image.id) && (

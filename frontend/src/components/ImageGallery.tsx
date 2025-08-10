@@ -21,6 +21,7 @@ const ImageGrid: React.FC = () => {
     selectedTag,
     tags,
     excludeInFolder,
+    aspectRatioSquare,
   } = useAppContext();
 
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
@@ -92,6 +93,7 @@ const ImageGrid: React.FC = () => {
                 folders={folders}
                 columnCount={columnCount}
                 onClick={(id) => openModal(id)}
+                aspectRatioSquare={aspectRatioSquare}
               />
 
               {selectedTag && (
@@ -110,6 +112,7 @@ const ImageGrid: React.FC = () => {
                     onClick={(id) => openModal(id)}
                     setFolders={setFolders}
                     setImages={setImages}
+                    aspectRatioSquare={aspectRatioSquare}
                   />
                 </>
               )}
@@ -174,6 +177,7 @@ const ImageGrid: React.FC = () => {
             onClick={(id) => openModal(id)}
             setFolders={setFolders}
             setImages={setImages}
+            aspectRatioSquare={aspectRatioSquare}
           />
         </div>
       )}
