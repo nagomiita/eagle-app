@@ -26,6 +26,7 @@ import type {
 import type {
   BodyDeleteImage,
   BodyRegisterFavoriteImage,
+  FetchAllFoldersParams,
   FetchFilteredThumnailImagesParams,
   FetchOriginalImageParams,
   FetchSimilarImagesParams,
@@ -484,93 +485,6 @@ export function useFetchSimilarImages<TData = Awaited<ReturnType<typeof fetchSim
 
 
 /**
- * @summary 全フォルダ情報を取得
- */
-export const fetchAllFolders = (
-    
- signal?: AbortSignal
-) => {
-      
-      
-      return customAxios<FolderInfo[]>(
-      {url: `/folder`, method: 'GET', signal
-    },
-      );
-    }
-  
-
-export const getFetchAllFoldersQueryKey = () => {
-    return [`/folder`] as const;
-    }
-
-    
-export const getFetchAllFoldersQueryOptions = <TData = Awaited<ReturnType<typeof fetchAllFolders>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchAllFolders>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getFetchAllFoldersQueryKey();
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof fetchAllFolders>>> = ({ signal }) => fetchAllFolders(signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof fetchAllFolders>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type FetchAllFoldersQueryResult = NonNullable<Awaited<ReturnType<typeof fetchAllFolders>>>
-export type FetchAllFoldersQueryError = unknown
-
-
-export function useFetchAllFolders<TData = Awaited<ReturnType<typeof fetchAllFolders>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchAllFolders>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof fetchAllFolders>>,
-          TError,
-          Awaited<ReturnType<typeof fetchAllFolders>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFetchAllFolders<TData = Awaited<ReturnType<typeof fetchAllFolders>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchAllFolders>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof fetchAllFolders>>,
-          TError,
-          Awaited<ReturnType<typeof fetchAllFolders>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useFetchAllFolders<TData = Awaited<ReturnType<typeof fetchAllFolders>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchAllFolders>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary 全フォルダ情報を取得
- */
-
-export function useFetchAllFolders<TData = Awaited<ReturnType<typeof fetchAllFolders>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchAllFolders>>, TError, TData>>, }
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getFetchAllFoldersQueryOptions(options)
-
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-/**
  * @summary 画像フォルダの作成とサムネイル取得
  */
 export const createImageFolder = (
@@ -635,6 +549,94 @@ export const useCreateImageFolder = <TError = HTTPValidationError,
       return useMutation(mutationOptions , queryClient);
     }
     /**
+ * @summary 全フォルダ情報を取得
+ */
+export const fetchAllFolders = (
+    params?: FetchAllFoldersParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customAxios<FolderInfo[]>(
+      {url: `/folder`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getFetchAllFoldersQueryKey = (params?: FetchAllFoldersParams,) => {
+    return [`/folder`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getFetchAllFoldersQueryOptions = <TData = Awaited<ReturnType<typeof fetchAllFolders>>, TError = HTTPValidationError>(params?: FetchAllFoldersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchAllFolders>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getFetchAllFoldersQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof fetchAllFolders>>> = ({ signal }) => fetchAllFolders(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof fetchAllFolders>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type FetchAllFoldersQueryResult = NonNullable<Awaited<ReturnType<typeof fetchAllFolders>>>
+export type FetchAllFoldersQueryError = HTTPValidationError
+
+
+export function useFetchAllFolders<TData = Awaited<ReturnType<typeof fetchAllFolders>>, TError = HTTPValidationError>(
+ params: undefined |  FetchAllFoldersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchAllFolders>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof fetchAllFolders>>,
+          TError,
+          Awaited<ReturnType<typeof fetchAllFolders>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFetchAllFolders<TData = Awaited<ReturnType<typeof fetchAllFolders>>, TError = HTTPValidationError>(
+ params?: FetchAllFoldersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchAllFolders>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof fetchAllFolders>>,
+          TError,
+          Awaited<ReturnType<typeof fetchAllFolders>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useFetchAllFolders<TData = Awaited<ReturnType<typeof fetchAllFolders>>, TError = HTTPValidationError>(
+ params?: FetchAllFoldersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchAllFolders>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary 全フォルダ情報を取得
+ */
+
+export function useFetchAllFolders<TData = Awaited<ReturnType<typeof fetchAllFolders>>, TError = HTTPValidationError>(
+ params?: FetchAllFoldersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof fetchAllFolders>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getFetchAllFoldersQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
  * @summary フォルダ内の画像順序を更新
  */
 export const updateFolderOrder = (

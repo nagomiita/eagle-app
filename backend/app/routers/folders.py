@@ -37,9 +37,9 @@ async def register_folder(request: FolderCreateRequest):
     operation_id="fetch_all_folders",
     summary="全フォルダ情報を取得",
 )
-async def fetch_all_folders():
+async def fetch_all_folders(include_sensitive: bool = False):
     try:
-        return folder_service.fetch_all_folders()
+        return folder_service.fetch_all_folders(include_sensitive)
     except Exception:
         logger.exception("❌ フォルダ情報取得中にエラーが発生しました")
         raise HTTPException(status_code=500, detail="フォルダ取得に失敗しました")

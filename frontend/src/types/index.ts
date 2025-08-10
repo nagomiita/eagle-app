@@ -1,4 +1,4 @@
-import { ThumbnailImage, OriginalImage, Tag, FolderInfo } from "../api/model";
+import { FolderInfo, OriginalImage, Tag, ThumbnailImage } from "../api/model";
 
 export interface AppContextType {
   // From useThumbnailImages
@@ -9,7 +9,10 @@ export interface AppContextType {
   isLoading: boolean;
   columnCount: number;
   setColumnCount: React.Dispatch<React.SetStateAction<number>>;
-  fetchImages: (selectedTag: string) => Promise<void>;
+  fetchImages: (
+    selectedTag: string,
+    includeSensitive: boolean
+  ) => Promise<void>;
   includeSensitive: boolean;
   setIncludeSensitive: React.Dispatch<React.SetStateAction<boolean>>;
   onlyFavorite: boolean;
@@ -30,5 +33,5 @@ export interface AppContextType {
   setShowFolders: React.Dispatch<React.SetStateAction<boolean>>;
   folders: FolderInfo[];
   setFolders: React.Dispatch<React.SetStateAction<FolderInfo[]>>;
-  fetchFolders: () => Promise<void>;
+  fetchFolders: (includeSensitive: boolean) => Promise<void>;
 }

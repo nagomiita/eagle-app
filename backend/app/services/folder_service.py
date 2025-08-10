@@ -8,9 +8,9 @@ def create_image_folder(
     return folder.create_image_folder(folder_name, image_ids, description)
 
 
-def fetch_all_folders() -> list[FolderInfo]:
+def fetch_all_folders(include_sensitive: bool) -> list[FolderInfo]:
     """全てのフォルダ情報を取得"""
-    raw_folders = folder.query_all_folders()
+    raw_folders = folder.query_all_folders(include_sensitive)
     return [FolderInfo.model_validate(folder_dict) for folder_dict in raw_folders]
 
 

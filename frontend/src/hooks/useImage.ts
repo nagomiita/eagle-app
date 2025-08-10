@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { fetchOriginalImage } from "../api/default/default";
-import { OriginalImage } from "../api/model";
-import { fetchFilteredThumnailImages } from "../api/default/default";
-import { ThumbnailImage } from "../api/model";
+import {
+  fetchFilteredThumnailImages,
+  fetchOriginalImage,
+} from "../api/default/default";
+import { OriginalImage, ThumbnailImage } from "../api/model";
 
 export const useOriginalImage = () => {
   const [selectedImage, setSelectedImage] = useState<OriginalImage | null>(
@@ -40,7 +41,7 @@ export const useThumbnailImages = () => {
   const [images, setImages] = useState<ThumbnailImage[]>([]);
   const [excludeInFolder, setExcludeInFolder] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [includeSensitive, setIncludeSensitive] = useState<boolean>(false);
+  // const [includeSensitive, setIncludeSensitive] = useState<boolean>(false);
   const [onlyFavorite, setOnlyFavorite] = useState<boolean>(false);
   const [columnCount, setColumnCount] = useState<number>(() => {
     const width = window.innerWidth;
@@ -49,7 +50,10 @@ export const useThumbnailImages = () => {
     return 8; // PC
   });
 
-  const fetchImages = async (selectedTag: string) => {
+  const fetchImages = async (
+    selectedTag: string,
+    includeSensitive: boolean
+  ) => {
     setIsLoading(true);
     try {
       const thumnailImages = await fetchFilteredThumnailImages({
@@ -75,8 +79,8 @@ export const useThumbnailImages = () => {
     columnCount,
     setColumnCount,
     fetchImages,
-    includeSensitive,
-    setIncludeSensitive,
+    // includeSensitive,
+    // setIncludeSensitive,
     onlyFavorite,
     setOnlyFavorite,
   };

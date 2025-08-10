@@ -26,7 +26,7 @@ def create_image_folder(name: str, image_ids: list[int], description: str = "") 
     return folder_id
 
 
-def query_all_folders() -> list[dict]:
+def query_all_folders(include_sensitive: bool) -> list[dict]:
     with get_session() as session:
         # フォルダ情報 + 紐づく画像IDを一括で取得
         results = (
@@ -49,6 +49,8 @@ def query_all_folders() -> list[dict]:
 
         for folder_id, name, desc, image_id in results:
             image_entry = session.query(ImageEntry).filter_by(id=image_id).first()
+            if not include_sensitive and getattr(image_entry, "is_sensitive", False):
+                continue  # sensitive画像を除外
             image_ids: dict = {
                 "id": image_entry.id,
                 "name": Path(image_entry.image_path).name,

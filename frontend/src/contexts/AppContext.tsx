@@ -1,8 +1,14 @@
-import { createContext, ReactNode, useContext, useEffect } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
+import { useFolder } from "../hooks/useFolder";
 import { useOriginalImage, useThumbnailImages } from "../hooks/useImage";
 import { useTags } from "../hooks/useTags";
-import { useFolder } from "../hooks/useFolder";
 import { AppContextType } from "../types";
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -12,22 +18,25 @@ interface AppProviderProps {
 }
 
 export function AppProvider({ children }: AppProviderProps) {
+  const [includeSensitive, setIncludeSensitive] = useState<boolean>(false);
   const thumbnailImagesState = useThumbnailImages();
   const OriginalImageState = useOriginalImage();
   const tagState = useTags();
   const folderState = useFolder();
 
   useEffect(() => {
-    thumbnailImagesState.fetchImages(tagState.selectedTag);
-    folderState.fetchFolders();
+    thumbnailImagesState.fetchImages(tagState.selectedTag, includeSensitive);
+    folderState.fetchFolders(includeSensitive);
   }, [
     tagState.selectedTag,
-    thumbnailImagesState.includeSensitive,
+    includeSensitive,
     thumbnailImagesState.onlyFavorite,
     thumbnailImagesState.excludeInFolder,
   ]);
 
   const value: AppContextType = {
+    includeSensitive,
+    setIncludeSensitive,
     ...thumbnailImagesState,
     ...OriginalImageState,
     ...tagState,

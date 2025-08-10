@@ -216,34 +216,16 @@
       }
     },
     "/folder": {
-      "get": {
-        "summary": "全フォルダ情報を取得",
-        "operationId": "fetch_all_folders",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": { "$ref": "#/components/schemas/FolderInfo" },
-                  "type": "array",
-                  "title": "Response Fetch All Folders"
-                }
-              }
-            }
-          }
-        }
-      },
       "post": {
         "summary": "画像フォルダの作成とサムネイル取得",
         "operationId": "create_image_folder",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": { "$ref": "#/components/schemas/FolderCreateRequest" }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -253,6 +235,44 @@
                 "schema": {
                   "type": "integer",
                   "title": "Response Create Image Folder"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "全フォルダ情報を取得",
+        "operationId": "fetch_all_folders",
+        "parameters": [
+          {
+            "name": "include_sensitive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Include Sensitive"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/FolderInfo" },
+                  "title": "Response Fetch All Folders"
                 }
               }
             }
