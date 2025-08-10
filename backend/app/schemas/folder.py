@@ -8,11 +8,6 @@ class FolderCreateRequest(BaseModel):
     description: str = ""
 
 
-class FolderRenameRequest(BaseModel):
-    folder_id: int
-    new_name: str
-
-
 class FolderInfo(BaseModel):
     id: int
     name: str

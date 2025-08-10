@@ -101,7 +101,7 @@ async def register_favorite_image(image_id: int = Body(..., embed=True)):
 
 
 @router.delete(
-    "/image",
+    "/image/{image_id}",
     operation_id="delete_image",
     description="""
 指定された画像IDに対応する画像を削除します。
@@ -116,7 +116,7 @@ async def register_favorite_image(image_id: int = Body(..., embed=True)):
 - 500: その他の削除処理中のエラー
 """,
 )
-async def delete_image(image_id: int = Body(..., embed=True)):
+async def delete_image(image_id: int):
     try:
         image_service.delete_image(image_id)
         return {"message": f"画像 {image_id} を削除しました"}

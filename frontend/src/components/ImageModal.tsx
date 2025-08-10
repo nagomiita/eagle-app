@@ -4,8 +4,8 @@ import {
   deleteImage,
   fetchOriginalImage,
   fetchSimilarImages,
-} from "../api/default/default";
-import { registerFavoriteImage } from "../api/default/default";
+  registerFavoriteImage,
+} from "../api/images/images";
 import { FolderInfo, OriginalImage, ThumbnailImage } from "../api/model";
 import { SidebarUi } from "./parts/SidebarUi";
 import ThumbnailGrid from "./parts/ThumbnailGrid";
@@ -446,7 +446,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
 
     if (!selectedImage) return;
     try {
-      await deleteImage({ image_id: selectedImage.id });
+      await deleteImage(selectedImage.id);
       if (setImages) {
         setImages((prev) => prev.filter((img) => img.id !== selectedImage.id));
       }

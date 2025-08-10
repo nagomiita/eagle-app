@@ -111,6 +111,19 @@ def query_add_images_to_folder(folder_id: int, image_ids: list[int]):
         session.commit()
 
 
+def query_remove_images_from_folder(folder_id: int, image_ids: list[int]) -> None:
+    with get_session() as session:
+        for image_id in image_ids:
+            assoc = (
+                session.query(ImageFolderAssociation)
+                .filter_by(folder_id=folder_id, image_id=image_id)
+                .first()
+            )
+            if assoc:
+                session.delete(assoc)
+        session.commit()
+
+
 def query_rename_folder(folder_id: int, new_name: str) -> None:
     with get_session() as session:
         folder = session.query(ImageFolder).filter(ImageFolder.id == folder_id).first()
@@ -125,4 +138,20 @@ def query_rename_folder(folder_id: int, new_name: str) -> None:
             raise ValueError(f"Folder name '{new_name}' is already used.")
 
         folder.name = new_name
+        session.commit()
+
+
+def query_delete_folder(folder_id: int) -> None:
+    with get_session() as session:
+        folder = session.query(ImageFolder).filter(ImageFolder.id == folder_id).first()
+        if not folder:
+            raise ValueError(f"Folder ID {folder_id} does not exist.")
+
+        # 関連付けを削除
+        session.query(ImageFolderAssociation).filter(
+            ImageFolderAssociation.folder_id == folder_id
+        ).delete()
+
+        # フォルダ自体を削除
+        session.delete(folder)
         session.commit()

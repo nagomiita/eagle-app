@@ -3,7 +3,7 @@ import { useAppContext } from "../contexts/AppContext";
 import ThumbnailGrid from "./parts/ThumbnailGrid";
 import FolderGrid from "./parts/FolderGrid";
 import ImageModal from "./ImageModal";
-import FolderImageEditor from "./parts/FolderImageEditor";
+import FolderImageEditor from "./FolderImageEditor";
 import { SectionDivider, SectionHeader } from "./parts/Section";
 import { FolderHeader } from "./parts/FolderHeader";
 import { LoadingIndicator } from "./parts/LoadingIndicator";

@@ -5,6 +5,7 @@
   "paths": {
     "/image/thumbnails": {
       "get": {
+        "tags": ["images"],
         "summary": "Fetch Filtered Thumnail Images",
         "description": "指定された条件に基づいて、画像のサムネイル一覧を取得します。\n\n- `include_sensitive`: センシティブな画像（NSFWなど）も含めるかどうかを指定します（デフォルト: False）。\n- `favorites_only`: お気に入りに登録された画像のみを対象とするかを指定します（デフォルト: False）。\n- `selected_tag`: 特定のタグに紐づいた画像のみを対象とする場合に指定します。\n\n取得に失敗した場合は、適切なエラーメッセージとステータスコードを返します。",
         "operationId": "fetch_filtered_thumnail_images",
@@ -75,6 +76,7 @@
     },
     "/image/original": {
       "get": {
+        "tags": ["images"],
         "summary": "Fetch Original Image",
         "description": "指定された画像IDに対応するオリジナル画像をBase64形式で取得します。\n\n- `id`: オリジナル画像ファイルのidを指定します。\n\n対応形式は `.png`, `.jpg`, `.jpeg`, `.webp` のみです。\n\n### エラー\n- 404: 指定された画像ファイルが存在しない場合\n- 400: 対応していない画像形式の場合\n- 500: その他の内部エラー",
         "operationId": "fetch_original_image",
@@ -108,6 +110,7 @@
     },
     "/image/favorite": {
       "post": {
+        "tags": ["images"],
         "summary": "Register Favorite Image",
         "description": "指定された画像IDをお気に入りとして登録します。\n\n- `image_id`: お気に入り登録対象の画像IDを指定します。\n\n成功時はステータス200を返します。",
         "operationId": "register_favorite_image",
@@ -137,19 +140,20 @@
         }
       }
     },
-    "/image": {
+    "/image/{image_id}": {
       "delete": {
+        "tags": ["images"],
         "summary": "Delete Image",
         "description": "指定された画像IDに対応する画像を削除します。\n\n- `image_id`: 削除対象の画像IDを指定します。\n\n### 成功時\n- ステータス200（削除成功）\n\n### 失敗時\n- 404: 対象画像が存在しない\n- 500: その他の削除処理中のエラー",
         "operationId": "delete_image",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/Body_delete_image" }
-            }
-          },
-          "required": true
-        },
+        "parameters": [
+          {
+            "name": "image_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Image Id" }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -168,6 +172,7 @@
     },
     "/image/similar": {
       "get": {
+        "tags": ["images"],
         "summary": "Fetch Similar Images",
         "description": "指定された画像IDに基づいて、類似画像のサムネイル一覧を取得します。\n\n- `image_id`: 類似画像検索の基準となる画像のIDを指定します。\n- `show_sensitive`: センシティブな画像（NSFWなど）を含めるかどうかを指定します（True で含める）。\n- `top_k`: 類似度が高い上位K件の画像を取得します（デフォルト: 20）。\n\n類似度の計算には、事前に保存された埋め込みベクトルを使用し、コサイン類似度に基づいて類似画像を検索します。\nセンシティブ画像の除外も埋め込み検索対象からフィルタリングされます。\n\n### レスポンス\n- `200 OK`: 類似画像のサムネイル情報のリスト（`ThumbnailImage`）を返します。\n\n### エラー\n- `404 Not Found`: 指定された画像に埋め込みベクトルが存在しないか、該当する画像が見つからない場合。\n- `500 Internal Server Error`: 類似画像の検索処理中にエラーが発生した場合。",
         "operationId": "fetch_similar_images",
@@ -216,40 +221,8 @@
       }
     },
     "/folder": {
-      "post": {
-        "summary": "画像フォルダの作成とサムネイル取得",
-        "operationId": "create_image_folder",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/FolderCreateRequest" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "integer",
-                  "title": "Response Create Image Folder"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
-              }
-            }
-          }
-        }
-      },
       "get": {
+        "tags": ["folders"],
         "summary": "全フォルダ情報を取得",
         "operationId": "fetch_all_folders",
         "parameters": [
@@ -286,10 +259,45 @@
             }
           }
         }
+      },
+      "post": {
+        "tags": ["folders"],
+        "summary": "画像フォルダの作成とサムネイル取得",
+        "operationId": "create_image_folder",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FolderCreateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "title": "Response Create Image Folder"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
       }
     },
     "/folder/{folder_id}/order": {
       "put": {
+        "tags": ["folders"],
         "summary": "フォルダ内の画像順序を更新",
         "operationId": "update_folder_order",
         "parameters": [
@@ -330,6 +338,7 @@
     },
     "/folder/{folder_id}/add_images": {
       "put": {
+        "tags": ["folders"],
         "summary": "既存のフォルダに画像を追加",
         "operationId": "add_images_to_folder",
         "parameters": [
@@ -368,18 +377,95 @@
         }
       }
     },
-    "/folder/rename": {
+    "/folder/{folder_id}/remove_images": {
       "put": {
-        "summary": "フォルダ名を変更",
-        "operationId": "rename_folder",
+        "tags": ["folders"],
+        "summary": "既存のフォルダから画像を省く",
+        "operationId": "remove_images_from_folder",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Folder Id" }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/FolderRenameRequest" }
+              "schema": {
+                "type": "array",
+                "items": { "type": "integer" },
+                "title": "Image Ids"
+              }
             }
-          },
-          "required": true
+          }
         },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/folder/{folder_id}/rename": {
+      "put": {
+        "tags": ["folders"],
+        "summary": "フォルダ名を変更",
+        "operationId": "rename_folder",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Folder Id" }
+          },
+          {
+            "name": "new_name",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "New Name" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/folder/{folder_id}": {
+      "delete": {
+        "tags": ["folders"],
+        "summary": "フォルダ削除",
+        "operationId": "delete_folder",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Folder Id" }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -398,6 +484,7 @@
     },
     "/tag/list": {
       "get": {
+        "tags": ["tags"],
         "summary": "Fetch Translated Tags",
         "description": "翻訳済みのタグ一覧を取得するエンドポイント。\n\n- 指定した言語（例: `\"ja\"` や `\"en\"`）に対応したタグを返します。\n- 使用用途：多言語対応のフロントエンド表示など。\n\n### クエリパラメータ:\n- `language` (str): 翻訳対象の言語コード（デフォルト: `\"ja\"`）\n\n### レスポンス:\n- `200 OK`: 成功時に翻訳済みタグの配列を返します\n- `404 Not Found`: タグが存在しない場合\n- `500 Internal Server Error`: サーバ内部でエラーが発生した場合",
         "operationId": "fetch_translated_tags",
@@ -441,6 +528,7 @@
     },
     "/tag/{tag_id}/toggle_flag": {
       "patch": {
+        "tags": ["tags"],
         "summary": "Toggle Tag Flag",
         "description": "タグのお気に入りまたはセンシティブフラグをオン/オフします。\n\n### パスパラメータ:\n- `tag_id` (int): フラグを変更する対象のタグID\n\n### リクエストボディ:\n- `flag` (str): `\"favorite\"` もしくは `\"sensitive\"`\n- `value` (bool): `true` でオン、`false` でオフ\n\n### レスポンス:\n- `200 OK`: 更新されたタグ情報\n- `400 Bad Request`: 不正なフラグ指定\n- `404 Not Found`: 指定IDのタグが存在しない",
         "operationId": "toggle_tag_flag",
@@ -488,14 +576,6 @@
   },
   "components": {
     "schemas": {
-      "Body_delete_image": {
-        "properties": {
-          "image_id": { "type": "integer", "title": "Image Id" }
-        },
-        "type": "object",
-        "required": ["image_id"],
-        "title": "Body_delete_image"
-      },
       "Body_register_favorite_image": {
         "properties": {
           "image_id": { "type": "integer", "title": "Image Id" }
@@ -536,15 +616,6 @@
         "type": "object",
         "required": ["id", "name", "description", "thumbnail_images"],
         "title": "FolderInfo"
-      },
-      "FolderRenameRequest": {
-        "properties": {
-          "folder_id": { "type": "integer", "title": "Folder Id" },
-          "new_name": { "type": "string", "title": "New Name" }
-        },
-        "type": "object",
-        "required": ["folder_id", "new_name"],
-        "title": "FolderRenameRequest"
       },
       "HTTPValidationError": {
         "properties": {

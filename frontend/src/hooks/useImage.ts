@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   fetchFilteredThumnailImages,
   fetchOriginalImage,
-} from "../api/default/default";
+} from "../api/images/images";
 import { OriginalImage, ThumbnailImage } from "../api/model";
 
 export const useOriginalImage = () => {

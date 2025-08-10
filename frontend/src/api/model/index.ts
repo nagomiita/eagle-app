@@ -19,6 +19,7 @@ export * from './folderReorderRequest';
 export * from './hTTPValidationError';
 export * from './originalImage';
 export * from './originalImageImage';
+export * from './renameFolderParams';
 export * from './tag';
 export * from './tagCategory';
 export * from './tagFlag';

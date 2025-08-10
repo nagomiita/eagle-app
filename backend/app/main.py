@@ -24,9 +24,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(images.router)
-app.include_router(folders.router)
-app.include_router(tags.router)
+app.include_router(images.router, tags=["images"])
+app.include_router(folders.router, tags=["folders"])
+app.include_router(tags.router, tags=["tags"])
 
 if __name__ == "__main__":
     import uvicorn

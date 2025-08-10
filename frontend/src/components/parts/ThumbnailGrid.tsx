@@ -5,7 +5,7 @@ import { HeartIcon, CheckIcon } from "@heroicons/react/24/solid";
 import {
   createImageFolder,
   addImagesToFolder,
-} from "../../api/default/default";
+} from "../../api/folders/folders";
 
 interface ThumbnailGridProps {
   images: ThumbnailImage[];

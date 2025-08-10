@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { fetchAllFolders } from "../api/default/default";
+import { fetchAllFolders } from "../api/folders/folders";
 import { FolderInfo } from "../api/model";
 
 export const useFolder = () => {

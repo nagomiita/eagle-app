@@ -35,6 +35,23 @@ def add_images_to_folder(folder_id: int, image_ids: list[int]):
     folder.query_add_images_to_folder(folder_id, image_ids)
 
 
+def remove_images_from_folder(folder_id: int, image_ids: list[int]) -> None:
+    """
+    フォルダから画像を削除する
+
+    Args:
+        folder_id (int): 画像を削除する対象のフォルダID
+        image_ids (list[int]): 削除する画像IDのリスト
+
+    Raises:
+        RuntimeError: 画像の削除中に予期しないエラーが発生した場合
+    """
+    try:
+        folder.query_remove_images_from_folder(folder_id, image_ids)
+    except Exception as e:
+        raise RuntimeError(f"フォルダからの画像削除に失敗しました: {e}") from e
+
+
 def rename_folder(folder_id: int, new_name: str) -> None:
     """
     フォルダの名前を変更する
@@ -53,3 +70,19 @@ def rename_folder(folder_id: int, new_name: str) -> None:
         raise ve
     except Exception as e:
         raise RuntimeError(f"フォルダ名の変更に失敗しました: {e}") from e
+
+
+def delete_folder(folder_id: int) -> None:
+    """
+    フォルダを削除する
+
+    Args:
+        folder_id (int): 削除するフォルダのID
+
+    Raises:
+        RuntimeError: フォルダの削除中に予期しないエラーが発生した場合
+    """
+    try:
+        folder.query_delete_folder(folder_id)
+    except Exception as e:
+        raise RuntimeError(f"フォルダの削除に失敗しました: {e}") from e

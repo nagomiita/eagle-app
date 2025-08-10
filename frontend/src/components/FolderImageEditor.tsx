@@ -6,9 +6,9 @@ import {
 } from "@dnd-kit/sortable";
 
 import React, { useState } from "react";
-import { FolderInfo, ThumbnailImage } from "../../api/model";
-import { updateFolderOrder, renameFolder } from "../../api/default/default";
-import { SortableImage } from "./SortableImage";
+import { FolderInfo, ThumbnailImage } from "../api/model";
+import { updateFolderOrder, renameFolder } from "../api/folders/folders";
+import { SortableImage } from "./parts/SortableImage";
 interface Props {
   folderId: number;
   originalFolderName: string;
@@ -77,7 +77,7 @@ const FolderImageEditor: React.FC<Props> = ({
 
   const saveFolderName = async () => {
     try {
-      await renameFolder({ folder_id: folderId, new_name: folderName });
+      await renameFolder(folderId, { new_name: folderName });
       setFolders((prevFolders) =>
         prevFolders.map((folder) =>
           folder.id === folderId ? { ...folder, name: folderName } : folder

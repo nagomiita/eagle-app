@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Tag } from "../api/model";
-import { fetchTranslatedTags, toggleTagFlag } from "../api/default/default";
+import { fetchTranslatedTags, toggleTagFlag } from "../api/tags/tags";
 export const useTags = () => {
   const [tags, setTags] = useState<Tag[] | null>(null);
   const [selectedTag, setSelectedTag] = useState<string>("");
