@@ -7,7 +7,7 @@ import FolderImageEditor from "./FolderImageEditor";
 import { SectionDivider, SectionHeader } from "./parts/Section";
 import { FolderHeader } from "./parts/FolderHeader";
 import { LoadingIndicator } from "./parts/LoadingIndicator";
-import { deleteFolder } from "../api/folders/folders";
+import { deleteFolder, removeImagesFromFolder } from "../api/folders/folders";
 
 const ImageGrid: React.FC = () => {
   const {
@@ -64,6 +64,32 @@ const ImageGrid: React.FC = () => {
       }
     }
   };
+  // フォルダ内の画像を削除する関数
+  const handleRemoveFolderImage = async (imageIds: number[]) => {
+    if (selectedFolderId !== null) {
+      try {
+        // APIを呼び出して画像を削除
+        await removeImagesFromFolder(selectedFolderId, imageIds);
+
+        // フォルダ内の画像を更新（複数のimageIdsに対応）
+        setFolders((prevFolders) =>
+          prevFolders.map((folder) =>
+            folder.id === selectedFolderId
+              ? {
+                  ...folder,
+                  thumbnail_images: folder.thumbnail_images.filter(
+                    (img) => !imageIds.includes(img.id) // imageIdsの配列に含まれていない画像のみを残す
+                  ),
+                }
+              : folder
+          )
+        );
+      } catch (error) {
+        console.error("Error removing images from folder:", error);
+        throw error; // エラーを上位に伝播させる
+      }
+    }
+  };
 
   // フォルダヘッダーのハンドラー
   const handleBackToFolders = () => {
@@ -98,6 +124,7 @@ const ImageGrid: React.FC = () => {
               onExitEditMode={() => setIsEditMode(false)}
               setFolders={setFolders}
               columnCount={columnCount}
+              onRemoveImage={handleRemoveFolderImage}
             />
           ) : (
             <div>
