@@ -1,3 +1,5 @@
+from enum import Enum
+
 from pydantic import BaseModel
 
 
@@ -11,6 +13,11 @@ class Tag(BaseModel):
     usage_count: int = 0
 
 
+class TagFlag(str, Enum):
+    FAVORITE = "favorite"
+    SENSITIVE = "sensitive"
+
+
 class TagFlagUpdate(BaseModel):
-    flag: str  # 'favorite' or 'sensitive'
+    flag: TagFlag
     value: bool

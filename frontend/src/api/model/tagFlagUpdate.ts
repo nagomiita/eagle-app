@@ -4,8 +4,9 @@
  * FastAPI
  * OpenAPI spec version: 0.1.0
  */
+import type { TagFlag } from './tagFlag';
 
 export interface TagFlagUpdate {
-  flag: string;
+  flag: TagFlag;
   value: boolean;
 }

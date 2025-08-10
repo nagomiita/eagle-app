@@ -21,6 +21,7 @@ export * from './originalImage';
 export * from './originalImageImage';
 export * from './tag';
 export * from './tagCategory';
+export * from './tagFlag';
 export * from './tagFlagUpdate';
 export * from './tagGenre';
 export * from './thumbnailImage';

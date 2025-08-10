@@ -606,9 +606,14 @@
         "required": ["tag_id", "tag_name"],
         "title": "Tag"
       },
+      "TagFlag": {
+        "type": "string",
+        "enum": ["favorite", "sensitive"],
+        "title": "TagFlag"
+      },
       "TagFlagUpdate": {
         "properties": {
-          "flag": { "type": "string", "title": "Flag" },
+          "flag": { "$ref": "#/components/schemas/TagFlag" },
           "value": { "type": "boolean", "title": "Value" }
         },
         "type": "object",

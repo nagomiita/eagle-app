@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Tag } from "../api/model";
-import { fetchTranslatedTags, useToggleTagFlag } from "../api/default/default";
+import { fetchTranslatedTags, toggleTagFlag } from "../api/default/default";
 export const useTags = () => {
   const [tags, setTags] = useState<Tag[] | null>(null);
   const [selectedTag, setSelectedTag] = useState<string>("");
@@ -30,50 +30,33 @@ export const useTags = () => {
 };
 
 export const useTagToggle = () => {
-  const toggleMutation = useToggleTagFlag();
   const [tagSettings, setTagSettings] = useState<
     Record<string, { isFavorite: boolean; isSensitive: boolean }>
   >({});
 
-  const toggleTagSetting = (
+  const toggleTagSetting = async (
     tagId: number,
     key: "isFavorite" | "isSensitive"
   ) => {
-    setTagSettings((prev) => {
-      const id = String(tagId);
-      const prevValue = prev[id]?.[key] ?? false;
-      const nextValue = !prevValue;
-
-      toggleMutation.mutate(
-        {
-          tagId,
-          data: {
-            flag: key === "isFavorite" ? "favorite" : "sensitive",
-            value: nextValue,
-          },
-        },
-        {
-          onError: () => {
-            // ロールバックする
-            setTagSettings((prev) => ({
-              ...prev,
-              [id]: {
-                ...prev[id],
-                [key]: prevValue,
-              },
-            }));
-          },
-        }
-      );
-
-      return {
+    const id = String(tagId);
+    const prevValue = tagSettings[id]?.[key] ?? false;
+    const nextValue = !prevValue;
+    try {
+      await toggleTagFlag(tagId, {
+        flag: key === "isFavorite" ? "favorite" : "sensitive",
+        value: nextValue,
+      });
+      setTagSettings((prev) => ({
         ...prev,
         [id]: {
           ...prev[id],
           [key]: nextValue,
         },
-      };
-    });
+      }));
+    } catch (error) {
+      console.error("Failed to toggle tag setting:", error);
+      // エラー時は状態を変更しない
+    }
   };
 
   return { tagSettings, setTagSettings, toggleTagSetting };

@@ -53,7 +53,7 @@ def toggle_tag_flag(tag_id: int, flag: str, value: bool) -> Tag:
     """
     if flag not in ["favorite", "sensitive"]:
         raise ValueError(
-            "無効なフラグ名です。'favorite' または 'sensitive' を指定してください。"
+            f"{flag}は無効なフラグ名です。'favorite' または 'sensitive' を指定してください。"
         )
 
     try:

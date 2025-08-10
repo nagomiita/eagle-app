@@ -71,7 +71,9 @@ async def toggle_tag_flag(
                 detail="flagは 'favorite' または 'sensitive' のみ指定できます。",
             )
 
-        updated_tag = tag_service.toggle_tag_flag(tag_id, payload.flag, payload.value)
+        updated_tag = tag_service.toggle_tag_flag(
+            tag_id, payload.flag.value, payload.value
+        )
         if not updated_tag:
             raise HTTPException(
                 status_code=404, detail="指定されたタグが見つかりません。"
