@@ -1,25 +1,16 @@
-import { useAppContext } from "./contexts/AppContext";
 import Header from "./components/Header";
-import FolderList from "./components/FolderList";
-import Controls from "./components/Controls";
-import ImageGrid from "./components/ImageGrid";
-import ImageModal from "./components/ImageModal";
+import ImageGallery from "./components/ImageGallery";
 
 function AppView() {
-  const { isDarkMode } = useAppContext();
-
   return (
-    <div
-      className={`min-h-screen ${
-        isDarkMode ? "dark bg-gray-900 text-white" : "bg-white text-black"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto p-5">
-        <Header />
-        <FolderList />
-        <Controls />
-        <ImageGrid />
-        <ImageModal />
+    <div className={"min-h-screendark bg-gray-900 text-white"}>
+      <div className="max-w-8xl mx-auto p-1">
+        <div className="sticky top-0 z-50 bg-gray-900">
+          <Header />
+        </div>
+        <div className="p-2">
+          <ImageGallery />
+        </div>
       </div>
     </div>
   );

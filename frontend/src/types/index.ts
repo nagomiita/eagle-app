@@ -1,59 +1,39 @@
-export interface ImageData {
-  id: string;
-  thumbnail: string | null;
-}
-
-export interface OriginalImageData {
-  id: string;
-  image: string | null;
-  error?: string;
-}
-
-export interface TagsData {
-  historyTags: string[];
-  starredTags: string[];
-}
-
-export interface FolderInfo {
-  id: string;
-  name: string;
-  children: FolderInfo[];
-  parent: string | null;
-  folder_image: [string, string];
-}
+import { FolderInfo, OriginalImage, Tag, ThumbnailImage } from "../api/model";
 
 export interface AppContextType {
-  isDarkMode: boolean;
-  toggleDarkMode: () => void;
-
-  // Folders
-  folders: FolderInfo[];
-  currentFolder: FolderInfo | null;
-  folderId: string;
-  setFolderId: (id: string) => void;
-  handleFolderClick: (folder: FolderInfo) => void;
-  handleBackClick: () => void;
-
-  // Images
-  images: ImageData[];
-  selectedImage: OriginalImageData | null;
-  setSelectedImage: (image: OriginalImageData | null) => void;
+  aspectRatioSquare: boolean;
+  setAspectRatioSquare: React.Dispatch<React.SetStateAction<boolean>>;
+  // From useThumbnailImages
+  images: ThumbnailImage[];
+  setImages: React.Dispatch<React.SetStateAction<ThumbnailImage[]>>;
+  excludeInFolder: boolean;
+  setExcludeInFolder: React.Dispatch<React.SetStateAction<boolean>>;
   isLoading: boolean;
-  limit: number;
-  setLimit: (limit: number) => void;
-  openModal: (image: ImageData) => Promise<void>;
+  columnCount: number;
+  setColumnCount: React.Dispatch<React.SetStateAction<number>>;
+  fetchImages: (
+    selectedTag: string,
+    includeSensitive: boolean
+  ) => Promise<void>;
+  includeSensitive: boolean;
+  setIncludeSensitive: React.Dispatch<React.SetStateAction<boolean>>;
+  onlyFavorite: boolean;
+  setOnlyFavorite: React.Dispatch<React.SetStateAction<boolean>>;
+  // From useOriginalImage
+  selectedImage: OriginalImage | null;
+  setSelectedImage: React.Dispatch<React.SetStateAction<OriginalImage | null>>;
+  openModal: (image: number) => Promise<void>;
   closeModal: () => void;
 
-  // Tags
-  tags: TagsData;
+  // From useTags
+  tags: Tag[] | null;
   selectedTag: string;
   setSelectedTag: (tag: string) => void;
 
-  // Layout
-  columnCount: number;
-  setColumnCount: (count: number) => void;
-}
-
-export interface AppProviderProps {
-  children: React.ReactNode;
+  // From useFolder
+  showFolders: boolean;
+  setShowFolders: React.Dispatch<React.SetStateAction<boolean>>;
+  folders: FolderInfo[];
+  setFolders: React.Dispatch<React.SetStateAction<FolderInfo[]>>;
+  fetchFolders: (includeSensitive: boolean) => Promise<void>;
 }

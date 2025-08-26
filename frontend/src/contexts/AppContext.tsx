@@ -1,48 +1,15 @@
-import React, {
+import {
   createContext,
-  useContext,
-  useState,
-  useEffect,
   ReactNode,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
-import useFolders from "../hooks/useFolders";
-import useImages from "../hooks/useImages";
-import useTags from "../hooks/useTags";
-import { FolderInfo, ImageData, OriginalImageData, TagsData } from "../types";
 
-interface AppContextType {
-  isDarkMode: boolean;
-  toggleDarkMode: () => void;
-
-  // From useFolders
-  folders: FolderInfo[];
-  currentFolder: FolderInfo | null;
-  folderId: string;
-  setFolderId: (id: string) => void;
-  handleFolderClick: (folder: FolderInfo) => void;
-  handleBackClick: () => void;
-
-  // From useImages
-  images: ImageData[];
-  setImages: React.Dispatch<React.SetStateAction<ImageData[]>>;
-  selectedImage: OriginalImageData | null;
-  setSelectedImage: React.Dispatch<
-    React.SetStateAction<OriginalImageData | null>
-  >;
-  isLoading: boolean;
-  limit: number;
-  setLimit: React.Dispatch<React.SetStateAction<number>>;
-  columnCount: number;
-  setColumnCount: React.Dispatch<React.SetStateAction<number>>;
-  fetchImages: (folderId: string, selectedTag: string) => Promise<void>;
-  openModal: (image: ImageData) => Promise<void>;
-  closeModal: () => void;
-
-  // From useTags
-  tags: TagsData;
-  selectedTag: string;
-  setSelectedTag: (tag: string) => void;
-}
+import { useFolder } from "../hooks/useFolder";
+import { useOriginalImage, useThumbnailImages } from "../hooks/useImage";
+import { useTags } from "../hooks/useTags";
+import { AppContextType } from "../types";
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -51,23 +18,40 @@ interface AppProviderProps {
 }
 
 export function AppProvider({ children }: AppProviderProps) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const folderState = useFolders();
-  const imageState = useImages();
+  const [includeSensitive, setIncludeSensitive] = useState<boolean>(false);
+  const [columnCount, setColumnCount] = useState<number>(() => {
+    const width = window.innerWidth;
+    if (width < 600) return 4; // モバイル
+    if (width < 1024) return 6; // タブレット
+    return 8; // PC
+  });
+  const [aspectRatioSquare, setAspectRatioSquare] = useState<boolean>(true);
+  const thumbnailImagesState = useThumbnailImages();
+  const OriginalImageState = useOriginalImage();
   const tagState = useTags();
-
-  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
+  const folderState = useFolder();
 
   useEffect(() => {
-    imageState.fetchImages(folderState.folderId, tagState.selectedTag);
-  }, [folderState.folderId, tagState.selectedTag, imageState.limit]);
+    thumbnailImagesState.fetchImages(tagState.selectedTag, includeSensitive);
+    folderState.fetchFolders(includeSensitive);
+  }, [
+    tagState.selectedTag,
+    includeSensitive,
+    thumbnailImagesState.onlyFavorite,
+    thumbnailImagesState.excludeInFolder,
+  ]);
 
   const value: AppContextType = {
-    isDarkMode,
-    toggleDarkMode,
-    ...folderState,
-    ...imageState,
+    includeSensitive,
+    setIncludeSensitive,
+    columnCount,
+    setColumnCount,
+    aspectRatioSquare,
+    setAspectRatioSquare,
+    ...thumbnailImagesState,
+    ...OriginalImageState,
     ...tagState,
+    ...folderState,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

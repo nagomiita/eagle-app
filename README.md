@@ -11,4 +11,3 @@ Eagle をインストールできる Windows でホストし、ローカルネ�
 
 - FastAPI
 - React
--

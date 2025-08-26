@@ -1,0 +1,25 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115.14",
+    "numpy>=2.3.1",
+    "pandas>=2.3.0",
+    "pillow>=11.2.1",
+    "pillow-heif>=1.0.0",
+    "pydantic>=2.11.7",
+    "requests>=2.32.4",
+    "scikit-learn>=1.7.0",
+    "send2trash>=1.8.3",
+    "sqlalchemy>=2.0.41",
+    "uvicorn>=0.35.0",
+]
+
+[dependency-groups]
+dev = [
+    "alembic>=1.16.4",
+    "googletrans>=4.0.2",
+]
