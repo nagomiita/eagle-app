@@ -20,6 +20,8 @@ const Header: React.FC = () => {
     setShowFolders,
     aspectRatioSquare,
     setAspectRatioSquare,
+    isShuffle,
+    setIsShuffle,
   } = useAppContext();
 
   const handleSidebarToggle = () => {
@@ -94,6 +96,8 @@ const Header: React.FC = () => {
           setSelectedTag={setSelectedTag}
           showFolders={showFolders}
           setShowFolders={setShowFolders}
+          isShuffle={isShuffle}
+          setIsShuffle={setIsShuffle}
         />
       </div>
 

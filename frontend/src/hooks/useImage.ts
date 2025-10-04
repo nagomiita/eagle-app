@@ -42,10 +42,12 @@ export const useThumbnailImages = () => {
   const [excludeInFolder, setExcludeInFolder] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [onlyFavorite, setOnlyFavorite] = useState<boolean>(false);
+  const [isShuffle, setIsShuffle] = useState<boolean>(false);
 
   const fetchImages = async (
     selectedTag: string,
-    includeSensitive: boolean
+    includeSensitive: boolean,
+    isShuffle:boolean = false
   ) => {
     setIsLoading(true);
     try {
@@ -54,6 +56,7 @@ export const useThumbnailImages = () => {
         favorites_only: onlyFavorite,
         selected_tag: selectedTag,
         exclude_in_folder: excludeInFolder,
+        shuffle: isShuffle,
       });
       setImages(thumnailImages);
     } catch (error) {
@@ -72,5 +75,7 @@ export const useThumbnailImages = () => {
     fetchImages,
     onlyFavorite,
     setOnlyFavorite,
+    isShuffle,
+    setIsShuffle
   };
 };

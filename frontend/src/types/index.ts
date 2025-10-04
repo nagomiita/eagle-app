@@ -19,6 +19,8 @@ export interface AppContextType {
   setIncludeSensitive: React.Dispatch<React.SetStateAction<boolean>>;
   onlyFavorite: boolean;
   setOnlyFavorite: React.Dispatch<React.SetStateAction<boolean>>;
+  isShuffle: boolean;
+  setIsShuffle: React.Dispatch<React.SetStateAction<boolean>>;
   // From useOriginalImage
   selectedImage: OriginalImage | null;
   setSelectedImage: React.Dispatch<React.SetStateAction<OriginalImage | null>>;

@@ -10,4 +10,5 @@ include_sensitive?: boolean;
 favorites_only?: boolean;
 selected_tag?: string | null;
 exclude_in_folder?: boolean;
+shuffle?: boolean;
 };

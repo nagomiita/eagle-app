@@ -32,13 +32,18 @@ export function AppProvider({ children }: AppProviderProps) {
   const folderState = useFolder();
 
   useEffect(() => {
-    thumbnailImagesState.fetchImages(tagState.selectedTag, includeSensitive);
+    thumbnailImagesState.fetchImages(
+      tagState.selectedTag,
+      includeSensitive,
+      thumbnailImagesState.isShuffle
+    );
     folderState.fetchFolders(includeSensitive);
   }, [
     tagState.selectedTag,
     includeSensitive,
     thumbnailImagesState.onlyFavorite,
     thumbnailImagesState.excludeInFolder,
+    thumbnailImagesState.isShuffle,
   ]);
 
   const value: AppContextType = {

@@ -1,4 +1,5 @@
 import base64
+import random
 from pathlib import Path
 
 from app.config import IMAGE_DIR
@@ -14,6 +15,7 @@ def fetch_filtered_thumnail_images(
     favorites_only: bool,
     selected_tag: str | None = None,
     exclude_in_folder: bool = True,
+    shuffle: bool = False,
 ) -> list[ThumbnailImage]:
     """
     フィルタ条件に基づいて画像エントリを取得し、サムネイル情報のリストを返す。
@@ -54,7 +56,8 @@ def fetch_filtered_thumnail_images(
                 is_favorite=entry.is_favorite,
             )
         )
-
+    if shuffle:
+        random.shuffle(thumbnails)
     return thumbnails
 
 

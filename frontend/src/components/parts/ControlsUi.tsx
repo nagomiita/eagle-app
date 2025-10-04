@@ -10,6 +10,8 @@ import {
   TagIcon as TagSolidIcon,
   PhotoIcon,
   PhotoIcon as PhotoSolidIcon,
+  ArrowsRightLeftIcon,
+  ArrowsRightLeftIcon as ArrowsRightLeftSolidIcon,
 } from "@heroicons/react/24/solid";
 
 interface ImageFilterButtonsProps {
@@ -23,6 +25,8 @@ interface ImageFilterButtonsProps {
   setShowFolders: (val: boolean) => void;
   excludeInFolder: boolean;
   setExcludeInFolder: React.Dispatch<React.SetStateAction<boolean>>;
+  isShuffle: boolean;
+  setIsShuffle: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const ImageFilterButtons: React.FC<ImageFilterButtonsProps> = ({
@@ -36,8 +40,26 @@ export const ImageFilterButtons: React.FC<ImageFilterButtonsProps> = ({
   setShowFolders,
   excludeInFolder,
   setExcludeInFolder,
+  isShuffle,
+  setIsShuffle,
 }) => (
   <div className="flex gap-2 items-center">
+    {/* シャッフルボタン */}
+    <button
+      onClick={() => setIsShuffle(!isShuffle)}
+      className={`rounded-full transition-all ${
+        isShuffle
+          ? "bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
+          : "text-gray-400 hover:text-blue-400 hover:bg-blue-500/10"
+      }`}
+      title="画像をシャッフル"
+    >
+      {isShuffle ? (
+        <ArrowsRightLeftSolidIcon className="w-5 h-5" />
+      ) : (
+        <ArrowsRightLeftIcon className="w-5 h-5" />
+      )}
+    </button>
     {/* タグ選択フィルター解除 */}
     <button
       onClick={() => setSelectedTag(selectedTag ? "" : selectedTag)}

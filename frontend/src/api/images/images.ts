@@ -44,6 +44,8 @@ import { customAxios } from '.././custom-axios';
 - `include_sensitive`: センシティブな画像（NSFWなど）も含めるかどうかを指定します（デフォルト: False）。
 - `favorites_only`: お気に入りに登録された画像のみを対象とするかを指定します（デフォルト: False）。
 - `selected_tag`: 特定のタグに紐づいた画像のみを対象とする場合に指定します。
+- `exclude_in_folder`: フォルダに含まれる画像を除外するかどうかを指定します（デフォルト: True）。
+- `shuffle`: 取得したサムネイルをランダムにシャッフルするかどうかを指定します（デフォルト: False）。
 
 取得に失敗した場合は、適切なエラーメッセージとステータスコードを返します。
  * @summary Fetch Filtered Thumnail Images

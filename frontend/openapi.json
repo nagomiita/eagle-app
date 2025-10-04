@@ -7,7 +7,7 @@
       "get": {
         "tags": ["images"],
         "summary": "Fetch Filtered Thumnail Images",
-        "description": "指定された条件に基づいて、画像のサムネイル一覧を取得します。\n\n- `include_sensitive`: センシティブな画像（NSFWなど）も含めるかどうかを指定します（デフォルト: False）。\n- `favorites_only`: お気に入りに登録された画像のみを対象とするかを指定します（デフォルト: False）。\n- `selected_tag`: 特定のタグに紐づいた画像のみを対象とする場合に指定します。\n\n取得に失敗した場合は、適切なエラーメッセージとステータスコードを返します。",
+        "description": "指定された条件に基づいて、画像のサムネイル一覧を取得します。\n\n- `include_sensitive`: センシティブな画像（NSFWなど）も含めるかどうかを指定します（デフォルト: False）。\n- `favorites_only`: お気に入りに登録された画像のみを対象とするかを指定します（デフォルト: False）。\n- `selected_tag`: 特定のタグに紐づいた画像のみを対象とする場合に指定します。\n- `exclude_in_folder`: フォルダに含まれる画像を除外するかどうかを指定します（デフォルト: True）。\n- `shuffle`: 取得したサムネイルをランダムにシャッフルするかどうかを指定します（デフォルト: False）。\n\n取得に失敗した場合は、適切なエラーメッセージとステータスコードを返します。",
         "operationId": "fetch_filtered_thumnail_images",
         "parameters": [
           {
@@ -47,6 +47,16 @@
               "type": "boolean",
               "default": true,
               "title": "Exclude In Folder"
+            }
+          },
+          {
+            "name": "shuffle",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Shuffle"
             }
           }
         ],
