@@ -8,6 +8,7 @@ import {
 } from "../api/images/images";
 import { FolderInfo, OriginalImage, ThumbnailImage } from "../api/model";
 import { useAppContext } from "../contexts/AppContext";
+import { useImageTransform } from "../hooks/useImageTransform";
 import ActionButton from "./parts/ActionButton";
 import { SidebarUi } from "./parts/SidebarUi";
 import TagList from "./parts/TagList";
@@ -48,6 +49,20 @@ const ImageModal: React.FC<ImageModalProps> = ({
     setSelectedTag,
   } = useAppContext();
 
+  // useImageTransformを使用
+  const {
+    isFlippedH,
+    isFlippedV,
+    hasTransform,
+    handleFlipHorizontal,
+    handleFlipVertical,
+    handleRotateRight,
+    handleRotateLeft,
+    handleResetTransform,
+    handleKeyboardTransform,
+    calculateImageTransform,
+  } = useImageTransform({ selectedImage });
+
   const modalRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [showButton, setShowButton] = useState(false);
@@ -65,9 +80,6 @@ const ImageModal: React.FC<ImageModalProps> = ({
   const [similarImages, setSimilarImages] = useState<ThumbnailImage[]>([]);
   const [showCarouselControls, setShowCarouselControls] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isFlippedH, setIsFlippedH] = useState(false); // 水平反転状態を管理
-  const [isFlippedV, setIsFlippedV] = useState(false); // 垂直反転状態を管理
-  const [rotationDegree, setRotationDegree] = useState(0); // 回転角度を管理
 
   //スライドショー機能
   const [isSlideshowPlaying, setIsSlideshowPlaying] = useState(false);
@@ -91,13 +103,6 @@ const ImageModal: React.FC<ImageModalProps> = ({
     latestStateRef.current.images = images;
     latestStateRef.current.isSlideshowPlaying = isSlideshowPlaying;
   }, [selectedImage, images, isSlideshowPlaying]);
-
-  // 画像が変更されたときに反転・回転状態をリセット
-  useEffect(() => {
-    setIsFlippedH(false);
-    setIsFlippedV(false);
-    setRotationDegree(0);
-  }, [selectedImage]);
 
   // スライドショーの停止処理を確実にするためのクリーンアップ
   useEffect(() => {
@@ -167,36 +172,6 @@ const ImageModal: React.FC<ImageModalProps> = ({
     setSelectedTag(String(tagId));
     setShowOptionPanel(false);
     closeModal();
-  };
-
-  // 反転機能のハンドラー
-  const handleFlipHorizontal = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setIsFlippedH((prev) => !prev);
-  };
-
-  const handleFlipVertical = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setIsFlippedV((prev) => !prev);
-  };
-
-  // 回転機能のハンドラー
-  const handleRotateRight = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setRotationDegree((prev) => (prev + 90) % 360);
-  };
-
-  const handleRotateLeft = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setRotationDegree((prev) => (prev - 90 + 360) % 360);
-  };
-
-  // 変形をリセットする機能
-  const handleResetTransform = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setIsFlippedH(false);
-    setIsFlippedV(false);
-    setRotationDegree(0);
   };
 
   useEffect(() => {
@@ -546,31 +521,17 @@ const ImageModal: React.FC<ImageModalProps> = ({
           setShowButton((prev) => !prev);
           setShowCarouselControls((prev) => !prev);
           break;
-        case "f": // Fキーで水平反転
+        case "f":
         case "F":
-          e.preventDefault();
-          setIsFlippedH((prev) => !prev);
-          break;
-        case "v": // Vキーで垂直反転
+        case "v":
         case "V":
-          e.preventDefault();
-          setIsFlippedV((prev) => !prev);
-          break;
-        case "r": // Rキーで右回転
+        case "r":
         case "R":
-          e.preventDefault();
-          setRotationDegree((prev) => (prev + 90) % 360);
-          break;
-        case "l": // Lキーで左回転
+        case "l":
         case "L":
+        case "0":
           e.preventDefault();
-          setRotationDegree((prev) => (prev - 90 + 360) % 360);
-          break;
-        case "0": // 0キーでリセット
-          e.preventDefault();
-          setIsFlippedH(false);
-          setIsFlippedV(false);
-          setRotationDegree(0);
+          handleKeyboardTransform(e.key); // hookの関数を使用
           break;
       }
     };
@@ -584,6 +545,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
     hasPrevious,
     hasNext,
     isTransitioning,
+    handleKeyboardTransform,
   ]);
 
   // 画像の透明度計算（スワイプ中の視覚効果）
@@ -602,29 +564,10 @@ const ImageModal: React.FC<ImageModalProps> = ({
     return Math.max(opacity, 0.4);
   }, [touchState.isDragging, touchState.dragY]);
 
-  // 画像の変形スタイルを計算
+  // hookの関数を使用して画像変形を計算
   const imageTransform = useMemo(() => {
-    const transforms = [];
-    
-    // スワイプによる移動
-    if (touchState.dragX !== 0 || touchState.dragY !== 0) {
-      transforms.push(`translate(${touchState.dragX}px, ${touchState.dragY}px)`);
-    }
-    
-    // 回転
-    if (rotationDegree !== 0) {
-      transforms.push(`rotate(${rotationDegree}deg)`);
-    }
-    
-    // 反転
-    const scaleX = isFlippedH ? -1 : 1;
-    const scaleY = isFlippedV ? -1 : 1;
-    if (scaleX !== 1 || scaleY !== 1) {
-      transforms.push(`scale(${scaleX}, ${scaleY})`);
-    }
-    
-    return transforms.length > 0 ? transforms.join(' ') : 'none';
-  }, [touchState.dragX, touchState.dragY, rotationDegree, isFlippedH, isFlippedV]);
+    return calculateImageTransform(touchState.dragX, touchState.dragY);
+  }, [calculateImageTransform, touchState.dragX, touchState.dragY]);
 
   if (!selectedImage) return null;
 
@@ -713,8 +656,8 @@ const ImageModal: React.FC<ImageModalProps> = ({
               ↻
             </button>
 
-            {/* リセットボタン */}
-            {(isFlippedH || isFlippedV || rotationDegree !== 0) && (
+            {/* リセットボタン（hookの hasTransform を使用） */}
+            {hasTransform && (
               <button
                 onClick={handleResetTransform}
                 className="text-white hover:text-gray-300 px-2 py-1 rounded transition-colors bg-red-600 hover:bg-red-700"
