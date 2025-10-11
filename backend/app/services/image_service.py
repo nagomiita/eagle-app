@@ -46,8 +46,6 @@ def fetch_filtered_thumnail_images(
     thumbnails: list[ThumbnailImage] = []
 
     for entry in filtered_image_entries:
-        if not entry.thumbnail_path:
-            continue
         thumbnails.append(
             ThumbnailImage(
                 id=entry.id,
