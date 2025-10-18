@@ -1,5 +1,9 @@
-from app.db.queries import folder
+from app.db.queries import folder, image
 from app.schemas.folder import FolderInfo
+from app.schemas.image import ThumbnailImage
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+from pathlib import Path
 
 
 def create_image_folder(
@@ -86,3 +90,74 @@ def delete_folder(folder_id: int) -> None:
         folder.query_delete_folder(folder_id)
     except Exception as e:
         raise RuntimeError(f"フォルダの削除に失敗しました: {e}") from e
+
+
+def sort_images_by_chained_similarity(
+    folder_id: int, seed_image_id: int, include_sensitive: bool = True
+) -> list[ThumbnailImage]:
+    """
+    指定フォルダ内の画像を、指定した画像IDを起点に「最も近いものへ順に辿る」
+    という貪欲法で並べ替えて返す。
+
+    返却は `ThumbnailImage` のリスト。
+    埋め込みが無い画像は対象外（返却にも含めない）。
+    """
+    # 1) 起点ベクトル取得
+    seed_blob = image.query_image_tag_embedding(seed_image_id)
+    if seed_blob is None:
+        return []
+
+    seed_vec = np.frombuffer(seed_blob, dtype=np.float32)
+
+    # 2) フォルダ内候補ベクトル取得（起点は除外されていてもいなくても良いので後で除外）
+    candidates = folder.query_folder_image_embeddings(
+        folder_id=folder_id, include_sensitive=include_sensitive
+    )
+    if not candidates:
+        return []
+
+    # (id, vec) に変換し、起点は除外
+    remaining: list[tuple[int, np.ndarray]] = [
+        (img_id, np.frombuffer(blob, dtype=np.float32))
+        for img_id, blob in candidates
+        if img_id != seed_image_id
+    ]
+
+    if not remaining:
+        # フォルダに起点しか無い場合
+        thumbs = image.query_thumbnails_by_ids([seed_image_id])
+        return [
+            ThumbnailImage(
+                id=entry.id,
+                name=Path(entry.image_path).name,
+                thumbnail=entry.thumbnail_path,
+                is_favorite=entry.is_favorite,
+            )
+            for entry in thumbs
+        ]
+
+    ordered_ids: list[int] = [seed_image_id]
+    current_vec = seed_vec
+
+    # 3) 貪欲法でチェーン
+    while remaining:
+        ids = [i for i, _ in remaining]
+        vecs = [v for _, v in remaining]
+        mat = np.vstack(vecs)
+        sims = cosine_similarity(current_vec.reshape(1, -1), mat)[0]
+        best_idx = int(np.argmax(sims))
+        best_id, best_vec = remaining.pop(best_idx)
+        ordered_ids.append(best_id)
+        current_vec = best_vec
+
+    # 4) サムネイル情報を順序通りに取得して返却
+    entries = image.query_thumbnails_by_ids(ordered_ids)
+    return [
+        ThumbnailImage(
+            id=e.id,
+            name=Path(e.image_path).name,
+            thumbnail=e.thumbnail_path,
+            is_favorite=e.is_favorite,
+        )
+        for e in entries
+    ]

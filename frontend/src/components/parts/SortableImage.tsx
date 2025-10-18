@@ -1,5 +1,4 @@
 import { useSortable } from "@dnd-kit/sortable";
-
 import React from "react";
 import { ThumbnailImage } from "../../api/model";
 import { CSS } from "@dnd-kit/utilities";
@@ -7,10 +6,8 @@ import { CSS } from "@dnd-kit/utilities";
 export const SortableImage: React.FC<{
   image: ThumbnailImage;
   disabled?: boolean;
-}> = ({
-  image,
-  disabled = false, // ドラッグを無効化するためのフラグ
-}) => {
+  onClickImage?: (id: number) => void;
+}> = ({ image, disabled = false, onClickImage }) => {
   const {
     attributes,
     listeners,
@@ -18,16 +15,13 @@ export const SortableImage: React.FC<{
     transform,
     transition,
     isDragging,
-  } = useSortable({
-    id: image.id,
-    disabled: disabled,
-  });
+  } = useSortable({ id: image.id, disabled });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
-    zIndex: isDragging ? 9999 : "auto", // ドラッグ中に最前面に
-    position: isDragging ? "relative" : "static", // z-index効かせるために必要
+    zIndex: isDragging ? 9999 : "auto",
+    position: isDragging ? "relative" : "static",
   };
 
   return (
@@ -35,7 +29,10 @@ export const SortableImage: React.FC<{
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...(disabled ? {} : listeners)} // disabledの時はlistenersを適用しない
+      {...(disabled ? {} : listeners)}
+      onClick={() => {
+        if (!isDragging) onClickImage?.(image.id);
+      }}
       className={
         disabled ? "cursor-pointer" : "cursor-grab active:cursor-grabbing"
       }
@@ -44,7 +41,7 @@ export const SortableImage: React.FC<{
         src={`http://192.168.11.11/api/static/${image.thumbnail}`}
         alt=""
         className="w-full rounded mb-1"
-        draggable={false} // 画像のネイティブドラッグを無効化
+        draggable={false}
       />
       <div className="text-sm text-white-700 truncate text-center">
         {image.name}

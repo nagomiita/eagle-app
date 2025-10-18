@@ -305,6 +305,59 @@
         }
       }
     },
+    "/folder/{folder_id}/similar_chain": {
+      "get": {
+        "tags": ["folders"],
+        "summary": "フォルダ内を類似度チェーンで並べ替えて返却",
+        "operationId": "chain_similar_images_in_folder",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Folder Id" }
+          },
+          {
+            "name": "seed_image_id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "title": "Seed Image Id" }
+          },
+          {
+            "name": "include_sensitive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Include Sensitive"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ThumbnailImage" },
+                  "title": "Response Chain Similar Images In Folder"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/folder/{folder_id}/order": {
       "put": {
         "tags": ["folders"],

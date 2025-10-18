@@ -1,5 +1,6 @@
 from app.core.logger import setup_logging
 from app.schemas.folder import FolderCreateRequest, FolderInfo
+from app.schemas.image import ThumbnailImage
 from app.services import folder_service
 from fastapi import APIRouter, HTTPException
 
@@ -19,6 +20,26 @@ async def fetch_all_folders(include_sensitive: bool = False):
     except Exception:
         logger.exception("❌ フォルダ情報取得中にエラーが発生しました")
         raise HTTPException(status_code=500, detail="フォルダ取得に失敗しました")
+
+
+@router.get(
+    "/folder/{folder_id}/similar_chain",
+    response_model=list[ThumbnailImage],
+    summary="フォルダ内を類似度チェーンで並べ替えて返却",
+    operation_id="chain_similar_images_in_folder",
+)
+async def chain_similar_images_in_folder(
+    folder_id: int, seed_image_id: int, include_sensitive: bool = True
+):
+    try:
+        return folder_service.sort_images_by_chained_similarity(
+            folder_id=folder_id,
+            seed_image_id=seed_image_id,
+            include_sensitive=include_sensitive,
+        )
+    except Exception:
+        logger.exception("❁Eフォルダ内類似チェーン取得エラー")
+        raise HTTPException(status_code=500, detail="類似チェーンの取得に失敗しました")
 
 
 @router.post(

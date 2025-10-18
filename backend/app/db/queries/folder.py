@@ -40,7 +40,7 @@ def query_all_folders(include_sensitive: bool) -> list[dict]:
                 ImageFolderAssociation,
                 ImageFolder.id == ImageFolderAssociation.folder_id,
             )
-            .order_by(ImageFolderAssociation.position)
+            .order_by(ImageFolder.name.asc(), ImageFolderAssociation.position.asc())
             .all()
         )
 
@@ -155,3 +155,27 @@ def query_delete_folder(folder_id: int) -> None:
         # フォルダ自体を削除
         session.delete(folder)
         session.commit()
+
+
+def query_folder_image_embeddings(
+    folder_id: int, include_sensitive: bool = True
+) -> list[tuple[int, bytes]]:
+    """
+    指定フォルダに含まれる画像の埋め込みベクトルを取得する（None は除外）。
+
+    Returns:
+        list[tuple[int, bytes]]: (image_id, tag_embedding_blob) のリスト
+    """
+    with get_session() as session:
+        q = (
+            session.query(ImageEntry.id, ImageEntry.tag_embedding_blob)
+            .join(
+                ImageFolderAssociation,
+                ImageFolderAssociation.image_id == ImageEntry.id,
+            )
+            .filter(ImageFolderAssociation.folder_id == folder_id)
+            .filter(ImageEntry.tag_embedding_blob.isnot(None))
+        )
+        if not include_sensitive:
+            q = q.filter(ImageEntry.is_sensitive.is_(False))
+        return q.all()

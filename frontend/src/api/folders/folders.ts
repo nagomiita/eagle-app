@@ -24,11 +24,13 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ChainSimilarImagesInFolderParams,
   FetchAllFoldersParams,
   FolderCreateRequest,
   FolderInfo,
   HTTPValidationError,
-  RenameFolderParams
+  RenameFolderParams,
+  ThumbnailImage
 } from '.././model';
 
 import { customAxios } from '.././custom-axios';
@@ -189,6 +191,101 @@ export const useCreateImageFolder = <TError = HTTPValidationError,
       return useMutation(mutationOptions , queryClient);
     }
     /**
+ * @summary フォルダ内を類似度チェーンで並べ替えて返却
+ */
+export const chainSimilarImagesInFolder = (
+    folderId: number,
+    params: ChainSimilarImagesInFolderParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customAxios<ThumbnailImage[]>(
+      {url: `/folder/${folderId}/similar_chain`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getChainSimilarImagesInFolderQueryKey = (folderId: number,
+    params: ChainSimilarImagesInFolderParams,) => {
+    return [`/folder/${folderId}/similar_chain`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getChainSimilarImagesInFolderQueryOptions = <TData = Awaited<ReturnType<typeof chainSimilarImagesInFolder>>, TError = HTTPValidationError>(folderId: number,
+    params: ChainSimilarImagesInFolderParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chainSimilarImagesInFolder>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getChainSimilarImagesInFolderQueryKey(folderId,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof chainSimilarImagesInFolder>>> = ({ signal }) => chainSimilarImagesInFolder(folderId,params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(folderId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof chainSimilarImagesInFolder>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ChainSimilarImagesInFolderQueryResult = NonNullable<Awaited<ReturnType<typeof chainSimilarImagesInFolder>>>
+export type ChainSimilarImagesInFolderQueryError = HTTPValidationError
+
+
+export function useChainSimilarImagesInFolder<TData = Awaited<ReturnType<typeof chainSimilarImagesInFolder>>, TError = HTTPValidationError>(
+ folderId: number,
+    params: ChainSimilarImagesInFolderParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof chainSimilarImagesInFolder>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chainSimilarImagesInFolder>>,
+          TError,
+          Awaited<ReturnType<typeof chainSimilarImagesInFolder>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChainSimilarImagesInFolder<TData = Awaited<ReturnType<typeof chainSimilarImagesInFolder>>, TError = HTTPValidationError>(
+ folderId: number,
+    params: ChainSimilarImagesInFolderParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chainSimilarImagesInFolder>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof chainSimilarImagesInFolder>>,
+          TError,
+          Awaited<ReturnType<typeof chainSimilarImagesInFolder>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useChainSimilarImagesInFolder<TData = Awaited<ReturnType<typeof chainSimilarImagesInFolder>>, TError = HTTPValidationError>(
+ folderId: number,
+    params: ChainSimilarImagesInFolderParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chainSimilarImagesInFolder>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary フォルダ内を類似度チェーンで並べ替えて返却
+ */
+
+export function useChainSimilarImagesInFolder<TData = Awaited<ReturnType<typeof chainSimilarImagesInFolder>>, TError = HTTPValidationError>(
+ folderId: number,
+    params: ChainSimilarImagesInFolderParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof chainSimilarImagesInFolder>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getChainSimilarImagesInFolderQueryOptions(folderId,params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
  * @summary フォルダ内の画像順序を更新
  */
 export const updateFolderOrder = (

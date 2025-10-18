@@ -7,6 +7,7 @@
 
 export * from './bodyDeleteImage';
 export * from './bodyRegisterFavoriteImage';
+export * from './chainSimilarImagesInFolderParams';
 export * from './fetchAllFoldersParams';
 export * from './fetchFilteredThumnailImagesParams';
 export * from './fetchOriginalImageParams';
