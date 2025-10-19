@@ -272,7 +272,62 @@ nginx -s stop
 
 ## 起動方法
 
-### 開発環境
+**📌 重要:** Eagle Appは3つの動作モードをサポートしています。
+
+### 🖥️ モード1: デスクトップモード（Electron - 推奨）
+
+ホストPCでデスクトップアプリとして動作します。
+
+```bash
+# 起動スクリプトを使用
+scripts\start-desktop.bat
+
+# または npm コマンド
+cd frontend
+npm run electron:start
+```
+
+**特徴:**
+- ✅ 高速起動
+- ✅ nginx不要
+- ✅ ネイティブウィンドウ
+
+---
+
+### 🌐 モード2: サーバーモード（nginx + Web）
+
+LAN内の複数デバイスからブラウザでアクセスできます。
+
+```bash
+# 起動スクリプトを使用
+scripts\start-server.bat
+```
+
+**アクセス:** `http://192.168.11.11`
+
+**停止:**
+```bash
+scripts\stop-server.bat
+```
+
+---
+
+### 🔄 モード3: ハイブリッドモード（Electron + nginx）
+
+デスクトップアプリとWebサーバーを同時に起動します。
+
+```bash
+# 起動スクリプトを使用
+scripts\start-all.bat
+```
+
+**アクセス:**
+- ホストPC: Electronウィンドウ
+- 他の端末: `http://192.168.11.11`
+
+---
+
+### 開発環境（従来の方法）
 
 #### 1. バックエンドの起動
 

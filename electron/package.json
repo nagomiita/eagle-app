@@ -1,0 +1,8 @@
+{
+  "name": "eagle-app-electron",
+  "version": "1.0.0",
+  "description": "Eagle App - Image Management with AI Tags",
+  "main": "main.js",
+  "author": "Your Name",
+  "license": "MIT"
+}

@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { VitePWA } from "vite-plugin-pwa"; // 追加
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,9 +11,9 @@ export default defineConfig({
       includeAssets: ["favicon.ico", "apple-touch-icon.png"],
       injectRegister: "auto",
       manifest: {
-        name: "PWA Sample Apps",
-        short_name: "PWAApps",
-        description: "PWAサンプルアプリ",
+        name: "Eagle App",
+        short_name: "EagleApp",
+        description: "画像管理・タグ検索アプリケーション",
         theme_color: "#ffffff",
         icons: [
           {
@@ -42,4 +42,15 @@ export default defineConfig({
       },
     }),
   ],
+  // Electron用に相対パスを使用
+  base: "./",
+  server: {
+    port: 5173,
+    host: true,
+  },
+  build: {
+    outDir: "dist",
+    assetsDir: "assets",
+    emptyOutDir: true,
+  },
 });

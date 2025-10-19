@@ -1,14 +1,44 @@
 {
-  "name": "frontend",
+  "name": "eagle-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "main": "../electron/main.js",
   "scripts": {
     "dev": "vite --host",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-client": "powershell -Command \"Invoke-WebRequest -Uri 'http://localhost:8000/openapi.json' -OutFile 'openapi.json'; npx orval\""
+    "generate-client": "powershell -Command \"Invoke-WebRequest -Uri 'http://localhost:8000/openapi.json' -OutFile 'openapi.json'; npx orval\"",
+    "clean:cache": "powershell -Command \"if (Test-Path 'node_modules/.vite') { Remove-Item -Recurse -Force 'node_modules/.vite' }\"",
+    "clean:dist": "powershell -Command \"if (Test-Path 'dist') { Remove-Item -Recurse -Force 'dist' -ErrorAction SilentlyContinue }\"",
+    "clean": "npm run clean:cache && npm run clean:dist",
+    "electron:dev": "npm run clean:cache && concurrently \"vite --host\" \"wait-on http://localhost:5173 && electron ../electron/main.js\"",
+    "electron:start": "electron ../electron/main.js",
+    "electron:build": "npm run build && electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.eagle.app",
+    "productName": "Eagle App",
+    "directories": {
+      "output": "../release"
+    },
+    "files": [
+      "dist/**/*",
+      "../electron/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "public/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -28,6 +58,9 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^8.2.2",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
     "eslint": "^9.9.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
@@ -38,6 +71,7 @@
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1",
-    "vite-plugin-pwa": "^1.0.0"
+    "vite-plugin-pwa": "^1.0.0",
+    "wait-on": "^7.2.0"
   }
 }
