@@ -17,7 +17,6 @@ const TagList: React.FC<TagListProps> = ({ tags, onTagClick }) => {
 
   return (
     <div className="mb-6">
-      <h3 className="font-semibold mb-2 text-gray-100">タグ</h3>
       <div className="flex flex-wrap gap-2 text-sm">
         {tags.map((tag) => (
           <span
