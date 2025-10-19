@@ -1,7 +1,7 @@
 import React from "react";
 import { HeartIcon, TrashIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 
-type ActionType = "favorite" | "delete" | "options";
+type ActionType = "favorite" | "delete" | "options" | "scrollToTop";
 type PositionType =
   | "bottom-right"
   | "bottom-left"
@@ -32,16 +32,20 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
   const positionClass = positionClassMap[position];
   const baseClass =
-    "absolute rounded-full p-3 shadow-lg z-50 transition-colors";
+    type === "scrollToTop"
+      ? "fixed rounded-full p-3 shadow-lg z-50 transition-all duration-300 hover:scale-110"
+      : "absolute rounded-full p-3 shadow-lg z-50 transition-colors";
 
-  const bgClass =
-    type === "favorite"
-      ? isActive
-        ? "bg-pink-500 hover:bg-pink-600"
-        : "bg-gray-500 hover:bg-gray-600"
-      : type === "delete"
-      ? "bg-red-600 hover:bg-red-700"
-      : "bg-gray-800 hover:bg-gray-700";
+  const bgClassMap: Record<ActionType, string> = {
+    favorite: isActive
+      ? "bg-pink-500 hover:bg-pink-600"
+      : "bg-gray-500 hover:bg-gray-600",
+    delete: "bg-red-600 hover:bg-red-700",
+    scrollToTop: "bg-blue-600 hover:bg-blue-700",
+    options: "bg-gray-800 hover:bg-gray-700",
+  };
+
+  const bgClass = bgClassMap[type];
 
   const icon =
     type === "favorite" ? (

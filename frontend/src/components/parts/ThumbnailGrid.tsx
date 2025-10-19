@@ -7,6 +7,7 @@ import {
   addImagesToFolder,
 } from "../../api/folders/folders";
 import { handleApiRequest } from "../../utils/apiHelpers";
+import ScrollToTopButton from "./ScrollToTopButton";
 
 interface ThumbnailGridProps {
   images: ThumbnailImage[];
@@ -287,6 +288,7 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
           </div>
         ))}
       </div>
+      <ScrollToTopButton />
     </div>
   );
 };
