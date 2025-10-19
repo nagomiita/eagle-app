@@ -153,7 +153,7 @@ async def delete_image(image_id: int):
 - `500 Internal Server Error`: 類似画像の検索処理中にエラーが発生した場合。
 """,
 )
-async def fetch_similar_images(image_id: int, show_sensitive: bool, top_k: int = 60):
+async def fetch_similar_images(image_id: int, show_sensitive: bool, top_k: int = 300):
     try:
         similar_images = image_service.fetch_similar_images(
             image_id, show_sensitive, top_k

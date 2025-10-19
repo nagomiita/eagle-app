@@ -10,7 +10,6 @@ import { FolderInfo, OriginalImage, ThumbnailImage } from "../api/model";
 import { useAppContext } from "../contexts/AppContext";
 import { useImageTransform } from "../hooks/useImageTransform";
 import ActionButton from "./parts/ActionButton";
-import { SidebarUi } from "./parts/SidebarUi";
 import TagList from "./parts/TagList";
 import ThumbnailGrid from "./parts/ThumbnailGrid";
 
@@ -77,6 +76,54 @@ const ImageModal: React.FC<ImageModalProps> = ({
     velocity: 0,
   });
   const [showOptionPanel, setShowOptionPanel] = useState(false);
+  const [sheetTranslateY, setSheetTranslateY] = useState(100); // percent (100% = hidden)
+  const sheetRef = useRef<HTMLDivElement | null>(null);
+
+  // showOptionPanelの状態に応じてsheetTranslateYを制御
+  useEffect(() => {
+    if (showOptionPanel) {
+      setSheetTranslateY(0); // パネルを表示
+    } else {
+      setSheetTranslateY(100); // パネルを非表示
+    }
+  }, [showOptionPanel]);
+
+  // sheet touch handling
+  const sheetTouchStartRef = useRef<{
+    startY: number;
+    currentY: number;
+  } | null>(null);
+
+  const handleSheetTouchStart = (e: React.TouchEvent) => {
+    if (!isMobile) return;
+    const startY = e.touches[0].clientY;
+    sheetTouchStartRef.current = { startY, currentY: startY };
+  };
+
+  const handleSheetTouchMove = (e: React.TouchEvent) => {
+    if (!isMobile || !sheetTouchStartRef.current) return;
+    const currentY = e.touches[0].clientY;
+    const delta = currentY - sheetTouchStartRef.current.startY;
+    const height = sheetRef.current?.clientHeight || window.innerHeight / 2;
+    const percent = Math.min(Math.max((delta / height) * 100, -100), 100);
+    // when dragging up (negative percent) show sheet (smaller translateY)
+    const newTranslate = Math.max(0, 100 - -percent);
+    setSheetTranslateY(newTranslate);
+    sheetTouchStartRef.current.currentY = currentY;
+  };
+
+  const handleSheetTouchEnd = () => {
+    if (!isMobile || !sheetTouchStartRef.current) return;
+    // decide open/close based on translateY threshold
+    if (sheetTranslateY < 50) {
+      setSheetTranslateY(0);
+      setShowOptionPanel(true);
+    } else {
+      setSheetTranslateY(100);
+      setShowOptionPanel(false);
+    }
+    sheetTouchStartRef.current = null;
+  };
   const [similarImages, setSimilarImages] = useState<ThumbnailImage[]>([]);
   const [showCarouselControls, setShowCarouselControls] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -124,9 +171,7 @@ const ImageModal: React.FC<ImageModalProps> = ({
   const hasPrevious = currentIndex > 0;
   const hasNext = currentIndex >= 0 && currentIndex < images.length - 1;
 
-  const closeSidebar = () => {
-    setShowOptionPanel(false);
-  };
+  // previously had a closeSidebar helper; removed since it's unused
 
   const handleThumbnailClick = async (imageId: number) => {
     try {
@@ -745,11 +790,10 @@ const ImageModal: React.FC<ImageModalProps> = ({
             ))}
           </div>
         )}
-
         {showButton && (
           <ActionButton
             type="options"
-            position="top-right"
+            position="bottom-center"
             onClick={(e) => {
               e.stopPropagation();
               setShowOptionPanel((prev) => !prev);
@@ -777,17 +821,62 @@ const ImageModal: React.FC<ImageModalProps> = ({
       </div>
 
       {showOptionPanel && (
-        <SidebarUi position="right" onClose={closeSidebar}>
-          <TagList
-            tags={selectedImage?.tags ?? []}
-            onTagClick={handleTagClick}
-          />
-          <ThumbnailGrid
-            images={similarImages}
-            columnCount={3}
-            onClick={handleThumbnailClick}
-          />
-        </SidebarUi>
+        // bottom sheet container
+        <div
+          ref={sheetRef}
+          className="fixed left-0 right-0 bottom-0 w-full z-50"
+          onTouchStart={handleSheetTouchStart}
+          onTouchMove={handleSheetTouchMove}
+          onTouchEnd={handleSheetTouchEnd}
+        >
+          <div
+            className="bg-gradient-to-b from-gray-900 to-gray-950 backdrop-blur-lg bg-opacity-98 border-t border-gray-700 shadow-2xl"
+            style={{
+              transform: `translateY(${sheetTranslateY}%)`,
+              transition: "transform 240ms ease-out",
+              touchAction: "none",
+              maxHeight: "70vh",
+              borderTopLeftRadius: "24px",
+              borderTopRightRadius: "24px",
+            }}
+          >
+            {/* ドラッグハンドル */}
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-12 h-1.5 bg-gray-600 rounded-full opacity-50"></div>
+            </div>
+
+            {/* コンテンツエリア */}
+            <div
+              className="px-6 pb-6 overflow-y-auto"
+              style={{ maxHeight: "calc(70vh - 40px)" }}
+            >
+              {/* タグセクション */}
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">
+                  Tags
+                </h3>
+                <TagList
+                  tags={selectedImage?.tags ?? []}
+                  onTagClick={handleTagClick}
+                />
+              </div>
+
+              {/* 類似画像セクション */}
+              {similarImages.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">
+                    Similar Images
+                  </h3>
+                  <ThumbnailGrid
+                    images={similarImages}
+                    columnCount={isMobile ? 4 : 8}
+                    onClick={handleThumbnailClick}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

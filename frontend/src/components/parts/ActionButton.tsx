@@ -1,12 +1,13 @@
 import React from "react";
-import {
-  HeartIcon,
-  TrashIcon,
-  AdjustmentsHorizontalIcon,
-} from "@heroicons/react/24/solid";
+import { HeartIcon, TrashIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 
 type ActionType = "favorite" | "delete" | "options";
-type PositionType = "bottom-right" | "bottom-left" | "top-right" | "top-left";
+type PositionType =
+  | "bottom-right"
+  | "bottom-left"
+  | "top-right"
+  | "top-left"
+  | "bottom-center";
 
 interface ActionButtonProps {
   type: ActionType;
@@ -26,6 +27,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     "bottom-left": "bottom-6 left-6",
     "top-right": "top-6 right-6",
     "top-left": "top-6 left-6",
+    "bottom-center": "bottom-6 left-1/2 transform -translate-x-1/2",
   };
 
   const positionClass = positionClassMap[position];
@@ -51,7 +53,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     ) : type === "delete" ? (
       <TrashIcon className="h-6 w-6 text-white" />
     ) : (
-      <AdjustmentsHorizontalIcon className="h-6 w-6 text-white" />
+      <ChevronUpIcon className="h-6 w-6 text-white" />
     );
 
   // 削除ボタンを非アクティブにするかどうか
