@@ -6,6 +6,7 @@ import {
   createImageFolder,
   addImagesToFolder,
 } from "../../api/folders/folders";
+import { handleApiRequest } from "../../utils/apiHelpers";
 
 interface ThumbnailGridProps {
   images: ThumbnailImage[];
@@ -113,46 +114,46 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
     const folderName = prompt("フォルダ名を入力してください：");
     if (!folderName) return;
 
-    const resFolderId = await createImageFolder({
-      folder_name: folderName,
-      image_ids: selectedIds,
-      description: "",
+    await handleApiRequest({
+      apiCall: () =>
+        createImageFolder({
+          folder_name: folderName,
+          image_ids: selectedIds,
+          description: "",
+        }),
+      errorContext: "新規フォルダ作成中",
+      onSuccess: async (folderId) => {
+        if (folderId) {
+          alert("フォルダを作成しました");
+          const selectedImages = images.filter((img) =>
+            selectedIds.includes(img.id)
+          );
+          // フォルダに追加
+          const newFolder: FolderInfo = {
+            id: folderId,
+            name: folderName,
+            description: "",
+            thumbnail_images: selectedImages,
+          };
+          // 🔄 フォルダ更新（参照を変える）
+          if (setFolders) {
+            setFolders((prev) => [...prev, newFolder]);
+          }
+          // 🔄 画像一覧から削除（参照が変わるように）
+          if (setImages) {
+            setImages((prev) =>
+              prev.filter((img) => !selectedIds.includes(img.id))
+            );
+          }
+          // UI状態の初期化
+          setIsCheckMode(false);
+          setSelectedIds([]);
+          setLastSelectedIndex(null);
+        } else {
+          alert("作成に失敗しました");
+        }
+      },
     });
-
-    if (resFolderId) {
-      alert("フォルダを作成しました");
-
-      const selectedImages = images.filter((img) =>
-        selectedIds.includes(img.id)
-      );
-
-      // フォルダに追加
-      const newFolder: FolderInfo = {
-        id: resFolderId,
-        name: folderName,
-        description: "",
-        thumbnail_images: selectedImages,
-      };
-
-      // 🔄 フォルダ更新（参照を変える）
-      if (setFolders) {
-        setFolders((prev) => [...prev, newFolder]);
-      }
-
-      // 🔄 画像一覧から削除（参照が変わるように）
-      if (setImages) {
-        setImages((prev) =>
-          prev.filter((img) => !selectedIds.includes(img.id))
-        );
-      }
-
-      // UI状態の初期化
-      setIsCheckMode(false);
-      setSelectedIds([]);
-      setLastSelectedIndex(null);
-    } else {
-      alert("作成に失敗しました");
-    }
   };
 
   return (

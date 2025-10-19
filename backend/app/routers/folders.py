@@ -38,7 +38,7 @@ async def chain_similar_images_in_folder(
             include_sensitive=include_sensitive,
         )
     except Exception:
-        logger.exception("❁Eフォルダ内類似チェーン取得エラー")
+        logger.exception("フォルダ内類似チェーン取得エラー")
         raise HTTPException(status_code=500, detail="類似チェーンの取得に失敗しました")
 
 

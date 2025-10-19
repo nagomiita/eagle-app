@@ -203,7 +203,7 @@
             "name": "top_k",
             "in": "query",
             "required": false,
-            "schema": { "type": "integer", "default": 60, "title": "Top K" }
+            "schema": { "type": "integer", "default": 300, "title": "Top K" }
           }
         ],
         "responses": {
