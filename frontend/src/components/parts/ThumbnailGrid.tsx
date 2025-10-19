@@ -110,6 +110,52 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
     }
   };
 
+  const addToExistingFolder = async () => {
+    if (!selectedFolderId) return;
+
+    await handleApiRequest({
+      apiCall: () => addImagesToFolder(parseInt(selectedFolderId), selectedIds),
+      errorContext: "既存フォルダへの追加中",
+      onSuccess: async (res) => {
+        if (res) {
+          alert("✅ フォルダに追加しました");
+          const selectedImages = images.filter((img) =>
+            selectedIds.includes(img.id)
+          );
+          // 🔄 既存フォルダに画像を追加（参照を変える）
+          if (setFolders) {
+            setFolders((prev) =>
+              prev.map((folder) =>
+                folder.id === parseInt(selectedFolderId)
+                  ? {
+                      ...folder,
+                      thumbnail_images: [
+                        ...folder.thumbnail_images,
+                        ...selectedImages,
+                      ],
+                    }
+                  : folder
+              )
+            );
+          }
+          // 🔄 画像一覧から削除（参照が変わるように）
+          if (setImages) {
+            setImages((prev) =>
+              prev.filter((img) => !selectedIds.includes(img.id))
+            );
+          }
+          // UI状態の初期化
+          setIsCheckMode(false);
+          setSelectedIds([]);
+          setLastSelectedIndex(null);
+          setSelectedFolderId(null);
+        } else {
+          alert("❌ 追加に失敗しました");
+        }
+      },
+    });
+  };
+
   const createFolder = async () => {
     const folderName = prompt("フォルダ名を入力してください：");
     if (!folderName) return;
@@ -175,23 +221,7 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
 
           <button
             disabled={!selectedFolderId}
-            onClick={async () => {
-              if (!selectedFolderId) return;
-              const res = await addImagesToFolder(
-                parseInt(selectedFolderId),
-                selectedIds
-              );
-
-              if (res) {
-                alert("✅ フォルダに追加しました");
-                setIsCheckMode(false);
-                setSelectedIds([]);
-                setLastSelectedIndex(null);
-                setSelectedFolderId(null);
-              } else {
-                alert("❌ 追加に失敗しました");
-              }
-            }}
+            onClick={addToExistingFolder}
             className="bg-yellow-600 text-white px-4 py-2 rounded disabled:opacity-50 w-full sm:w-auto"
           >
             ➕ 既存フォルダに追加（{selectedIds.length} 枚）
