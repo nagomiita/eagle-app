@@ -27,6 +27,7 @@ const ImageGrid: React.FC = () => {
 
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [showAllFolders, setShowAllFolders] = useState(false);
 
   //選択されたタグをIDから名前に変換
   const selectedTagName = tags?.find(
@@ -101,6 +102,13 @@ const ImageGrid: React.FC = () => {
     setIsEditMode(true);
   };
 
+  // フォルダ表示数の制限
+  const initialFolderDisplayCount = columnCount === 2 ? 6 : 8;
+  const displayedFolders = showAllFolders
+    ? folders
+    : folders.slice(0, initialFolderDisplayCount);
+  const hasMoreFolders = folders.length > initialFolderDisplayCount;
+
   if (isLoading) {
     return <LoadingIndicator />;
   }
@@ -174,11 +182,38 @@ const ImageGrid: React.FC = () => {
             subtitle="画像が整理されたフォルダを表示しています"
           />
           <FolderGrid
-            folders={folders}
+            folders={displayedFolders}
             columnCount={columnCount}
             onClickFolder={handleFolderClick}
             onDeleteFolder={handleDeleteFolder}
           />
+          {hasMoreFolders && (
+            <div style={{ textAlign: "center", margin: "20px 0" }}>
+              <button
+                onClick={() => setShowAllFolders(!showAllFolders)}
+                style={{
+                  padding: "10px 24px",
+                  fontSize: "14px",
+                  backgroundColor: "#4a5568",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  transition: "background-color 0.2s",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#2d3748")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#4a5568")
+                }
+              >
+                {showAllFolders
+                  ? "折りたたむ"
+                  : `さらに表示 (残り${folders.length - initialFolderDisplayCount}個)`}
+              </button>
+            </div>
+          )}
         </>
       ) : (
         <div>
@@ -191,11 +226,38 @@ const ImageGrid: React.FC = () => {
                 subtitle="整理された画像コレクション"
               />
               <FolderGrid
-                folders={folders}
+                folders={displayedFolders}
                 columnCount={columnCount}
                 onClickFolder={handleFolderClick}
                 onDeleteFolder={handleDeleteFolder}
               />
+              {hasMoreFolders && (
+                <div style={{ textAlign: "center", margin: "20px 0" }}>
+                  <button
+                    onClick={() => setShowAllFolders(!showAllFolders)}
+                    style={{
+                      padding: "10px 24px",
+                      fontSize: "14px",
+                      backgroundColor: "#4a5568",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                      transition: "background-color 0.2s",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#2d3748")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "#4a5568")
+                    }
+                  >
+                    {showAllFolders
+                      ? "折りたたむ"
+                      : `さらに表示 (残り${folders.length - initialFolderDisplayCount}個)`}
+                  </button>
+                </div>
+              )}
               <SectionDivider />
             </>
           )}
