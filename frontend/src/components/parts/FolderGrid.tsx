@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FolderInfo } from "../../api/model";
+import { STATIC_BASE_URL } from "../../config";
 
 interface FolderGridProps {
   folders: FolderInfo[];
@@ -122,7 +123,7 @@ const FolderGrid: React.FC<FolderGridProps> = ({
               {folder.thumbnail_images.slice(0, 3).map((thumb, index) => (
                 <img
                   key={thumb.id}
-                  src={`http://192.168.11.11/api/static/${thumb.thumbnail}`}
+                  src={`${STATIC_BASE_URL}/${thumb.thumbnail}`}
                   className={`absolute w-full h-full object-cover rounded-lg shadow transition-transform ${
                     index === 0
                       ? "relative z-30"

@@ -8,6 +8,7 @@ import {
 } from "../../api/folders/folders";
 import { handleApiRequest } from "../../utils/apiHelpers";
 import ScrollToTopButton from "./ScrollToTopButton";
+import { STATIC_BASE_URL } from "../../config";
 
 interface ThumbnailGridProps {
   images: ThumbnailImage[];
@@ -268,7 +269,7 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
             onTouchEnd={handleTouchEnd}
           >
             <LazyImage
-              src={`http://192.168.11.11/api/static/${image.thumbnail}`}
+              src={`${STATIC_BASE_URL}/${image.thumbnail}`}
               alt={`Thumbnail ${image.id}`}
               className={selectedIds.includes(image.id) ? "opacity-60" : ""}
               aspectRatioSquare={aspectRatioSquare}

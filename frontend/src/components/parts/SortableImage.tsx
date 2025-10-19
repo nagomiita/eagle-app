@@ -2,6 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import React from "react";
 import { ThumbnailImage } from "../../api/model";
 import { CSS } from "@dnd-kit/utilities";
+import { STATIC_BASE_URL } from "../../config";
 
 export const SortableImage: React.FC<{
   image: ThumbnailImage;
@@ -38,7 +39,7 @@ export const SortableImage: React.FC<{
       }
     >
       <img
-        src={`http://192.168.11.11/api/static/${image.thumbnail}`}
+        src={`${STATIC_BASE_URL}/${image.thumbnail}`}
         alt=""
         className="w-full rounded mb-1"
         draggable={false}
