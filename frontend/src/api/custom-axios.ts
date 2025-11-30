@@ -9,7 +9,7 @@ export const getApiBaseUrl = (): string => {
 };
 
 export const customAxios = async <T>({ url, method = "GET", ...rest }: any): Promise<T> => {
-  const baseURL = getApiBaseUrl();
+  const baseURL = `${getApiBaseUrl()}/api`;
   const response = await axios.request<T>({
     baseURL,
     url,

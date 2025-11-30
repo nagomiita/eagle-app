@@ -13,3 +13,4 @@ thumbnails
 *.log
 .env
 *.db
+images

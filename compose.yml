@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: eagle-app-frontend:latest
+    ports:
+      - "8080:80"
+    # thumbnails を静的に配信するために backend の thumbnails ディレクトリをマウント
+    volumes:
+      - ./backend/thumbnails:/var/www/thumbnails:ro
+    networks:
+      - eagle-net
+
+networks:
+  eagle-net:
+    driver: bridge
