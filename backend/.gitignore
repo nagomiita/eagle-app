@@ -11,3 +11,5 @@ tag_config.py
 *.csv
 thumbnails
 *.log
+.env
+*.db

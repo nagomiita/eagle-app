@@ -1,5 +1,7 @@
 # from pathlib import Path
+from contextlib import asynccontextmanager
 
+from app.db.init import initialize_database
 from app.routers import folders, images, tags
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,7 +9,17 @@ from fastapi.middleware.gzip import GZipMiddleware
 
 # from fastapi.staticfiles import StaticFiles
 
-app = FastAPI(root_path="/api")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup event
+    initialize_database()
+    yield
+    # Shutdown event (if needed in the future)
+    pass
+
+
+app = FastAPI(root_path="/api", lifespan=lifespan)
 # static_dir = Path(__file__).resolve().parent.parent / "thumbnails"
 # app.mount(
 #     "/static/thumbnails",

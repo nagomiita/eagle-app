@@ -27,5 +27,6 @@
     "quickfix.biome": "explicit",
     "source.organizeImports.biome": "explicit"
   },
-  "python-envs.pythonProjects": []
+  "python-envs.pythonProjects": [],
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python3.13"
 }
