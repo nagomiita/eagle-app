@@ -15,7 +15,7 @@ from app.db.models import (
 )
 from app.db.query_performance import measure_query_time, measure_time, perf_logger
 from app.db.session import get_session
-from app.tag_config import SENSITIVE_KEYWORDS
+from app.settings import SENSITIVE_KEYWORDS
 from app.utils.categorize import get_tag_category
 from app.utils.genre import get_genres
 from app.utils.translations import get_translation_for_tag

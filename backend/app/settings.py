@@ -47,6 +47,12 @@ class Settings(BaseSettings):
         description="Default language for translations (e.g., 'ja', 'en')"
     )
 
+    # Content Filtering Configuration
+    sensitive_keywords: str = Field(
+        default="explicit,adult",
+        description="Comma-separated list of keywords to mark content as sensitive"
+    )
+
 
 # Create a global settings instance
 settings = Settings()
@@ -55,3 +61,4 @@ settings = Settings()
 DB_PATH = settings.db_path
 IMAGE_DIR = settings.image_dir
 LANGUAGE = settings.language
+SENSITIVE_KEYWORDS = settings.sensitive_keywords
