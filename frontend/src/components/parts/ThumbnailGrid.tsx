@@ -1,14 +1,14 @@
+import { CheckIcon, HeartIcon } from "@heroicons/react/24/solid";
 import React, { useState } from "react";
-import { FolderInfo, ThumbnailImage } from "../../api/model";
-import LazyImage from "./LazyImage";
-import { HeartIcon, CheckIcon } from "@heroicons/react/24/solid";
 import {
-  createImageFolder,
   addImagesToFolder,
+  createImageFolder,
 } from "../../api/folders/folders";
-import { handleApiRequest } from "../../utils/apiHelpers";
-import ScrollToTopButton from "./ScrollToTopButton";
+import { FolderInfo, ThumbnailImage } from "../../api/model";
 import { STATIC_BASE_URL } from "../../config";
+import { handleApiRequest } from "../../utils/apiHelpers";
+import LazyImage from "./LazyImage";
+import ScrollToTopButton from "./ScrollToTopButton";
 
 interface ThumbnailGridProps {
   images: ThumbnailImage[];
@@ -35,6 +35,7 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
   const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
     null
   );
+  const [showFolderDropdown, setShowFolderDropdown] = useState<boolean>(false);
   //長押しで選択モードに入るためのタイマー
   let longPressTimer: NodeJS.Timeout | null = null;
 
@@ -208,18 +209,65 @@ const ThumbnailGrid: React.FC<ThumbnailGridProps> = ({
     <div>
       {isCheckMode && (
         <div className="fixed bottom-0 left-0 w-full bg-gray-900 bg-opacity-90 z-50 p-4 flex flex-col sm:flex-row justify-center items-center gap-4 shadow-md">
-          <select
-            value={selectedFolderId ?? ""}
-            onChange={(e) => setSelectedFolderId(e.target.value)}
-            className="px-2 py-1 rounded bg-white text-black border w-full sm:w-auto"
-          >
-            <option value="">📁 フォルダを選択</option>
-            {(folders ?? []).map((folder) => (
-              <option key={folder.id} value={folder.id}>
-                {folder.name}
-              </option>
-            ))}
-          </select>
+          {/* Custom folder dropdown with thumbnails */}
+          <div className="relative w-full sm:w-auto">
+            <button
+              onClick={() => setShowFolderDropdown((s) => !s)}
+              className="flex items-center space-x-2 px-4 py-2 bg-white text-black rounded w-full sm:w-64"
+            >
+              {selectedFolderId ? (
+                (() => {
+                  const f = (folders ?? []).find((ff) => String(ff.id) === selectedFolderId);
+                  const thumb = f?.thumbnail_images?.[0]?.thumbnail;
+                  return (
+                    <>
+                          {thumb ? (
+                            <img src={`${STATIC_BASE_URL}/${thumb}`} alt="folder-thumb" className="w-9 h-9 object-cover rounded mr-2" />
+                          ) : (
+                            <span className="w-9 h-9 bg-gray-300 rounded inline-block mr-2" />
+                          )}
+                      <span>{f?.name ?? "📁 フォルダを選択"}</span>
+                    </>
+                  );
+                })()
+              ) : (
+                <>
+                  <span>📁 フォルダを選択</span>
+                </>
+              )}
+            </button>
+
+            {/** dropdown list */}
+            {showFolderDropdown && (
+              <div className="absolute bottom-14 left-0 w-80 max-h-64 overflow-auto bg-white text-black rounded shadow-lg z-60">
+                {(folders ?? []).length === 0 ? (
+                  <div className="p-3 text-sm text-gray-600">フォルダがありません</div>
+                ) : (
+                  (folders ?? []).map((folder) => (
+                    <div
+                      key={folder.id}
+                      className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        setSelectedFolderId(String(folder.id));
+                        setShowFolderDropdown(false);
+                      }}
+                    >
+                      {folder.thumbnail_images?.[0]?.thumbnail ? (
+                        <img
+                          src={`${STATIC_BASE_URL}/${folder.thumbnail_images[0].thumbnail}`}
+                          alt={folder.name}
+                          className="w-20 h-20 object-cover rounded mr-5"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 bg-gray-200 rounded mr-5" />
+                      )}
+                      <div className="truncate">{folder.name}</div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
 
           <button
             disabled={!selectedFolderId}

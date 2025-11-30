@@ -7,6 +7,7 @@
 
 export type FetchSimilarImagesParams = {
 image_id: number;
-show_sensitive: boolean;
+show_sensitive?: boolean;
+exclude_in_folder?: boolean;
 top_k?: number;
 };

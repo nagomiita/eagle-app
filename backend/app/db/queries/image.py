@@ -98,10 +98,13 @@ def query_image_tag_embedding(image_id: int) -> bytes | None:
 
 @measure_time("query_all_image_tag_embedding")
 def query_all_image_tag_embedding(
-    exclude_id: int | None = None, show_sensitive: bool = True
+    exclude_id: int | None = None,
+    show_sensitive: bool = True,
+    exclude_in_folder: bool = False,
 ) -> list[tuple[int, bytes]]:
     with get_session() as session:
         with measure_query_time("build_embedding_query"):
+            # 基本クエリ
             query = session.query(ImageEntry.id, ImageEntry.tag_embedding_blob).filter(
                 ImageEntry.tag_embedding_blob.isnot(None)
             )
@@ -112,23 +115,30 @@ def query_all_image_tag_embedding(
             if not show_sensitive:
                 query = query.filter(ImageEntry.is_sensitive.is_(False))
 
+            if exclude_in_folder:
+                # LEFT OUTER JOIN と IS NULL でフォルダに紐づく画像を除外
+                query = query.outerjoin(
+                    ImageFolderAssociation,
+                    ImageEntry.id == ImageFolderAssociation.image_id,
+                ).filter(ImageFolderAssociation.image_id.is_(None))
+
         with measure_query_time("execute_embedding_query"):
             return query.all()
 
 
 @measure_time("query_thumbnails_by_ids")
-def query_thumbnails_by_ids(image_ids: list[int]) -> list[ImageEntry]:
-    if not image_ids:
-        return []
-
+def query_thumbnails_by_ids(
+    image_ids: list[int],
+    exclude_in_folder: bool = False,
+) -> list[ImageEntry]:
     with get_session() as session:
-        with measure_query_time("fetch_thumbnails_by_ids"):
-            # SQLAlchemy の in_ でIDリストを指定して一括取得
-            entries = (
-                session.query(ImageEntry).filter(ImageEntry.id.in_(image_ids)).all()
-            )
-
-    # ID順の整列（入力順を保ちたい場合）
-    entry_map = {entry.id: entry for entry in entries}
-    sorted_entries = [entry_map[i] for i in image_ids if i in entry_map]
-    return sorted_entries
+        query = session.query(ImageEntry).filter(ImageEntry.id.in_(image_ids))
+        if exclude_in_folder:
+            query = query.outerjoin(
+                ImageFolderAssociation, ImageEntry.id == ImageFolderAssociation.image_id
+            ).filter(ImageFolderAssociation.image_id.is_(None))
+        # preserve order of image_ids if needed - simplest: fetch and sort in Python
+        results = query.all()
+        # optional: return in same order as image_ids
+        id_to_entry = {e.id: e for e in results}
+        return [id_to_entry[i] for i in image_ids if i in id_to_entry]

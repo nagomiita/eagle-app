@@ -26,5 +26,6 @@
     "source.organizeImports": "explicit",
     "quickfix.biome": "explicit",
     "source.organizeImports.biome": "explicit"
-  }
+  },
+  "python-envs.pythonProjects": []
 }

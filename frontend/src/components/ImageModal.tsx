@@ -9,9 +9,8 @@ import {
 import { FolderInfo, OriginalImage, ThumbnailImage } from "../api/model";
 import { useAppContext } from "../contexts/AppContext";
 import { useImageTransform } from "../hooks/useImageTransform";
+import ImageOptionPanel from "./ImageOptionPanel";
 import ActionButton from "./parts/ActionButton";
-import TagList from "./parts/TagList";
-import ThumbnailGrid from "./parts/ThumbnailGrid";
 
 const SWIPE_CLOSE_THRESHOLD = 100;
 const SWIPE_IMAGE_THRESHOLD = 80;
@@ -125,6 +124,9 @@ const ImageModal: React.FC<ImageModalProps> = ({
     sheetTouchStartRef.current = null;
   };
   const [similarImages, setSimilarImages] = useState<ThumbnailImage[]>([]);
+  // excludeFolderImages: true = exclude images inside folders from similar search
+  const [excludeFolderImages, setExcludeFolderImages] = useState(false);
+  const [isSimilarLoading, setIsSimilarLoading] = useState(false);
   const [showCarouselControls, setShowCarouselControls] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -192,19 +194,24 @@ const ImageModal: React.FC<ImageModalProps> = ({
   useEffect(() => {
     const fetchSimilar = async () => {
       if (!selectedImage) return;
+      setIsSimilarLoading(true);
       try {
         const SimilarImages = await fetchSimilarImages({
           image_id: selectedImage.id,
           show_sensitive: includeSensitive,
+          // server expects exclude_in_folder; pass state directly
+          exclude_in_folder: excludeFolderImages,
         });
         setSimilarImages(SimilarImages);
       } catch (error) {
         console.error("❌ 類似画像の取得に失敗しました:", error);
+      } finally {
+        setIsSimilarLoading(false);
       }
     };
 
     fetchSimilar();
-  }, [selectedImage]);
+  }, [selectedImage, includeSensitive, excludeFolderImages]);
 
   const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
     e.stopPropagation();
@@ -821,62 +828,21 @@ const ImageModal: React.FC<ImageModalProps> = ({
       </div>
 
       {showOptionPanel && (
-        // bottom sheet container
-        <div
-          ref={sheetRef}
-          className="fixed left-0 right-0 bottom-0 w-full z-50"
-          onTouchStart={handleSheetTouchStart}
-          onTouchMove={handleSheetTouchMove}
-          onTouchEnd={handleSheetTouchEnd}
-        >
-          <div
-            className="bg-gradient-to-b from-gray-900 to-gray-950 backdrop-blur-lg bg-opacity-98 border-t border-gray-700 shadow-2xl"
-            style={{
-              transform: `translateY(${sheetTranslateY}%)`,
-              transition: "transform 240ms ease-out",
-              touchAction: "none",
-              maxHeight: "70vh",
-              borderTopLeftRadius: "24px",
-              borderTopRightRadius: "24px",
-            }}
-          >
-            {/* ドラッグハンドル */}
-            <div className="flex justify-center pt-3 pb-2">
-              <div className="w-12 h-1.5 bg-gray-600 rounded-full opacity-50"></div>
-            </div>
-
-            {/* コンテンツエリア */}
-            <div
-              className="px-6 pb-6 overflow-y-auto"
-              style={{ maxHeight: "calc(70vh - 40px)" }}
-            >
-              {/* タグセクション */}
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">
-                  Tags
-                </h3>
-                <TagList
-                  tags={selectedImage?.tags ?? []}
-                  onTagClick={handleTagClick}
-                />
-              </div>
-
-              {/* 類似画像セクション */}
-              {similarImages.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">
-                    Similar Images
-                  </h3>
-                  <ThumbnailGrid
-                    images={similarImages}
-                    columnCount={isMobile ? 4 : 8}
-                    onClick={handleThumbnailClick}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <ImageOptionPanel
+          sheetRef={sheetRef}
+          sheetTranslateY={sheetTranslateY}
+          handleSheetTouchStart={handleSheetTouchStart}
+          handleSheetTouchMove={handleSheetTouchMove}
+          handleSheetTouchEnd={handleSheetTouchEnd}
+          selectedImage={selectedImage}
+          handleTagClick={handleTagClick}
+          excludeFolderImages={excludeFolderImages}
+          setExcludeFolderImages={setExcludeFolderImages}
+          isSimilarLoading={isSimilarLoading}
+          similarImages={similarImages}
+          isMobile={isMobile}
+          handleThumbnailClick={handleThumbnailClick}
+        />
       )}
     </>
   );

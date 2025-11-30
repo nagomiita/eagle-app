@@ -196,8 +196,22 @@
           {
             "name": "show_sensitive",
             "in": "query",
-            "required": true,
-            "schema": { "type": "boolean", "title": "Show Sensitive" }
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Show Sensitive"
+            }
+          },
+          {
+            "name": "exclude_in_folder",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Exclude In Folder"
+            }
           },
           {
             "name": "top_k",

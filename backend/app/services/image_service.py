@@ -109,7 +109,7 @@ def delete_image(image_id: int) -> bool:
 
 
 def fetch_similar_images(
-    image_id: int, show_sensitive: bool, top_k: int
+    image_id: int, show_sensitive: bool, exclude_in_folder: bool, top_k: int
 ) -> list[ThumbnailImage]:
     # 1. クエリ画像のベクトル（バイナリ）を取得
     query_vec_blob = image.query_image_tag_embedding(image_id)
@@ -117,9 +117,11 @@ def fetch_similar_images(
         print("❌ クエリ画像のベクトルがありません")
         return []
 
-    # 2. 比較対象の全ベクトル（バイナリ）を取得
+    # 2. 比較対象の全ベクトル（バイナリ）を取得（フォルダ除外オプションを渡す）
     all_vectors_blob = image.query_all_image_tag_embedding(
-        exclude_id=image_id, show_sensitive=show_sensitive
+        exclude_id=image_id,
+        show_sensitive=show_sensitive,
+        exclude_in_folder=exclude_in_folder,
     )
     if not all_vectors_blob:
         print("❌ 比較対象のベクトルが存在しません")
@@ -128,8 +130,10 @@ def fetch_similar_images(
     # 3. 類似画像IDを取得（top_k件）
     top_ids = embedding.find_similar_image_ids(query_vec_blob, all_vectors_blob, top_k)
 
-    # 4. 類似画像のサムネイル情報を取得
-    similar_thumbnails = image.query_thumbnails_by_ids(top_ids)
+    # 4. 類似画像のサムネイル情報を取得（フォルダ除外オプションを渡す）
+    similar_thumbnails = image.query_thumbnails_by_ids(
+        top_ids, exclude_in_folder=exclude_in_folder
+    )
 
     return [
         ThumbnailImage(

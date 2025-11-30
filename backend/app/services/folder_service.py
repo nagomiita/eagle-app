@@ -1,9 +1,10 @@
+from pathlib import Path
+
+import numpy as np
 from app.db.queries import folder, image
 from app.schemas.folder import FolderInfo
 from app.schemas.image import ThumbnailImage
-import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from pathlib import Path
 
 
 def create_image_folder(
