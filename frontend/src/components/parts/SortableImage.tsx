@@ -1,8 +1,10 @@
 import { useSortable } from "@dnd-kit/sortable";
-import React from "react";
-import { ThumbnailImage } from "../../api/model";
 import { CSS } from "@dnd-kit/utilities";
-import { STATIC_BASE_URL } from "../../config";
+import React from "react";
+import { getApiBaseUrl } from "../../api/custom-axios";
+import { ThumbnailImage } from "../../api/model";
+
+const STATIC_BASE_URL = getApiBaseUrl() + "/static";
 
 export const SortableImage: React.FC<{
   image: ThumbnailImage;

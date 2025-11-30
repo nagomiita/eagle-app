@@ -1,14 +1,16 @@
 import { CheckIcon, HeartIcon } from "@heroicons/react/24/solid";
 import React, { useState } from "react";
+import { getApiBaseUrl } from "../../api/custom-axios";
 import {
   addImagesToFolder,
   createImageFolder,
 } from "../../api/folders/folders";
 import { FolderInfo, ThumbnailImage } from "../../api/model";
-import { STATIC_BASE_URL } from "../../config";
 import { handleApiRequest } from "../../utils/apiHelpers";
 import LazyImage from "./LazyImage";
 import ScrollToTopButton from "./ScrollToTopButton";
+
+const STATIC_BASE_URL = getApiBaseUrl() + "/static";
 
 interface ThumbnailGridProps {
   images: ThumbnailImage[];

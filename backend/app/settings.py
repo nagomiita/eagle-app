@@ -41,6 +41,11 @@ class Settings(BaseSettings):
         description="Directory where images are stored"
     )
 
+    thumb_dir: Path = Field(
+        default=Path("./thumbnails"),
+        description="Directory where thumbnails are stored"
+    )
+
     # Localization Configuration
     language: str = Field(
         default="ja",
@@ -60,5 +65,6 @@ settings = Settings()
 # Export constants for backward compatibility
 DB_PATH = settings.db_path
 IMAGE_DIR = settings.image_dir
+THUMB_DIR = settings.thumb_dir
 LANGUAGE = settings.language
 SENSITIVE_KEYWORDS = settings.sensitive_keywords

@@ -1,7 +1,30 @@
+from pathlib import Path
+
 from app.db.models import ImageEntry, ImageFolderAssociation, ImageTag
 from app.db.query_performance import measure_query_time, measure_time
 from app.db.session import get_session
+from app.utils.image import image_manager
 from sqlalchemy import not_, select
+
+
+def add_image_entries(entries: list[tuple[Path, Path]]) -> None:
+    with get_session() as session:
+        image_objects = [
+            ImageEntry(
+                image_path=str(orig),
+                image_name=str(orig.name),
+                thumbnail_path=str(thumb),
+                created_at=image_manager.extract_captured_at(orig),
+            )
+            for orig, thumb in entries
+        ]
+        session.add_all(image_objects)
+        session.commit()
+
+
+def get_registered_image_paths() -> set[str]:
+    with get_session() as session:
+        return {r.image_path for r in session.query(ImageEntry.image_path).all()}
 
 
 @measure_time("get_filtered_image_entries")

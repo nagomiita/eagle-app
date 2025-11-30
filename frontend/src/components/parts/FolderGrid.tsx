@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { FolderInfo } from "../../api/model";
-import { STATIC_BASE_URL } from "../../config";
+
+import { getApiBaseUrl } from "../../api/custom-axios";
+
+const STATIC_BASE_URL = getApiBaseUrl() + "/static";
 
 interface FolderGridProps {
   folders: FolderInfo[];
