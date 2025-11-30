@@ -2,7 +2,7 @@ import base64
 import random
 from pathlib import Path
 
-from app.config import IMAGE_DIR
+from app.settings import IMAGE_DIR
 from app.db.queries import image, tag
 from app.schemas.image import OriginalImage, ThumbnailImage
 from app.schemas.tag import Tag

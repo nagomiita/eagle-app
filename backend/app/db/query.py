@@ -2,7 +2,7 @@ from datetime import datetime
 from pathlib import Path
 
 import numpy as np
-from app.config import LANGUAGE
+from app.settings import LANGUAGE
 from app.db.models import (
     Category,
     Genre,
